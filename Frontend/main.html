@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ═══ MAIN PAGE ═══ -->
+<div id="main-page">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-brand">
+      <img src="./images-removebg-preview (1).png" alt="" style="width: 50px;">
+      <div>
+        <div class="brand-text">CARBOLSAS</div>
+        <div class="brand-sub">empacamos sus ideas naturalmente</div>
+      </div>
+    </div>
+
+    <div class="header-user">
+      <div class="welcome-txt">
+        Hola de nuevo,
+        <strong id="welcome-name">Administrador</strong>
+      </div>
+      <div class="user-avatar" id="user-initials">AD</div>
+      <button class="btn-logout" onclick="handleLogout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="nav-bar">
+    <button class="nav-tab active" onclick="switchTab('inicio', this)">
+      <span class="tab-icon">🏠</span> Inicio
+    </button>
+    <button class="nav-tab" onclick="switchTab('reportes', this)">
+      <span class="tab-icon">📊</span> Reportes
+    </button>
+    <button class="nav-tab" onclick="switchTab('configuracion', this)">
+      <span class="tab-icon">⚙️</span> Configuración
+    </button>
+  </nav>
+
+  <!-- Content Area -->
+  <main class="content-area">
+
+    <!-- Inicio -->
+    <div class="tab-panel panel-inicio active" id="panel-inicio">
+      <div class="empty-state">
+        <div class="empty-icon">🏠</div>
+        <h3>Página de Inicio</h3>
+        <p>Aquí aparecerá el contenido principal del panel. Próximamente añadiremos más funcionalidades.</p>
+        <span class="coming-soon-badge">Próximamente</span>
+      </div>
+    </div>
+
+    <!-- Reportes -->
+    <div class="tab-panel panel-reportes" id="panel-reportes">
+      <div class="empty-state">
+        <div class="empty-icon">📊</div>
+        <h3>Reportes</h3>
+        <p>Los reportes y estadísticas de la empresa estarán disponibles en esta sección.</p>
+        <span class="coming-soon-badge">Próximamente</span>
+      </div>
+    </div>
+
+    <!-- Configuración -->
+    <div class="tab-panel panel-config" id="panel-configuracion">
+      <div class="empty-state">
+        <div class="empty-icon">⚙️</div>
+        <h3>Configuración</h3>
+        <p>Administra las configuraciones y preferencias del sistema desde aquí.</p>
+        <span class="coming-soon-badge">Próximamente</span>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="./script.js"></script>
+</body>
+</html>
