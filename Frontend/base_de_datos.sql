@@ -16,6 +16,8 @@ CREATE TABLE Empresas (
     id_empresa INT AUTO_INCREMENT PRIMARY KEY,
     nombre_comercial VARCHAR(150) NOT NULL,
     nit VARCHAR(20) UNIQUE,
+    telefono VARCHAR(20),
+    correo_contacto VARCHAR(100),
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -31,16 +33,18 @@ CREATE TABLE TintasBase (
 -- 4. Tabla de Fórmulas (Algoritmo de Mezcla RF-02)
 CREATE TABLE Formulas (
     id_formula INT AUTO_INCREMENT PRIMARY KEY,
+    id_empresa INT NULL,
     nombre_color VARCHAR(100) NOT NULL,
     descripcion_color TEXT
+    FOREIGN KEY (id_empresa) REFERENCES Empresas(id_empresa)
 );
 
 -- 5. Detalle de Fórmulas (Relación muchos a muchos entre Tintas y Fórmulas)
 CREATE TABLE DetalleFormulas (
     id_detalle INT AUTO_INCREMENT PRIMARY KEY,
-    id_formula INT,
-    id_tinta INT,
-    porcentaje DECIMAL(5,2), -- Porcentaje de la mezcla
+    id_formula INT NOT NULL,
+    id_tinta INT NOT NULL,
+    porcentaje DECIMAL(5,2) NOT NULL, -- Porcentaje de la mezcla
     FOREIGN KEY (id_formula) REFERENCES Formulas(id_formula),
     FOREIGN KEY (id_tinta) REFERENCES TintasBase(id_tinta)
 );
@@ -48,7 +52,8 @@ CREATE TABLE DetalleFormulas (
 -- 6. Tabla de Logotipos (Asociación RF-03)
 CREATE TABLE Logotipos (
     id_logotipo INT AUTO_INCREMENT PRIMARY KEY,
-    id_empresa INT,
+    id_empresa INT NOT NULL,
+    nombre_logo VARCHAR(100),
     url_imagen VARCHAR(255), -- Ruta de la imagen del logo
     id_formula INT, -- Color principal asociado
     FOREIGN KEY (id_empresa) REFERENCES Empresas(id_empresa),
@@ -58,10 +63,10 @@ CREATE TABLE Logotipos (
 -- 7. Historial de Órdenes (Control de Inventario RF-04)
 CREATE TABLE OrdenesImpresion (
     id_orden INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT,
-    id_logotipo INT,
+    id_usuario INT NOT NULL,
+    id_logotipo INT NOT NULL,
     fecha_orden TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    volumen_total DECIMAL(10,2),
+    volumen_total DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario),
     FOREIGN KEY (id_logotipo) REFERENCES Logotipos(id_logotipo)
 );
