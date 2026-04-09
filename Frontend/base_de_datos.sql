@@ -2,13 +2,13 @@ CREATE DATABASE IF NOT EXISTS CarbolsasDB;
 USE CarbolsasDB;
 
 -- 1. Tabla de Usuarios (Para Control de Permisos RF-05)
-CREATE TABLE Usuarios (
-    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    correo VARCHAR(100) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    rol ENUM('Administrador', 'Empleado') NOT NULL,
-    primer_inicio BOOLEAN DEFAULT TRUE -- Para el Tutorial RF-06
+CREATE TABLE Usuario (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(60) NOT NULL,
+    Correo VARCHAR(100) UNIQUE NOT NULL,
+    PasswordHash VARCHAR(20) NOT NULL,
+    Rol ENUM('Administrador', 'Empleado') NOT NULL,
+    PrimerInicio BOOLEAN DEFAULT TRUE -- Para el Tutorial RF-06
 );
 
 -- 2. Tabla de Empresas (Organización de Empresas RF-03)
@@ -22,8 +22,8 @@ CREATE TABLE Empresas (
 );
 
 -- 3. Tabla de Tintas Base (Gestión de Tintas RF-01 y RF-08)
-CREATE TABLE TintasBase (
-    id_tinta INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE TintaBase (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
     nombre_tinta VARCHAR(100) NOT NULL,
     codigo_hex VARCHAR(7),
     stock_actual DECIMAL(10,2) NOT NULL, -- Volumen en ml o gr
@@ -31,42 +31,48 @@ CREATE TABLE TintasBase (
 );
 
 -- 4. Tabla de Fórmulas (Algoritmo de Mezcla RF-02)
-CREATE TABLE Formulas (
-    id_formula INT AUTO_INCREMENT PRIMARY KEY,
-    id_empresa INT NULL,
-    nombre_color VARCHAR(100) NOT NULL,
-    descripcion_color TEXT
+CREATE TABLE Formula (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    IdEmpresa INT NULL,
+    nombreColor VARCHAR(50) NOT NULL,
     FOREIGN KEY (id_empresa) REFERENCES Empresas(id_empresa)
 );
 
 -- 5. Detalle de Fórmulas (Relación muchos a muchos entre Tintas y Fórmulas)
-CREATE TABLE DetalleFormulas (
-    id_detalle INT AUTO_INCREMENT PRIMARY KEY,
-    id_formula INT NOT NULL,
-    id_tinta INT NOT NULL,
-    porcentaje DECIMAL(5,2) NOT NULL, -- Porcentaje de la mezcla
-    FOREIGN KEY (id_formula) REFERENCES Formulas(id_formula),
-    FOREIGN KEY (id_tinta) REFERENCES TintasBase(id_tinta)
+CREATE TABLE DetalleFormula (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    IdFormula INT NOT NULL,
+    IdTinta INT NOT NULL,
+    Porcentaje DECIMAL(5,2) NOT NULL, -- Porcentaje de la mezcla
+    FOREIGN KEY (IdFormula) REFERENCES Formula(IdFormula),
+    FOREIGN KEY (IdTinta) REFERENCES TintaBase(IdTinta)
 );
 
 -- 6. Tabla de Logotipos (Asociación RF-03)
-CREATE TABLE Logotipos (
-    id_logotipo INT AUTO_INCREMENT PRIMARY KEY,
-    id_empresa INT NOT NULL,
-    nombre_logo VARCHAR(100),
-    url_imagen VARCHAR(255), -- Ruta de la imagen del logo
-    id_formula INT, -- Color principal asociado
-    FOREIGN KEY (id_empresa) REFERENCES Empresas(id_empresa),
-    FOREIGN KEY (id_formula) REFERENCES Formulas(id_formula)
+CREATE TABLE Logotipo (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    NombreLogo VARCHAR(100),
+    UrlImagen VARCHAR(255), -- Ruta de la imagen del logo
+    IdFormula INT, -- Color principal asociado
+    IdEmpresa INT, -- Empresa asociada al logo
+    FOREIGN KEY (IdEmpresa) REFERENCES Empresa(IdEmpresa),
+    FOREIGN KEY (IdFormula) REFERENCES Formula(IdFormula)
 );
 
 -- 7. Historial de Órdenes (Control de Inventario RF-04)
-CREATE TABLE OrdenesImpresion (
-    id_orden INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    id_logotipo INT NOT NULL,
-    fecha_orden TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    volumen_total DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario),
-    FOREIGN KEY (id_logotipo) REFERENCES Logotipos(id_logotipo)
+CREATE TABLE OrdenImpresion (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    IdUsuario INT NOT NULL,
+    IdLogotipo INT NOT NULL,
+    FechaOrden TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    VolumenTotal DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario),
+    FOREIGN KEY (IdLogotipo) REFERENCES Logotipo(IdLogotipo)
 );
+
+CREATE TABLE Rol(
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT INTO Roles (nombre) VALUES ('Administrador'), ('Empleado');

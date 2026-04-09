@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\API\\API.csproj": {}
+    "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\API\\API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\API\\API.csproj": {
+    "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\API\\API.csproj",
+        "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\API\\API.csproj",
-        "packagesPath": "C:\\Users\\Mariana\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\API\\obj\\",
+        "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\API\\API.csproj",
+        "packagesPath": "C:\\Users\\Janus\\.nuget\\packages\\",
+        "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Mariana\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Janus\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -26,8 +26,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Application\\Application.csproj": {
-                "projectPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Application\\Application.csproj"
+              "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Application\\Application.csproj": {
+                "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Application\\Application.csproj"
               }
             }
           }
@@ -96,21 +96,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Application\\Application.csproj": {
+    "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Application\\Application.csproj",
+        "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Application\\Application.csproj",
-        "packagesPath": "C:\\Users\\Mariana\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Application\\obj\\",
+        "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Application\\Application.csproj",
+        "packagesPath": "C:\\Users\\Janus\\.nuget\\packages\\",
+        "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Mariana\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Janus\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -122,11 +122,11 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Domain\\Domain.csproj"
+              "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj": {
+                "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj"
               },
-              "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Persistence\\Persistence.csproj": {
-                "projectPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Persistence\\Persistence.csproj"
+              "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Persistence\\Persistence.csproj": {
+                "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Persistence\\Persistence.csproj"
               }
             }
           }
@@ -156,21 +156,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Domain\\Domain.csproj": {
+    "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Domain\\Domain.csproj",
+        "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Domain\\Domain.csproj",
-        "packagesPath": "C:\\Users\\Mariana\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Domain\\obj\\",
+        "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj",
+        "packagesPath": "C:\\Users\\Janus\\.nuget\\packages\\",
+        "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Mariana\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Janus\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -223,21 +223,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Persistence\\Persistence.csproj": {
+    "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Persistence\\Persistence.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Persistence\\Persistence.csproj",
+        "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Persistence\\Persistence.csproj",
         "projectName": "Persistence",
-        "projectPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Persistence\\Persistence.csproj",
-        "packagesPath": "C:\\Users\\Mariana\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Persistence\\obj\\",
+        "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Persistence\\Persistence.csproj",
+        "packagesPath": "C:\\Users\\Janus\\.nuget\\packages\\",
+        "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Persistence\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Mariana\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Janus\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -249,8 +249,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\paginatintas\\Domain\\Domain.csproj"
+              "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj": {
+                "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj"
               }
             }
           }
@@ -290,7 +290,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
         }
       }
     }
