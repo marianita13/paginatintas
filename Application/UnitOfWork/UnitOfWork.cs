@@ -1,9 +1,9 @@
 using System;
 using Domain.Interfaces;
 using Persistence.Data;
-using Persistence.Repository;
+using Application.Repository;
 
-namespace Persistence.UnitOfWork;
+namespace Application.UnitOfWork;
 public class UnitOfWork : IUnitOfWork, IDisposable
 {
     private readonly paginatintasContext _context;
@@ -12,17 +12,19 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private IEmpresa _Empresa;
     private IFormula _Formula;
     private ILogotipo _Logotipo;
+    private ILogotipoColor _LogotipoColor;
     private IOrdenImpresion _OrdenImpresion;
     private ITintaBase _TintaBase;
     private IUsuario _Usuario;
     private IRol _Rol;
+    private ILogotipoColor _LogotipoColors;
 
     public UnitOfWork(paginatintasContext context)
     {
         _context = context;
     }
 
-    public IDetalleFormula DetallesFormula {
+    public IDetalleFormula DetalleFormulas{
         get {
             if (_DetalleFormula == null) {
                 _DetalleFormula = new DetalleFormulaRepository(_context);
@@ -58,7 +60,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         }
     }
 
-    public IOrdenImpresion OrdenesImpresion {
+    public IOrdenImpresion OrdenImpresions{
         get {
             if (_OrdenImpresion == null) {
                 _OrdenImpresion = new OrdenImpresionRepository(_context);
@@ -67,7 +69,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         }
     }
 
-    public ITintaBase TintasBase {
+    public ITintaBase TintaBases{
         get {
             if (_TintaBase == null) {
                 _TintaBase = new TintaBaseRepository(_context);
@@ -91,6 +93,15 @@ public class UnitOfWork : IUnitOfWork, IDisposable
                 _Rol = new RolRepository(_context);
             }
             return _Rol;
+        }
+    }
+
+    public ILogotipoColor LogotipoColors {
+        get {
+            if (_LogotipoColor == null) {
+                _LogotipoColor = new LogotipoColorRepository(_context);
+            }
+            return _LogotipoColor;
         }
     }
 

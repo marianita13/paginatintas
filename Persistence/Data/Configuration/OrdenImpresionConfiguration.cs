@@ -21,11 +21,11 @@ namespace Persistence.Data.Configurations
                 .HasDefaultValueSql("CURRENT_TIMESTAMP"); // Usa el valor por defecto del servidor
 
             builder.HasOne(o => o.Usuario)
-                .WithMany(u => u.OrdenesImpresion)
+                .WithMany(u => u.OrdenImpresions)
                 .HasForeignKey(o => o.IdUsuario);
 
             builder.HasOne(o => o.Logotipo)
-                .WithMany(l => l.OrdenesImpresion)
+                .WithMany(l => l.OrdenImpresions)
                 .HasForeignKey(o => o.IdLogotipo);
         }
     }

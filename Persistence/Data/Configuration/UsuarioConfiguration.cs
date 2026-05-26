@@ -25,14 +25,14 @@ namespace Persistence.Data.Configurations
 
             builder.Property(e => e.PasswordHash)
                 .IsRequired()
-                .HasMaxLength(20)
-                .HasConversion<string>();
+                .HasMaxLength(255);
 
-            builder.Property(e => e.Rol)
-                .IsRequired(); // Administrador o Empleado
-                
+            builder.HasOne(u => u.Rol)
+                .WithMany(r => r.Usuarios)
+                .HasForeignKey(u => u.IdRol);
+
             builder.Property(e => e.PrimerInicio)
-                .HasDefaultValue(true);
+                .HasDefaultValue(1);
         }
     }
 }

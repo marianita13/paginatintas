@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Interfaces;
 using Persistence.Data;
-using Persistence.Repository;
 
-namespace Persistence.Repository;
-public class TintaBaseRepository : GenericRepository<TintaBase> , ITintaBaseRepository
+namespace Application.Repository;
+public class TintaBaseRepository : GenericRepository<TintaBase> , ITintaBase
     {
-        private readonly paginatintascontext _context;
-        public TintaBaseRepository(paginatintascontext context) : base(context)
+        private readonly paginatintasContext _context;
+        public TintaBaseRepository(paginatintasContext context) : base(context)
         {
             _context = context;
         }

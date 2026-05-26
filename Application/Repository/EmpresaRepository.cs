@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Interfaces;
 using Persistence.Data;
-using Persistence.Repository;
 
-namespace Persistence.Repository;
-public class EmpresaRepository : GenericRepository<Empresa> , IEmpresaRepository
+namespace Application.Repository;
+public class EmpresaRepository : GenericRepository<Empresa> , IEmpresa
     {
-        private readonly paginatintascontext _context;
-        public EmpresaRepository(paginatintascontext context) : base(context)
+        private readonly paginatintasContext _context;
+        public EmpresaRepository(paginatintasContext context) : base(context)
         {
             _context = context;
         }

@@ -24,7 +24,7 @@ namespace Persistence.Data.Configurations
                 .IsRequired()
                 .HasColumnType("decimal(10,2)");
 
-            builder.Property(e => e.StockMinimoAlerta)
+            builder.Property(e => e.StockMinimo_alerta)
                 .IsRequired()
                 .HasColumnType("decimal(10,2)");
                 

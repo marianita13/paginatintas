@@ -6525,11 +6525,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\API\\API.csproj",
+      "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\API\\API.csproj",
       "projectName": "API",
-      "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\API\\API.csproj",
+      "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\API\\API.csproj",
       "packagesPath": "C:\\Users\\Janus\\.nuget\\packages\\",
-      "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\API\\obj\\",
+      "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Janus\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -6544,8 +6544,8 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Application\\Application.csproj": {
-              "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Application\\Application.csproj"
+            "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Application\\Application.csproj": {
+              "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Application\\Application.csproj"
             }
           }
         }

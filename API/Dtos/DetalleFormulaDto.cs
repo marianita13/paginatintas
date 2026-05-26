@@ -13,6 +13,6 @@ namespace API.Dtos
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public ICollection<TintaBase> Sales { get; set; }
+        public ICollection<TintaBase> TintaBases { get; set; }
     }
 }

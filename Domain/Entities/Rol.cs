@@ -4,6 +4,7 @@ namespace Domain.Entities
 {
     public class Rol : BaseEntity
     {
-        public int MyProperty { get; set; }
+        public string Nombre { get; set; }
+        public ICollection<Usuario> Usuarios { get; set; }
     }
 }

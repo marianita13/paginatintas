@@ -10,10 +10,10 @@ namespace Persistence.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Empresa> builder)
         {
-            builder.ToTable("Empresas");
+            builder.ToTable("Empresa");
             builder.HasKey(e => e.Id);
 
-            builder.Property(e => e.Nombre_Comercial)
+            builder.Property(e => e.NombreComercial)
                 .IsRequired()
                 .HasMaxLength(100);
 
@@ -23,11 +23,11 @@ namespace Persistence.Data.Configurations
 
             builder.HasIndex(e => e.Nit).IsUnique();
 
-            builder.HasIndex(e => e.Telefono)
+            builder.Property(e => e.Telefono)
                 .IsRequired()
                 .HasMaxLength(15);
 
-            builder.Property(e => e.Correo)
+            builder.Property(e => e.CorreoContacto)
                 .IsRequired()
                 .HasMaxLength(100);
         }

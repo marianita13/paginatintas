@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Persistence\\Persistence.csproj": {}
+    "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Persistence\\Persistence.csproj": {}
   },
   "projects": {
-    "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj": {
+    "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj",
+        "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj",
+        "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj",
         "packagesPath": "C:\\Users\\Janus\\.nuget\\packages\\",
-        "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\obj\\",
+        "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Janus\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -71,14 +71,14 @@
         }
       }
     },
-    "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Persistence\\Persistence.csproj": {
+    "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Persistence\\Persistence.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Persistence\\Persistence.csproj",
+        "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Persistence\\Persistence.csproj",
         "projectName": "Persistence",
-        "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Persistence\\Persistence.csproj",
+        "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Persistence\\Persistence.csproj",
         "packagesPath": "C:\\Users\\Janus\\.nuget\\packages\\",
-        "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Persistence\\obj\\",
+        "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Persistence\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Janus\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -93,8 +93,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj": {
-                "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj"
+              "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj": {
+                "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj"
               }
             }
           }

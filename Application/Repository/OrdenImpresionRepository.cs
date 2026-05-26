@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Interfaces;
 using Persistence.Data;
-using Persistence.Repository;
 
-namespace Persistence.Repository;
-public class OrdenImpresionRepository : GenericRepository<OrdenImpresion> , IOrdenImpresionRepository
+namespace Application.Repository;
+public class OrdenImpresionRepository : GenericRepository<OrdenImpresion> , IOrdenImpresion
     {
-        private readonly paginatintascontext _context;
-        public OrdenImpresionRepository(paginatintascontext context) : base(context)
+        private readonly paginatintasContext _context;
+        public OrdenImpresionRepository(paginatintasContext context) : base(context)
         {
             _context = context;
         }

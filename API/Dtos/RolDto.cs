@@ -11,7 +11,7 @@ namespace API.Dtos
     {
         public int Id { get; set; }
         public string Nombre { get; set; }
-        public ICollection<User> Users { get; set; } = new HashSet<User>();
-        public ICollection<UserRol> UsersRols { get; set; }
+        public ICollection<Usuario> Usuarios { get; set; } = new HashSet<Usuario>();
+        public ICollection<UsuarioRol> UsuariosRols { get; set; }
     }
 }

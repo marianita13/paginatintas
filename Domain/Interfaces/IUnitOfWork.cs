@@ -10,10 +10,11 @@ namespace Domain.Interfaces
         IDetalleFormula DetalleFormulas {get;}
         IEmpresa Empresas {get;}
         IFormula Formulas {get;}
+        ILogotipoColor LogotipoColors {get;}
         ILogotipo Logotipos {get;}
-        IordenImpresion Rols {get;}
+        IOrdenImpresion OrdenImpresions {get;}
         ITintaBase TintaBases {get;}
-        IUsuario Users {get;}
+        IUsuario Usuarios {get;}
         IRol Roles {get;}
         Task<int> SaveAsync();
     }

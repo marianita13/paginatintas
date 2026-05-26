@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Interfaces;
 using Persistence.Data;
-using Persistence.Repository;
 
-namespace Persistence.Repository;
-public class LogotipoRepository : GenericRepository<Logotipo> , ILogotipoRepository
+namespace Application.Repository;
+public class LogotipoRepository : GenericRepository<Logotipo> , ILogotipo
     {
-        private readonly paginatintascontext _context;
-        public LogotipoRepository(paginatintascontext context) : base(context)
+        private readonly paginatintasContext _context;
+        public LogotipoRepository(paginatintasContext context) : base(context)
         {
             _context = context;
         }

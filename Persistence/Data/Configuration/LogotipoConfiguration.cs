@@ -14,8 +14,8 @@ namespace Persistence.Data.Configurations
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.NombreLogo)
-            .IsRequired()
-            .HasMaxLength(100);
+                .IsRequired()
+                .HasMaxLength(100);
 
             builder.HasIndex(e => e.NombreLogo).IsUnique();
 

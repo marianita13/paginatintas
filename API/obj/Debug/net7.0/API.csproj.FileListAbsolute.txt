@@ -84,3 +84,13 @@ C:\Users\Mariana\OneDrive\Escritorio\paginatintas\API\obj\Debug\net7.0\refint\AP
 C:\Users\Mariana\OneDrive\Escritorio\paginatintas\API\obj\Debug\net7.0\API.pdb
 C:\Users\Mariana\OneDrive\Escritorio\paginatintas\API\obj\Debug\net7.0\API.genruntimeconfig.cache
 C:\Users\Mariana\OneDrive\Escritorio\paginatintas\API\obj\Debug\net7.0\ref\API.dll
+D:\Users\Janus\OneDrive\Documentos\UNIVERSIDAD\CAIAL\paginatintas\API\obj\Debug\net7.0\API.dll
+D:\Users\Janus\OneDrive\Documentos\UNIVERSIDAD\CAIAL\paginatintas\API\obj\Debug\net7.0\refint\API.dll
+D:\Users\Janus\OneDrive\Documentos\UNIVERSIDAD\CAIAL\paginatintas\API\obj\Debug\net7.0\API.pdb
+D:\Users\Janus\OneDrive\Documentos\UNIVERSIDAD\CAIAL\paginatintas\API\obj\Debug\net7.0\API.csproj.AssemblyReference.cache
+D:\Users\Janus\OneDrive\Documentos\UNIVERSIDAD\CAIAL\paginatintas\API\obj\Debug\net7.0\API.GeneratedMSBuildEditorConfig.editorconfig
+D:\Users\Janus\OneDrive\Documentos\UNIVERSIDAD\CAIAL\paginatintas\API\obj\Debug\net7.0\API.AssemblyInfoInputs.cache
+D:\Users\Janus\OneDrive\Documentos\UNIVERSIDAD\CAIAL\paginatintas\API\obj\Debug\net7.0\API.AssemblyInfo.cs
+D:\Users\Janus\OneDrive\Documentos\UNIVERSIDAD\CAIAL\paginatintas\API\obj\Debug\net7.0\API.csproj.CoreCompileInputs.cache
+D:\Users\Janus\OneDrive\Documentos\UNIVERSIDAD\CAIAL\paginatintas\API\obj\Debug\net7.0\API.MvcApplicationPartsAssemblyInfo.cs
+D:\Users\Janus\OneDrive\Documentos\UNIVERSIDAD\CAIAL\paginatintas\API\obj\Debug\net7.0\API.MvcApplicationPartsAssemblyInfo.cache

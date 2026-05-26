@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Interfaces;
 using Persistence.Data;
-using Persistence.Repository;
 
-namespace Persistence.Repository;
-public class DetalleFormulaRepository : GenericRepository<DetalleFormula> , IDetalleFormulaRepository
+namespace Application.Repository;
+public class DetalleFormulaRepository : GenericRepository<DetalleFormula> , IDetalleFormula
     {
-        private readonly paginatintascontext _context;
-        public DetalleFormulaRepository(paginatintascontext context) : base(context)
+        private readonly paginatintasContext _context;
+        public DetalleFormulaRepository(paginatintasContext context) : base(context)
         {
             _context = context;
         }

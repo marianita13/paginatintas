@@ -5050,11 +5050,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj",
+      "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj",
       "projectName": "Domain",
-      "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\Domain.csproj",
+      "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj",
       "packagesPath": "C:\\Users\\Janus\\.nuget\\packages\\",
-      "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\paginatintas\\Domain\\obj\\",
+      "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Janus\\AppData\\Roaming\\NuGet\\NuGet.Config"
