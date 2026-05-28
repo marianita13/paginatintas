@@ -25,7 +25,7 @@ public class UsuarioController: BaseController
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<Usuario>>> Get()
         {
-            var entidades = await _unitOfWork.Usuario.GetAllAsync();
+            var entidades = await _unitOfWork.Usuarios.GetAllAsync();
             return _mapper.Map<List<Usuario>>(entidades);
         }
 
@@ -35,7 +35,7 @@ public class UsuarioController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<UsuarioDto>> Get(int id)
         {
-            var entidad = await _unitOfWork.Usuario.GetByIdAsync(id);
+            var entidad = await _unitOfWork.Usuarios.GetByIdAsync(id);
             if(entidad == null)
             {
                 return NotFound();
@@ -49,7 +49,7 @@ public class UsuarioController: BaseController
         public async Task<ActionResult<Usuario>> Post(UsuarioDto UsuarioDto)
         {
             var entidad = _mapper.Map<Usuario>(UsuarioDto);
-            this._unitOfWork.Usuario.Add(entidad);
+            this._unitOfWork.Usuarios.Add(entidad);
             await _unitOfWork.SaveAsync();
             if(entidad == null)
             {
@@ -70,7 +70,7 @@ public class UsuarioController: BaseController
                 return NotFound();
             }
             var entidades = _mapper.Map<Usuario>(UsuarioDto);
-            _unitOfWork.Usuario.Update(entidades);
+            _unitOfWork.Usuarios.Update(entidades);
             await _unitOfWork.SaveAsync();
             return UsuarioDto;
         }
@@ -80,12 +80,12 @@ public class UsuarioController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var entidad = await _unitOfWork.Usuario.GetByIdAsync(id);
+            var entidad = await _unitOfWork.Usuarios.GetByIdAsync(id);
             if(entidad == null)
             {
                 return NotFound();
             }
-            _unitOfWork.Usuario.Delete(entidad);
+            _unitOfWork.Usuarios.Remove(entidad);
             await _unitOfWork.SaveAsync();
             return NoContent();
         }

@@ -25,7 +25,7 @@ public class FormulaController: BaseController
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<Formula>>> Get()
         {
-            var Formulaes = await _unitOfWork.Formula.GetAllAsync();
+            var Formulaes = await _unitOfWork.Formulas.GetAllAsync();
             return _mapper.Map<List<Formula>>(Formulaes);
         }
 
@@ -35,7 +35,7 @@ public class FormulaController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<FormulaDto>> Get(int id)
         {
-            var Formula = await _unitOfWork.Formula.GetByIdAsync(id);
+            var Formula = await _unitOfWork.Formulas.GetByIdAsync(id);
             if(Formula == null)
             {
                 return NotFound();
@@ -49,7 +49,7 @@ public class FormulaController: BaseController
         public async Task<ActionResult<Formula>> Post(FormulaDto FormulaDto)
         {
             var Formula = _mapper.Map<Formula>(FormulaDto);
-            this._unitOfWork.Formula.Add(Formula);
+            this._unitOfWork.Formulas.Add(Formula);
             await _unitOfWork.SaveAsync();
             if(Formula == null)
             {
@@ -70,7 +70,7 @@ public class FormulaController: BaseController
                 return NotFound();
             }
             var Formulaes = _mapper.Map<Formula>(FormulaDto);
-            _unitOfWork.Formula.Update(Formulaes);
+            _unitOfWork.Formulas.Update(Formulaes);
             await _unitOfWork.SaveAsync();
             return FormulaDto;
         }
@@ -80,12 +80,12 @@ public class FormulaController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var Formula = await _unitOfWork.Formula.GetByIdAsync(id);
+            var Formula = await _unitOfWork.Formulas.GetByIdAsync(id);
             if(Formula == null)
             {
                 return NotFound();
             }
-            _unitOfWork.Formula.Delete(Formula);
+            _unitOfWork.Formulas.Remove(Formula);
             await _unitOfWork.SaveAsync();
             return NoContent();
         }

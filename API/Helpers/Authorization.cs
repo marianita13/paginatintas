@@ -8,6 +8,6 @@ namespace API.Helpers
             Empleado
         }
 
-        public const Roles rol_default = Roles.Usuario;
+        public const Roles rol_default = Roles.Empleado;
     }
 }

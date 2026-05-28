@@ -15,6 +15,5 @@ namespace API.Dtos
         public int PrimerInicio { get; set; }
         public ICollection<Rol> Rols { get; set; }
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new HashSet<RefreshToken>();
-        public ICollection<UsuarioRol> UsuariosRols { get; set; }
     }
 }

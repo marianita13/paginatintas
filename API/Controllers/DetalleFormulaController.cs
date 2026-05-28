@@ -25,7 +25,7 @@ public class DetalleFormulaController: BaseController
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<DetalleFormula>>> Get()
         {
-            var DetalleFormulaes = await _unitOfWork.DetalleFormula.GetAllAsync();
+            var DetalleFormulaes = await _unitOfWork.DetalleFormulas.GetAllAsync();
             return _mapper.Map<List<DetalleFormula>>(DetalleFormulaes);
         }
 
@@ -35,7 +35,7 @@ public class DetalleFormulaController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<DetalleFormulaDto>> Get(int id)
         {
-            var DetalleFormula = await _unitOfWork.DetalleFormula.GetByIdAsync(id);
+            var DetalleFormula = await _unitOfWork.DetalleFormulas.GetByIdAsync(id);
             if(DetalleFormula == null)
             {
                 return NotFound();
@@ -49,7 +49,7 @@ public class DetalleFormulaController: BaseController
         public async Task<ActionResult<DetalleFormula>> Post(DetalleFormulaDto DetalleFormulaDto)
         {
             var DetalleFormula = _mapper.Map<DetalleFormula>(DetalleFormulaDto);
-            this._unitOfWork.DetalleFormula.Add(DetalleFormula);
+            this._unitOfWork.DetalleFormulas.Add(DetalleFormula);
             await _unitOfWork.SaveAsync();
             if(DetalleFormula == null)
             {
@@ -70,7 +70,7 @@ public class DetalleFormulaController: BaseController
                 return NotFound();
             }
             var DetalleFormulaes = _mapper.Map<DetalleFormula>(DetalleFormulaDto);
-            _unitOfWork.DetalleFormula.Update(DetalleFormulaes);
+            _unitOfWork.DetalleFormulas.Update(DetalleFormulaes);
             await _unitOfWork.SaveAsync();
             return DetalleFormulaDto;
         }
@@ -80,12 +80,12 @@ public class DetalleFormulaController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var DetalleFormula = await _unitOfWork.DetalleFormula.GetByIdAsync(id);
+            var DetalleFormula = await _unitOfWork.DetalleFormulas.GetByIdAsync(id);
             if(DetalleFormula == null)
             {
                 return NotFound();
             }
-            _unitOfWork.DetalleFormula.Delete(DetalleFormula);
+            _unitOfWork.DetalleFormulas.Remove(DetalleFormula);
             await _unitOfWork.SaveAsync();
             return NoContent();
         }

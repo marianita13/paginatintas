@@ -25,7 +25,7 @@ public class LogotipoController: BaseController
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<Logotipo>>> Get()
         {
-            var entidades = await _unitOfWork.Logotipo.GetAllAsync();
+            var entidades = await _unitOfWork.Logotipos.GetAllAsync();
             return _mapper.Map<List<Logotipo>>(entidades);
         }
 
@@ -35,7 +35,7 @@ public class LogotipoController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<LogotipoDto>> Get(int id)
         {
-            var entidad = await _unitOfWork.Logotipo.GetByIdAsync(id);
+            var entidad = await _unitOfWork.Logotipos.GetByIdAsync(id);
             if(entidad == null)
             {
                 return NotFound();
@@ -49,7 +49,7 @@ public class LogotipoController: BaseController
         public async Task<ActionResult<Logotipo>> Post(LogotipoDto LogotipoDto)
         {
             var entidad = _mapper.Map<Logotipo>(LogotipoDto);
-            this._unitOfWork.Logotipo.Add(entidad);
+            this._unitOfWork.Logotipos.Add(entidad);
             await _unitOfWork.SaveAsync();
             if(entidad == null)
             {
@@ -70,7 +70,7 @@ public class LogotipoController: BaseController
                 return NotFound();
             }
             var entidades = _mapper.Map<Logotipo>(LogotipoDto);
-            _unitOfWork.Logotipo.Update(entidades);
+            _unitOfWork.Logotipos.Update(entidades);
             await _unitOfWork.SaveAsync();
             return LogotipoDto;
         }
@@ -80,12 +80,12 @@ public class LogotipoController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var entidad = await _unitOfWork.Logotipo.GetByIdAsync(id);
+            var entidad = await _unitOfWork.Logotipos.GetByIdAsync(id);
             if(entidad == null)
             {
                 return NotFound();
             }
-            _unitOfWork.Logotipo.Delete(entidad);
+            _unitOfWork.Logotipos.Remove(entidad);
             await _unitOfWork.SaveAsync();
             return NoContent();
         }

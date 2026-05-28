@@ -25,7 +25,7 @@ public class OrdenImpresionController: BaseController
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<OrdenImpresion>>> Get()
         {
-            var entidades = await _unitOfWork.OrdenImpresion.GetAllAsync();
+            var entidades = await _unitOfWork.OrdenImpresions.GetAllAsync();
             return _mapper.Map<List<OrdenImpresion>>(entidades);
         }
 
@@ -35,7 +35,7 @@ public class OrdenImpresionController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<OrdenImpresionDto>> Get(int id)
         {
-            var entidad = await _unitOfWork.OrdenImpresion.GetByIdAsync(id);
+            var entidad = await _unitOfWork.OrdenImpresions.GetByIdAsync(id);
             if(entidad == null)
             {
                 return NotFound();
@@ -49,7 +49,7 @@ public class OrdenImpresionController: BaseController
         public async Task<ActionResult<OrdenImpresion>> Post(OrdenImpresionDto OrdenImpresionDto)
         {
             var entidad = _mapper.Map<OrdenImpresion>(OrdenImpresionDto);
-            this._unitOfWork.OrdenImpresion.Add(entidad);
+            this._unitOfWork.OrdenImpresions.Add(entidad);
             await _unitOfWork.SaveAsync();
             if(entidad == null)
             {
@@ -70,7 +70,7 @@ public class OrdenImpresionController: BaseController
                 return NotFound();
             }
             var entidades = _mapper.Map<OrdenImpresion>(OrdenImpresionDto);
-            _unitOfWork.OrdenImpresion.Update(entidades);
+            _unitOfWork.OrdenImpresions.Update(entidades);
             await _unitOfWork.SaveAsync();
             return OrdenImpresionDto;
         }
@@ -80,12 +80,12 @@ public class OrdenImpresionController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var entidad = await _unitOfWork.OrdenImpresion.GetByIdAsync(id);
+            var entidad = await _unitOfWork.OrdenImpresions.GetByIdAsync(id);
             if(entidad == null)
             {
                 return NotFound();
             }
-            _unitOfWork.OrdenImpresion.Delete(entidad);
+            _unitOfWork.OrdenImpresions.Remove(entidad);
             await _unitOfWork.SaveAsync();
             return NoContent();
         }

@@ -30,7 +30,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(Assembly.GetEntryAssembly());
 builder.Services.ConfigureCors();
-builder.Services.AddAplicacionServices();
+builder.Services.AddAplicationServices();
 builder.Services.AddJwt(builder.Configuration);
 
 builder.Services.AddDbContext<paginatintasContext>(options =>
@@ -55,7 +55,7 @@ using (var scope = app.Services.CreateScope())
     var loggerFactory = services.GetRequiredService<ILoggerFactory>();
     try
     {
-        var context = services.GetRequiredService<PushUpFullStackContext>();
+        var context = services.GetRequiredService<paginatintasContext>();
         await context.Database.MigrateAsync();
     }
     catch (Exception ex)

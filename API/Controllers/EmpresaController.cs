@@ -25,7 +25,7 @@ public class EmpresaController: BaseController
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<Empresa>>> Get()
         {
-            var Empresaes = await _unitOfWork.Empresa.GetAllAsync();
+            var Empresaes = await _unitOfWork.Empresas.GetAllAsync();
             return _mapper.Map<List<Empresa>>(Empresaes);
         }
 
@@ -35,7 +35,7 @@ public class EmpresaController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<EmpresaDto>> Get(int id)
         {
-            var Empresa = await _unitOfWork.Empresa.GetByIdAsync(id);
+            var Empresa = await _unitOfWork.Empresas.GetByIdAsync(id);
             if(Empresa == null)
             {
                 return NotFound();
@@ -49,7 +49,7 @@ public class EmpresaController: BaseController
         public async Task<ActionResult<Empresa>> Post(EmpresaDto EmpresaDto)
         {
             var Empresa = _mapper.Map<Empresa>(EmpresaDto);
-            this._unitOfWork.Empresa.Add(Empresa);
+            this._unitOfWork.Empresas.Add(Empresa);
             await _unitOfWork.SaveAsync();
             if(Empresa == null)
             {
@@ -70,7 +70,7 @@ public class EmpresaController: BaseController
                 return NotFound();
             }
             var Empresaes = _mapper.Map<Empresa>(EmpresaDto);
-            _unitOfWork.Empresa.Update(Empresaes);
+            _unitOfWork.Empresas.Update(Empresaes);
             await _unitOfWork.SaveAsync();
             return EmpresaDto;
         }
@@ -80,12 +80,12 @@ public class EmpresaController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var Empresa = await _unitOfWork.Empresa.GetByIdAsync(id);
+            var Empresa = await _unitOfWork.Empresas.GetByIdAsync(id);
             if(Empresa == null)
             {
                 return NotFound();
             }
-            _unitOfWork.Empresa.Delete(Empresa);
+            _unitOfWork.Empresas.Remove(Empresa);
             await _unitOfWork.SaveAsync();
             return NoContent();
         }

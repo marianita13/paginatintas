@@ -1,10 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using API.Helpers;
+using API.Services;
 using AspNetCoreRateLimit;
-using Domain.Interfaces;
 using Application.UnitOfWork;
+using Domain.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using Domain.Entities;
 
 namespace API.Extension
 {
@@ -40,7 +48,9 @@ namespace API.Extension
         }
         public static void AddAplicationServices(this IServiceCollection services)
         {
-            services.AddScoped<IUnitOfWork,UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPasswordHasher<Usuario>, PasswordHasher<Usuario>>();
         }
 
         public static void AddJwt(this IServiceCollection services, IConfiguration configuration)

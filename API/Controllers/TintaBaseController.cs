@@ -25,7 +25,7 @@ public class TintaBaseController: BaseController
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<TintaBase>>> Get()
         {
-            var entidades = await _unitOfWork.TintaBase.GetAllAsync();
+            var entidades = await _unitOfWork.TintaBases.GetAllAsync();
             return _mapper.Map<List<TintaBase>>(entidades);
         }
 
@@ -35,7 +35,7 @@ public class TintaBaseController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TintaBaseDto>> Get(int id)
         {
-            var entidad = await _unitOfWork.TintaBase.GetByIdAsync(id);
+            var entidad = await _unitOfWork.TintaBases.GetByIdAsync(id);
             if(entidad == null)
             {
                 return NotFound();
@@ -49,7 +49,7 @@ public class TintaBaseController: BaseController
         public async Task<ActionResult<TintaBase>> Post(TintaBaseDto TintaBaseDto)
         {
             var entidad = _mapper.Map<TintaBase>(TintaBaseDto);
-            this._unitOfWork.TintaBase.Add(entidad);
+            this._unitOfWork.TintaBases.Add(entidad);
             await _unitOfWork.SaveAsync();
             if(entidad == null)
             {
@@ -70,7 +70,7 @@ public class TintaBaseController: BaseController
                 return NotFound();
             }
             var entidades = _mapper.Map<TintaBase>(TintaBaseDto);
-            _unitOfWork.TintaBase.Update(entidades);
+            _unitOfWork.TintaBases.Update(entidades);
             await _unitOfWork.SaveAsync();
             return TintaBaseDto;
         }
@@ -80,12 +80,12 @@ public class TintaBaseController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var entidad = await _unitOfWork.TintaBase.GetByIdAsync(id);
+            var entidad = await _unitOfWork.TintaBases.GetByIdAsync(id);
             if(entidad == null)
             {
                 return NotFound();
             }
-            _unitOfWork.TintaBase.Delete(entidad);
+            _unitOfWork.TintaBases.Remove(entidad);
             await _unitOfWork.SaveAsync();
             return NoContent();
         }
