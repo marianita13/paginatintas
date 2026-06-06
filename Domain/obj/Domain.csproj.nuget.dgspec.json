@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj": {}
+    "C:\\Users\\Mariana\\OneDrive\\Escritorio\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj": {}
   },
   "projects": {
-    "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj": {
+    "C:\\Users\\Mariana\\OneDrive\\Escritorio\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj",
+        "projectUniqueName": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj",
-        "packagesPath": "C:\\Users\\Janus\\.nuget\\packages\\",
-        "outputPath": "D:\\Users\\Janus\\OneDrive\\Documentos\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\obj\\",
+        "projectPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\Domain.csproj",
+        "packagesPath": "C:\\Users\\Mariana\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Mariana\\OneDrive\\Escritorio\\UNIVERSIDAD\\CAIAL\\paginatintas\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Janus\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Mariana\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net7.0"
+          "net9.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net7.0": {
-            "targetAlias": "net7.0",
+          "net9.0": {
+            "targetAlias": "net9.0",
             "projectReferences": {}
           }
         },
@@ -32,11 +32,17 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
           "dependencies": {
             "FluentValidation.AspNetCore": {
               "target": "Package",
@@ -44,7 +50,7 @@
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[7.0.12, )"
+              "version": "[9.0.0, )"
             },
             "itext7.pdfhtml": {
               "target": "Package",
@@ -67,7 +73,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,17 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Persistence.Data;
 
-namespace Application.Repository;
-public class FormulaRepository : GenericRepository<Formula> , IFormula
+namespace Application.Repository
+{
+    public class FormulaRepository : GenericRepository<Formula>, IFormula
     {
-        private readonly paginatintasContext _context;
-        public FormulaRepository(paginatintasContext context) : base(context)
+        public FormulaRepository(paginatintasContext context) : base(context) { }
+
+        public async Task<Formula> GetFormulaConDetallesAsync(int idFormula)
         {
-            _context = context;
+            return await _context.Formula
+                .Include(f => f.DetalleFormulas)
+                    .ThenInclude(d => d.TintaBase)
+                .FirstOrDefaultAsync(f => f.Id == idFormula);
         }
     }
+}

@@ -17,7 +17,7 @@ namespace Persistence.Data.Configurations
                 .HasColumnType("decimal(10,2)");
 
             builder.Property(e => e.FechaOrden)
-                .HasColumnType("timestamp") // Coincide con tu SQL
+                .HasColumnType("datetime") // Coincide con tu SQL
                 .HasDefaultValueSql("CURRENT_TIMESTAMP"); // Usa el valor por defecto del servidor
 
             builder.HasOne(o => o.Usuario)

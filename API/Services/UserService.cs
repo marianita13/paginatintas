@@ -28,42 +28,46 @@ namespace API.Services
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<string> RegisterAsync(DataUserDto registerDto)
+        public async Task<string> RegisterAsync(RegistroDto registerDto)
         {
+
+            // 1. Validar si el usuario ya existe antes de hacer cualquier otra cosa
+            var existingUser = _unitOfWork.Usuarios
+                .Find(u => u.Correo.ToLower() == registerDto.Correo.ToLower())
+                .FirstOrDefault();
+
+            if (existingUser != null)
+                return $"Ya existe un usuario con el correo '{registerDto.Correo}'.";
+
+            // 2. Buscar el rol que viene desde el DTO (usando el ID que mandas en Swagger)
+            var rolExistente = _unitOfWork.Roles
+                .Find(r => r.Id == registerDto.IdRol) // O si usas nombre: r.Nombre.ToLower() == registerDto.NombreRol.ToLower()
+                .FirstOrDefault();
+
+            if (rolExistente == null)
+                return $"Error: El rol especificado no existe en la base de datos.";
+
+            // 3. Crear la instancia del usuario
             var usuario = new Usuario
             {
                 Nombre = registerDto.Nombre,
                 Correo = registerDto.Correo,
-                PrimerInicio = 1
+                PrimerInicio = 1,
+                IdRol = rolExistente.Id // Asignamos el ID del rol validado
             };
-            usuario.PasswordHash = _passwordHasher.HashPassword(usuario, registerDto.Token); // Token field used as password input
+            
+            // Cifrar contraseña
+            usuario.PasswordHash = _passwordHasher.HashPassword(usuario, registerDto.Password); 
 
-            var existingUser = _unitOfWork.Usuarios
-                                    .Find(u => u.Nombre.ToLower() == registerDto.Nombre.ToLower())
-                                    .FirstOrDefault();
-
-            if (existingUser == null)
+            try
             {
-                var rolDefault = _unitOfWork.Roles
-                                    .Find(u => u.Nombre == Authorization.rol_default.ToString())
-                                    .FirstOrDefault();
-                try
-                {
-                    if (rolDefault != null)
-                        usuario.IdRol = rolDefault.Id;
-
-                    _unitOfWork.Usuarios.Add(usuario);
-                    await _unitOfWork.SaveAsync();
-                    return $"Usuario {registerDto.Nombre} registrado exitosamente.";
-                }
-                catch (Exception ex)
-                {
-                    return $"Error: {ex.Message}";
-                }
+                _unitOfWork.Usuarios.Add(usuario);
+                await _unitOfWork.SaveAsync();
+                return $"Usuario '{registerDto.Nombre}' registrado exitosamente como {rolExistente.Nombre}.";
             }
-            else
+            catch (Exception ex)
             {
-                return $"El usuario {registerDto.Nombre} ya está registrado.";
+                return $"Error al guardar: {ex.Message}";
             }
         }
 
@@ -153,6 +157,32 @@ namespace API.Services
             dataUserDto.RefreshToken = newRefreshToken.Token;
             dataUserDto.RefreshTokenExpiration = newRefreshToken.Expires;
             return dataUserDto;
+        }
+
+        public async Task<string> AddRolAsync(AddRolDto model)
+        {
+            var usuario = await _unitOfWork.Usuarios.GetByUsernameAsync(model.Nombre);
+            if (usuario == null)
+                return $"No existe el usuario {model.Nombre}.";
+
+            var result = _passwordHasher.VerifyHashedPassword(usuario, usuario.PasswordHash, model.Password);
+
+            if (result == PasswordVerificationResult.Success)
+            {
+                var rolExists = _unitOfWork.Roles
+                                    .Find(u => u.Nombre.ToLower() == model.Rol.ToLower())
+                                    .FirstOrDefault();
+
+                if (rolExists != null)
+                {
+                    usuario.IdRol = rolExists.Id;
+                    _unitOfWork.Usuarios.Update(usuario);
+                    await _unitOfWork.SaveAsync();
+                    return $"Rol {model.Rol} asignado al usuario {model.Nombre} exitosamente.";
+                }
+                return $"El rol {model.Rol} no fue encontrado.";
+            }
+            return "Credenciales inválidas.";
         }
 
         private RefreshToken CreateRefreshToken()

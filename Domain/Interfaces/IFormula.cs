@@ -8,6 +8,6 @@ namespace Domain.Interfaces
 {
     public interface IFormula : IGenericRepository<Formula>
     {
-
+        Task<Formula> GetFormulaConDetallesAsync(int idFormula);
     }
 }

@@ -6,7 +6,7 @@ namespace Domain.Entities
     {
         public int IdUsuario { get; set; }
         public int IdLogotipo { get; set; }
-        public string FechaOrden { get; set; }
+        public DateTime FechaOrden { get; set; }
         public decimal VolumenTotal { get; set; }
 
         public Usuario Usuario { get; set; }

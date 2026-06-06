@@ -13,7 +13,7 @@ namespace Persistence.Data.Configurations
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Porcentaje)
-            .HasColumnType("decimal(5,2)")
+            .HasColumnType("decimal(10,6)")
             .IsRequired();
 
         // Relación: Una TintaBase aparece en muchos detalles
@@ -25,7 +25,7 @@ namespace Persistence.Data.Configurations
         builder.HasOne(p => p.Formula)
             .WithMany(p => p.DetalleFormulas)
             .HasForeignKey(p => p.IdFormula)
-            .OnDelete(DeleteBehavior.Cascade); // Si borras la fórmula, se borra el detalle
+            .OnDelete(DeleteBehavior.Cascade); // Si borras la fórmula, se borra el detall  e
         }
     }
 }

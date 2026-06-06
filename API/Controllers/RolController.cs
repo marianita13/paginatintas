@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-[Authorize(Roles = "Administrador")]
 public class RolController: BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
