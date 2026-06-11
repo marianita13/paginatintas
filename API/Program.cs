@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using API.Extension;
 using API.Helpers;
+using API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,7 @@ builder.Services.AddAutoMapper(Assembly.GetEntryAssembly());
 builder.Services.ConfigureCors();
 builder.Services.AddAplicationServices();
 builder.Services.AddJwt(builder.Configuration);
+builder.Services.AddScoped<IMezclaService, MezclaService>();
 
 builder.Services.AddDbContext<paginatintasContext>(options =>
 {
