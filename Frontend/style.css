@@ -259,7 +259,6 @@ body {
 #main-page {
   display: none;
   min-height: 100vh;
-  /* When shown via JS it becomes flex */
 }
 
 /* ─── SIDEBAR ─── */
@@ -487,6 +486,18 @@ body {
   box-shadow: 0 0 0 3px rgba(27,43,107,0.1);
 }
 
+.btn-facture{
+  background: var(--surface); border: 1px solid var(--border); cursor: pointer;
+  padding: 6px; border-radius: 6px;
+  color: var(--text-muted); transition: all var(--transition);
+  height: 36px; max-width: 250px;
+  position: absolute; right: 50px; top:50px; transform: translateY(-50%);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.btn-facture:hover { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,43,107,0.1);}
+.btn-facture p { margin-left: 9px; }
+
 body.dark .color-search-bar input:focus { box-shadow: 0 0 0 3px rgba(27,43,107,0.3); }
 
 .search-icon {
@@ -681,6 +692,11 @@ body.dark .empresa-item.active { background: rgba(200,32,46,0.1); border-left-co
 .data-table td {
   padding: 13px 16px; font-size: 0.82rem; color: var(--text);
   border-bottom: 1px solid var(--border); vertical-align: middle;
+}
+
+.button-edit{
+  padding-left: 17px;
+  cursor: pointer;
 }
 
 .data-table tr:last-child td { border-bottom: none; }
@@ -1055,4 +1071,100 @@ body.dark .advertencia { color: #fbbf24; border-color: rgba(234,179,8,0.2); back
   .config-layout { grid-template-columns: 1fr; }
 
   .tab-panel { padding: 20px 16px; }
+}
+
+/* ─── FACTURACIÓN ─── */
+.factura-color-chip {
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.18s ease;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.factura-color-chip:hover { transform: translateY(-2px); border-color: var(--navy); }
+.factura-color-chip.selected {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(200,32,46,0.2);
+}
+.factura-sel-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ─── BARRA FLOTANTE FACTURA ─── */
+.factura-float-bar {
+  position: fixed;
+  bottom: -80px;
+  right: 32px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  z-index: 300;
+  transition: bottom 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+
+.factura-float-bar.visible { bottom: 28px; }
+
+.factura-float-count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-right: 4px;
+}
+
+.factura-float-cancel {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.factura-float-cancel:hover { border-color: var(--red); color: var(--red); }
+
+.factura-float-accept {
+  background: linear-gradient(135deg, var(--red), var(--red-dark));
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(200,32,46,0.3);
+  transition: all var(--transition);
+  letter-spacing: 0.04em;
+}
+
+.factura-float-accept:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(200,32,46,0.4);
+}
+
+/* Chip en modo selección */
+.color-chip.seleccionando {
+  outline: 3px solid var(--red);
+  outline-offset: 2px;
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 8px 24px rgba(200,32,46,0.25);
 }

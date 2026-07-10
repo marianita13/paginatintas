@@ -4,6 +4,13 @@
 const API_URL = 'http://localhost:5115/api';
 
 // ════════════════════════════════════════
+//  HELPERS DE ROL
+// ════════════════════════════════════════
+function esAdmin() {
+  return (currentUser?.rol || '').toLowerCase() === 'administrador';
+}
+
+// ════════════════════════════════════════
 //  ESTADO GLOBAL
 // ════════════════════════════════════════
 let token       = localStorage.getItem('token') || null;
@@ -238,7 +245,8 @@ function showMainPage() {
     document.getElementById('user-role-label').textContent = currentUser.rol || '—';
 
     // Mostrar pestaña Usuarios si es Admin
-    if ((currentUser.rol || '').toLowerCase() === 'admin') {
+    // FIX: El backend devuelve 'Administrador', no 'admin'
+    if (esAdmin()) {
       document.querySelector('.nav-item-admin').style.display = 'flex';
     }
   }
@@ -289,6 +297,7 @@ const TAB_TITLES = {
   inicio:     ['Inicio',      'Catálogo de colores'],
   empresas:   ['Empresas',    'Empresas registradas'],
   inventario: ['Inventario',  'Tintas base y stock'],
+  facturacion: ['Facturación', 'Gestión de facturas'],
   usuarios:   ['Usuarios',    'Gestión de usuarios'],
   config:     ['Configuración','Perfil y seguridad']
 };
@@ -311,6 +320,7 @@ function switchTab(name, btn) {
   if (name === 'inventario') cargarInventario();
   if (name === 'usuarios')   cargarUsuarios();
   if (name === 'config')     cargarConfig();
+  if (name === 'facturacion') cargarFacturacion();
 }
 
 // ════════════════════════════════════════
@@ -350,7 +360,9 @@ function renderColorGrid(formulas) {
     // Texto oscuro o claro según luminancia del fondo
     const textColor = hex !== 'transparent' ? colorTextContrast(hex) : '#666';
     return `
-      <div class="color-chip" onclick="abrirModalMezcla(${f.id}, '${escHtml(f.nombreColor)}', '${hex}')">
+      <div class="color-chip" onclick="modoSeleccionFactura
+        ? toggleColorFacturaDirecto(${f.id}, '${escHtml(f.nombreColor)}', '${hex}', this)
+        : abrirModalMezcla(${f.id}, '${escHtml(f.nombreColor)}', '${hex}')">
         <div class="chip-swatch" style="background:${hex}; position:relative;">
           ${hex === 'transparent' ? '<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem;opacity:.3">🎨</span>' : ''}
         </div>
@@ -414,10 +426,11 @@ function abrirModalMezcla(idFormula, nombreColor, hex) {
   document.getElementById('modal-color-preview').style.background = hex;
   document.getElementById('modal-color-nombre').textContent = nombreColor;
   document.getElementById('modal-formula-id').textContent   = 'Fórmula #' + idFormula;
-  document.getElementById('peso-mezcla').value              = '';
-  document.getElementById('resultado-mezcla').innerHTML     = '';
+  document.getElementById('resultado-mezcla').innerHTML     =
+    '<div class="loading-state" style="padding:30px">Cargando fórmula...</div>';
   document.getElementById('modal-mezcla').classList.add('open');
-  document.getElementById('peso-mezcla').focus();
+  // FIX 4: Calcular automáticamente al abrir (solo informativo, 100g)
+  calcularMezcla();
 }
 
 function cerrarModalMezcla(e) {
@@ -426,20 +439,16 @@ function cerrarModalMezcla(e) {
   }
 }
 
+// FIX 4: Modal SOLO INFORMATIVO — muestra proporciones para 100g sin descontar stock
 async function calcularMezcla() {
-  const idFormula       = _modalFormulaId;
-  const pesoTotalGramos = parseFloat(document.getElementById('peso-mezcla').value);
-  const resultado       = document.getElementById('resultado-mezcla');
+  const idFormula = _modalFormulaId;
+  const resultado = document.getElementById('resultado-mezcla');
 
-  if (!idFormula || !pesoTotalGramos || pesoTotalGramos <= 0) {
-    resultado.innerHTML = '<div class="error-cell">Ingresa un peso válido mayor a 0.</div>';
-    return;
-  }
-
-  resultado.innerHTML = '<div class="loading-state" style="padding:20px">Calculando...</div>';
+  resultado.innerHTML = '<div class="loading-state" style="padding:20px">Consultando fórmula...</div>';
 
   try {
-    const res  = await apiFetch('Mezcla/calcular', 'POST', { idFormula, pesoTotalGramos });
+    // 100g fijo — solo para mostrar proporciones informativas
+    const res  = await apiFetch('Mezcla/calcular', 'POST', { idFormula, pesoTotalGramos: 100 });
     const data = await res.json();
 
     if (!res.ok) {
@@ -447,30 +456,17 @@ async function calcularMezcla() {
       return;
     }
 
-    const puedaConfirmar = data.porcentajesValidos && !data.tintas.some(t => !t.stockSuficiente);
-
     resultado.innerHTML = `
       <div class="mezcla-resultado">
-        <div class="mezcla-header">
-          <h3>${escHtml(data.nombreColor)}</h3>
-          <span class="${data.porcentajesValidos ? 'badge-ok' : 'badge-err'}">
-            ${data.porcentajesValidos ? '✅ Porcentajes válidos' : '⚠️ Porcentajes inválidos'}
-          </span>
-        </div>
-
-        ${data.advertencias && data.advertencias.length ? `
-          <div class="advertencias">
-            ${data.advertencias.map(a => `<div class="advertencia">⚠ ${escHtml(a)}</div>`).join('')}
-          </div>` : ''}
-
+        <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:14px">
+          Proporciones para <strong>100g</strong> de mezcla
+        </p>
         <table class="tabla-mezcla">
           <thead>
             <tr>
-              <th>Tinta</th>
-              <th>%</th>
-              <th>Gramos</th>
-              <th>Stock</th>
-              <th>Estado</th>
+              <th>Tinta base</th>
+              <th>Gramos por 100g</th>
+              <th>Stock disponible</th>
             </tr>
           </thead>
           <tbody>
@@ -480,21 +476,18 @@ async function calcularMezcla() {
                   <span class="color-dot" style="background:${t.codigoHex || '#ccc'}"></span>
                   ${escHtml(t.nombreTinta)}
                 </td>
-                <td>${t.porcentajeDisplay}%</td>
-                <td><strong>${t.gramosNecesarios}g</strong></td>
-                <td>${t.stockActual}g</td>
-                <td>${t.stockSuficiente ? '✅' : '<span style="color:var(--red)">❌ Insuf.</span>'}</td>
+                <td><strong>${t.gramosNecesarios}g</strong>
+                  <span style="color:var(--text-muted);font-size:0.72rem">(${t.porcentajeDisplay}%)</span>
+                </td>
+                <td>
+                  <span class="stock-badge ${t.stockSuficiente ? 'ok' : 'warn'}">
+                    ${t.stockActual}g
+                  </span>
+                </td>
               </tr>
             `).join('')}
           </tbody>
         </table>
-
-        <div class="mezcla-actions">
-          <button class="btn-confirmar" onclick="confirmarMezcla(${data.idFormula}, ${pesoTotalGramos})"
-            ${!puedaConfirmar ? 'disabled title="Revisa advertencias o stock insuficiente"' : ''}>
-            ✅ Confirmar y descontar stock
-          </button>
-        </div>
       </div>
     `;
   } catch (e) {
@@ -540,16 +533,16 @@ async function cargarEmpresas() {
   try {
     const res      = await apiFetch('Empresa');
     const empresas = await res.json();
+    console.log(empresas);
     if (!empresas.length) {
       lista.innerHTML = '<div class="no-data">No hay empresas registradas.</div>';
       return;
     }
     lista.innerHTML = empresas.map(e => `
       <div class="empresa-item" onclick="verEmpresa(${e.id}, this)">
-        <div class="empresa-icon">${iniciales(e.nombre)}</div>
+        <div class="empresa-icon">${iniciales(e.nombreComercial)}</div>
         <div>
-          <div class="empresa-name">${escHtml(e.nombre)}</div>
-          <div class="empresa-nit">NIT: ${e.nit || '—'}</div>
+          <div class="empresa-name">${escHtml(e.nombreComercial)}</div>
         </div>
       </div>
     `).join('');
@@ -581,17 +574,8 @@ async function verEmpresa(id, el) {
     const exclusivas = formulas.filter ? formulas.filter(f => f.idEmpresa == id) : formulas;
 
     detail.innerHTML = `
-      <div class="empresa-detail-name">${escHtml(emp.nombre)}</div>
-      <div class="empresa-detail-nit">NIT: ${emp.nit || '—'} · ${emp.correo || ''} · ${emp.telefono || ''}</div>
-
-      ${logos.length ? `
-        <div class="detail-section">
-          <div class="detail-section-title">Logotipos</div>
-          <div class="logos-grid">
-            ${logos.map(l => `<div class="logo-card">🖼 ${escHtml(l.nombre || 'Logo #' + l.id)}</div>`).join('')}
-          </div>
-        </div>
-      ` : ''}
+      <div class="empresa-detail-name">${escHtml(emp.NombreComercial)}</div>
+      <div class="empresa-detail-nit">NIT: ${emp.Nit || '—'} · ${emp.CorreoContacto || ''} · ${emp.Telefono || ''}</div>
 
       ${exclusivas.length ? `
         <div class="detail-section">
@@ -674,6 +658,15 @@ async function cargarInventario() {
           <td class="${esBajo ? 'stock-low' : ''}">${t.stockActual}g</td>
           <td>${t.stockMinimo_alerta}g</td>
           <td><span class="stock-badge ${estadoClass}">${estadoLabel}</span></td>
+          <td>${t.precio}</td>
+          <td>
+            <span class="button-edit">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16 " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </span>
+          </td>
         </tr>
       `;
     }).join('') || '<tr><td colspan="6" class="loading-cell">No hay tintas registradas.</td></tr>';
@@ -814,6 +807,182 @@ async function cambiarContrasena() {
   } catch (e) {
     showModalMsg(msg, 'Error: ' + e.message, 'err');
   }
+}
+
+
+// ════════════════════════════════════════
+//  FACTURACIÓN
+//  FIX 2: Modal nueva factura con selector de colores
+//  FIX 3: Panel de facturación con tabla de facturas
+// ════════════════════════════════════════
+let facturas = JSON.parse(localStorage.getItem('facturas') || '[]');
+let facturaColoresSeleccionados = [];
+
+// ── REEMPLAZA abrirModalNuevaFactura ──
+let modoSeleccionFactura = false;
+
+function abrirModalNuevaFactura() {
+  // Limpiar selección anterior
+  facturaColoresSeleccionados = [];
+  document.querySelectorAll('.color-chip.seleccionando')
+    .forEach(c => c.classList.remove('seleccionando'));
+
+  // Activar modo selección en la grilla de inicio
+  modoSeleccionFactura = true;
+  document.getElementById('factura-float-bar').classList.add('visible');
+
+  // Ir a la pestaña inicio si no estamos ahí
+  const tabInicio = document.querySelector('[data-tab="inicio"]');
+  switchTab('inicio', tabInicio);
+}
+
+function toggleColorFacturaDirecto(id, nombre, hex, chipEl) {
+  if (!modoSeleccionFactura) return;
+
+  const idx = facturaColoresSeleccionados.findIndex(c => c.id === id);
+  if (idx === -1) {
+    facturaColoresSeleccionados.push({ id, nombre, hex });
+    chipEl.classList.add('seleccionando');
+  } else {
+    facturaColoresSeleccionados.splice(idx, 1);
+    chipEl.classList.remove('seleccionando');
+  }
+
+  // Actualizar contador en el botón flotante
+  const count = facturaColoresSeleccionados.length;
+  document.getElementById('factura-float-count').textContent =
+    count === 0 ? 'Selecciona colores' : `${count} color${count > 1 ? 'es' : ''} seleccionado${count > 1 ? 's' : ''}`;
+}
+
+function aceptarSeleccionFactura() {
+  if (!facturaColoresSeleccionados.length) {
+    alert('Selecciona al menos un color antes de continuar.');
+    return;
+  }
+  // Desactivar modo selección
+  modoSeleccionFactura = false;
+  document.getElementById('factura-float-bar').classList.remove('visible');
+  document.querySelectorAll('.color-chip.seleccionando')
+    .forEach(c => c.classList.remove('seleccionando'));
+
+  // Abrir el popup con los colores ya seleccionados
+  document.getElementById('factura-cliente').value = '';
+  document.getElementById('factura-msg').style.display = 'none';
+  actualizarSeleccionadosFactura();
+  document.getElementById('modal-factura').classList.add('open');
+}
+
+function cancelarSeleccionFactura() {
+  modoSeleccionFactura = false;
+  facturaColoresSeleccionados = [];
+  document.getElementById('factura-float-bar').classList.remove('visible');
+  document.querySelectorAll('.color-chip.seleccionando')
+    .forEach(c => c.classList.remove('seleccionando'));
+}
+
+async function cargarColoresParaFactura() {
+  const grid = document.getElementById('factura-colores-grid');
+  try {
+    const colores = allColors.length ? allColors : await apiFetch('Formula').then(r => r.json());
+    if (!allColors.length) allColors = colores;
+    grid.innerHTML = colores.map(f => {
+      const hex = resolverHex(f);
+      return `
+        <div class="factura-color-chip" id="fcc-${f.id}"
+          onclick="toggleColorFactura(${f.id}, '${escHtml(f.nombreColor)}', '${hex}')">
+          <div class="chip-swatch" style="background:${hex};height:50px"></div>
+          <div class="chip-info" style="padding:5px 8px">
+            <div class="chip-name">${escHtml(f.nombreColor)}</div>
+          </div>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    grid.innerHTML = '<div class="error-cell">Error cargando colores</div>';
+  }
+}
+
+function toggleColorFactura(id, nombre, hex) {
+  const chip = document.getElementById('fcc-' + id);
+  const idx  = facturaColoresSeleccionados.findIndex(c => c.id === id);
+  if (idx === -1) {
+    facturaColoresSeleccionados.push({ id, nombre, hex });
+    chip.classList.add('selected');
+  } else {
+    facturaColoresSeleccionados.splice(idx, 1);
+    chip.classList.remove('selected');
+  }
+  actualizarSeleccionadosFactura();
+}
+
+function actualizarSeleccionadosFactura() {
+  const cont = document.getElementById('factura-seleccionados');
+  if (!facturaColoresSeleccionados.length) {
+    cont.innerHTML = '<p class="no-data" style="padding:8px">Ningún color seleccionado</p>';
+    return;
+  }
+  cont.innerHTML = facturaColoresSeleccionados.map(c => `
+    <div class="factura-sel-item">
+      <span class="color-dot" style="background:${c.hex}"></span>
+      <span>${escHtml(c.nombre)}</span>
+      <button onclick="toggleColorFactura(${c.id},'${escHtml(c.nombre)}','${c.hex}')"
+        style="background:none;border:none;cursor:pointer;color:var(--red);font-weight:700;margin-left:auto">✕</button>
+    </div>
+  `).join('');
+}
+
+function cerrarModalFactura(e) {
+  if (e.target === document.getElementById('modal-factura'))
+    document.getElementById('modal-factura').classList.remove('open');
+}
+
+function guardarFactura() {
+  const cliente = document.getElementById('factura-cliente').value.trim();
+  const msg     = document.getElementById('factura-msg');
+  if (!cliente) { showModalMsg(msg, 'Ingresa el nombre del cliente.', 'err'); return; }
+  if (!facturaColoresSeleccionados.length) { showModalMsg(msg, 'Selecciona al menos un color.', 'err'); return; }
+  const factura = {
+    id: Date.now(),
+    cliente,
+    fecha: new Date().toLocaleDateString('es-CO'),
+    colores: [...facturaColoresSeleccionados],
+    estado: 'Pendiente'
+  };
+  facturas.unshift(factura);
+  localStorage.setItem('facturas', JSON.stringify(facturas));
+  document.getElementById('modal-factura').classList.remove('open');
+  const panel = document.getElementById('panel-facturacion');
+  if (panel && panel.classList.contains('active')) cargarFacturacion();
+}
+
+function cargarFacturacion() {
+  const tbody = document.getElementById('tabla-facturas');
+  if (!facturas.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="loading-cell">No hay facturas registradas.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = facturas.map(f => `
+    <tr>
+      <td style="font-family:monospace;font-size:.78rem">#${String(f.id).slice(-6)}</td>
+      <td>${escHtml(f.cliente)}</td>
+      <td>${f.fecha}</td>
+      <td>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          ${f.colores.map(c => `
+            <span title="${escHtml(c.nombre)}"
+              style="width:18px;height:18px;border-radius:4px;background:${c.hex};
+              display:inline-block;border:1px solid rgba(0,0,0,0.1)"></span>
+          `).join('')}
+        </div>
+      </td>
+      <td><span class="stock-badge ok">${f.estado}</span></td>
+    </tr>
+  `).join('');
+}
+
+function cerrarYLimpiarFactura() {
+  facturaColoresSeleccionados = [];
+  document.getElementById('factura-float-count').textContent = 'Selecciona colores';
+  document.getElementById('modal-factura').classList.remove('open');
 }
 
 // ════════════════════════════════════════

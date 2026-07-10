@@ -123,6 +123,15 @@
         <span class="nav-label">Inventario</span>
       </button>
 
+      <button class="nav-item" data-tab="facturacion" onclick="switchTab('facturacion', this)">
+        <span class="nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/> <path d="M14 2v4a2 2 0 0 0 2 2h4"/> <path d="M16 13H8"/> <path d="M16 17H8"/> <path d="M10 9H8"/>
+          </svg>
+        </span>
+        <span class="nav-label">Facturación</span>
+      </button>
+
       <button class="nav-item nav-item-admin" data-tab="usuarios" onclick="switchTab('usuarios', this)" style="display:none">
         <span class="nav-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -188,13 +197,22 @@
 
     <!-- ─── INICIO ─── -->
     <div class="tab-panel active" id="panel-inicio">
-      <div class="color-search-bar">
-        <input type="text" id="color-search" placeholder="Buscar color por nombre o código..." oninput="filtrarColores()" />
-        <span class="search-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      <div style="height: 80px; width: 100%;">
+        <div class="color-search-bar">
+          <input type="text" id="color-search" placeholder="Buscar color por nombre o código..." oninput="filtrarColores()" />
+          <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </span>
+        </div>
+        <button class="btn-facture" onclick="abrirModalNuevaFactura()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16 " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
           </svg>
-        </span>
+          <p>Crear Nueva Factura</p>
+        </button>
       </div>
       <div class="color-grid" id="color-grid">
         <div class="loading-state">Cargando colores...</div>
@@ -233,10 +251,37 @@
               <th>Stock actual</th>
               <th>Stock mínimo</th>
               <th>Estado</th>
+              <th>Precio</th>
+              <th>Editar</th>
             </tr>
           </thead>
           <tbody id="tabla-inventario">
-            <tr><td colspan="6" class="loading-cell">Cargando...</td></tr>
+            <tr><td colspan="8" class="loading-cell">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <!-- ─── FACTURACIÓN ─── -->
+    <div class="tab-panel" id="panel-facturacion">
+      <div class="section-card">
+        <div class="card-header">
+          <h3 class="card-title">Facturas registradas</h3>
+          <button class="btn-primary" onclick="abrirModalNuevaFactura()">+ Nueva factura</button>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th># Factura</th>
+              <th>Cliente</th>
+              <th>Fecha</th>
+              <th>Colores</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-facturas">
+            <tr><td colspan="5" class="loading-cell">No hay facturas registradas.</td></tr>
           </tbody>
         </table>
       </div>
@@ -310,15 +355,9 @@
       <button class="modal-close" onclick="document.getElementById('modal-mezcla').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="peso-input-group">
-        <label>Peso total deseado</label>
-        <div class="peso-wrap">
-          <input type="number" id="peso-mezcla" placeholder="5000" min="1" onkeydown="if(event.key==='Enter') calcularMezcla()">
-          <span class="peso-unit">g</span>
-        </div>
-        <button class="btn-calcular" onclick="calcularMezcla()">Calcular mezcla</button>
+      <div id="resultado-mezcla">
+        <div class="loading-state" style="padding:30px">Cargando fórmula...</div>
       </div>
-      <div id="resultado-mezcla"></div>
     </div>
   </div>
 </div>
@@ -356,6 +395,46 @@
   </div>
 </div>
 
+
+<!-- ═══ MODAL NUEVA FACTURA ═══ -->
+<div class="modal-overlay" id="modal-factura" onclick="cerrarModalFactura(event)">
+  <div class="modal-box" style="max-width:700px">
+    <div class="modal-header">
+      <h2 class="modal-title">Nueva Factura</h2>
+      <button class="modal-close" onclick="cerrarYLimpiarFactura()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group-flat" style="margin-bottom:20px">
+        <label>Nombre del cliente</label>
+        <input type="text" id="factura-cliente" placeholder="Ej: Empresa XYZ S.A.S">
+      </div>
+
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-size:0.7rem;font-weight:700;letter-spacing:.12em;
+          text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">
+          Colores seleccionados
+        </label>
+        <div id="factura-seleccionados"
+          style="border:1px solid var(--border);border-radius:10px;
+          padding:8px;min-height:50px;display:flex;flex-direction:column;gap:4px">
+        </div>
+      </div>
+
+      <div id="factura-msg" class="config-msg" style="display:none"></div>
+      <button class="btn-primary" onclick="guardarFactura()" style="width:100%">
+        Guardar factura
+      </button>
+    </div>
+  </div>
+</div>
+<!-- ═══ BARRA FLOTANTE SELECCIÓN FACTURA ═══ -->
+<div class="factura-float-bar" id="factura-float-bar">
+  <span class="factura-float-count" id="factura-float-count">Selecciona colores</span>
+  <button class="factura-float-cancel" onclick="cancelarSeleccionFactura()">Cancelar</button>
+  <button class="factura-float-accept" onclick="aceptarSeleccionFactura()">
+    Aceptar →
+  </button>
+</div>
 <script src="script.js"></script>
 </body>
 </html>
