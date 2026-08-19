@@ -16,9 +16,6 @@ namespace Persistence.Data.Configurations
             builder.Property(e => e.NombreTinta)
                 .IsRequired()
                 .HasMaxLength(100);
-            
-            builder.Property(e => e.CodigoHex)
-                .HasMaxLength(7);
 
             builder.Property(e => e.StockActual)
                 .IsRequired()
@@ -27,7 +24,10 @@ namespace Persistence.Data.Configurations
             builder.Property(e => e.StockMinimo_alerta)
                 .IsRequired()
                 .HasColumnType("decimal(10,2)");
-                
+
+            builder.Property(e => e.PrecioUnitario)
+                .IsRequired()
+                .HasColumnType("decimal(10,2)");
         }
     }
 }

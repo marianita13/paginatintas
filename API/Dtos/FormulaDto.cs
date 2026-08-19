@@ -10,7 +10,6 @@ namespace API.Dtos
     {
         public int Id { get; set; }
         public required string NombreColor { get; set; }
-        public ICollection<LogotipoColor> LogotipoColors { get; set; }
         public ICollection<DetalleFormula> DetalleFormulas { get; set; }
     }
 }

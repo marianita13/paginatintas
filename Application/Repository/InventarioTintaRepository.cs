@@ -7,10 +7,10 @@ using Domain.Interfaces;
 using Persistence.Data;
 
 namespace Application.Repository;
-public class LogotipoRepository : GenericRepository<Logotipo> , ILogotipo
+public class InventarioTintaRepository : GenericRepository<InventarioTinta> , IInventarioTinta
     {
         private readonly paginatintasContext _context;
-        public LogotipoRepository(paginatintasContext context) : base(context)
+        public InventarioTintaRepository(paginatintasContext context) : base(context)
         {
             _context = context;
         }

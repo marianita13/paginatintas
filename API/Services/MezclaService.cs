@@ -55,7 +55,6 @@ namespace API.Services
                 {
                     IdTinta          = tinta.Id,
                     NombreTinta      = tinta.NombreTinta,
-                    CodigoHex        = tinta.CodigoHex,
                     Porcentaje       = detalle.Porcentaje,
                     PorcentajeDisplay = Math.Round(detalle.Porcentaje * 100, 4),
                     GramosNecesarios = gramosNecesarios,

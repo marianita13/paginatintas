@@ -11,13 +11,12 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private IDetalleFormula _DetalleFormula;
     private IEmpresa _Empresa;
     private IFormula _Formula;
-    private ILogotipo _Logotipo;
-    private ILogotipoColor _LogotipoColor;
     private IOrdenImpresion _OrdenImpresion;
     private ITintaBase _TintaBase;
     private IUsuario _Usuario;
     private IRol _Rol;
-    private ILogotipoColor _LogotipoColors;
+    private IInventarioTinta _InventarioTinta;
+    private IOrdenFormula _OrdenFormula;
 
     public UnitOfWork(paginatintasContext context)
     {
@@ -48,15 +47,6 @@ public class UnitOfWork : IUnitOfWork, IDisposable
                 _Formula = new FormulaRepository(_context);
             }
             return _Formula;
-        }
-    }
-
-    public ILogotipo Logotipos {
-        get {
-            if (_Logotipo == null) {
-                _Logotipo = new LogotipoRepository(_context);
-            }
-            return _Logotipo;
         }
     }
 
@@ -96,14 +86,24 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         }
     }
 
-    public ILogotipoColor LogotipoColors {
+    public IInventarioTinta InventarioTintas {
         get {
-            if (_LogotipoColor == null) {
-                _LogotipoColor = new LogotipoColorRepository(_context);
+            if (_InventarioTinta == null) {
+                _InventarioTinta = new InventarioTintaRepository(_context);
             }
-            return _LogotipoColor;
+            return _InventarioTinta;
         }
     }
+
+    public IOrdenFormula OrdenFormulas {
+        get {
+            if (_OrdenFormula == null) {
+                _OrdenFormula = new OrdenFormulaRepository(_context);
+            }
+            return _OrdenFormula;
+        }
+    }
+
 
     public void Dispose()
     {

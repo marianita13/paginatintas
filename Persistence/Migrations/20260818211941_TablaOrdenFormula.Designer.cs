@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence.Data;
@@ -11,22 +12,26 @@ using Persistence.Data;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(paginatintasContext))]
-    [Migration("20260528153836_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260818211941_TablaOrdenFormula")]
+    partial class TablaOrdenFormula
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.12")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("Domain.Entities.DetalleFormula", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("IdFormula")
                         .HasColumnType("int");
@@ -35,7 +40,7 @@ namespace Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Porcentaje")
-                        .HasColumnType("decimal(5,2)");
+                        .HasColumnType("decimal(10,6)");
 
                     b.HasKey("Id");
 
@@ -52,19 +57,16 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("CorreoContacto")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("FechaRegistro")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Nit")
+                    b.Property<string>("Información")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("NombreComercial")
                         .IsRequired()
@@ -78,9 +80,6 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Nit")
-                        .IsUnique();
-
                     b.ToTable("Empresa", (string)null);
                 });
 
@@ -90,76 +89,95 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("IdEmpresa")
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("IdEmpresa")
                         .HasColumnType("int");
 
-                    b.Property<int>("NombreColor")
-                        .HasMaxLength(50)
+                    b.Property<int?>("IdOrdenImpresion")
                         .HasColumnType("int");
+
+                    b.Property<string>("NombreColor")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("IdEmpresa");
+
+                    b.HasIndex("IdOrdenImpresion");
 
                     b.ToTable("Formula", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Logotipo", b =>
+            modelBuilder.Entity("Domain.Entities.InventarioTinta", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("IdEmpresa")
-                        .HasColumnType("int");
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("IdFormula")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Costo")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("NombreLogo")
+                    b.Property<string>("Fabricante")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<string>("UrlImagen")
+                    b.Property<string>("IdInterno")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int?>("IdTintaBase")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Lote")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Presentacion")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdEmpresa");
+                    b.HasIndex("IdTintaBase");
 
-                    b.HasIndex("IdFormula");
-
-                    b.HasIndex("NombreLogo")
-                        .IsUnique();
-
-                    b.ToTable("Logotipo", (string)null);
+                    b.ToTable("InventarioTinta", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.LogotipoColor", b =>
+            modelBuilder.Entity("Domain.Entities.OrdenFormula", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("EsColorprincipal")
-                        .HasColumnType("int");
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("IdFormula")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdLogotipo")
+                    b.Property<int>("IdOrdenImpresion")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("IdFormula");
 
-                    b.HasIndex("IdLogotipo");
+                    b.HasIndex("IdOrdenImpresion");
 
-                    b.ToTable("LogotipoColor", (string)null);
+                    b.ToTable("OrdenFormula", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.OrdenImpresion", b =>
@@ -168,23 +186,36 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("CostoTotal")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<bool>("Estado")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<DateTime>("FechaOrden")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<int>("IdLogotipo")
+                    b.Property<int>("IdUsuario")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdUsuario")
+                    b.Property<int>("NumeroCajas")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NumeroOrden")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("PruebaColor")
                         .HasColumnType("int");
 
                     b.Property<decimal>("VolumenTotal")
                         .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IdLogotipo");
 
                     b.HasIndex("IdUsuario");
 
@@ -196,6 +227,8 @@ namespace Persistence.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)");
@@ -229,6 +262,8 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -248,15 +283,15 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("CodigoHex")
-                        .IsRequired()
-                        .HasMaxLength(7)
-                        .HasColumnType("varchar(7)");
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("NombreTinta")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
+
+                    b.Property<decimal>("PrecioUnitario")
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<decimal>("StockActual")
                         .HasColumnType("decimal(10,2)");
@@ -274,6 +309,8 @@ namespace Persistence.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Correo")
                         .IsRequired()
@@ -333,62 +370,50 @@ namespace Persistence.Migrations
                         .WithMany("Formulas")
                         .HasForeignKey("IdEmpresa");
 
+                    b.HasOne("Domain.Entities.OrdenImpresion", "OrdenImpresion")
+                        .WithMany("Formulas")
+                        .HasForeignKey("IdOrdenImpresion");
+
                     b.Navigation("Empresa");
+
+                    b.Navigation("OrdenImpresion");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Logotipo", b =>
+            modelBuilder.Entity("Domain.Entities.InventarioTinta", b =>
                 {
-                    b.HasOne("Domain.Entities.Empresa", "Empresa")
-                        .WithMany("Logotipos")
-                        .HasForeignKey("IdEmpresa")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Domain.Entities.TintaBase", "TintaBase")
+                        .WithMany("InventarioTintas")
+                        .HasForeignKey("IdTintaBase");
 
-                    b.HasOne("Domain.Entities.Formula", "FormulaPrincipal")
-                        .WithMany()
-                        .HasForeignKey("IdFormula")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Empresa");
-
-                    b.Navigation("FormulaPrincipal");
+                    b.Navigation("TintaBase");
                 });
 
-            modelBuilder.Entity("Domain.Entities.LogotipoColor", b =>
+            modelBuilder.Entity("Domain.Entities.OrdenFormula", b =>
                 {
                     b.HasOne("Domain.Entities.Formula", "Formula")
-                        .WithMany("LogotipoColors")
+                        .WithMany()
                         .HasForeignKey("IdFormula")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Logotipo", "Logotipo")
-                        .WithMany("LogotipoColors")
-                        .HasForeignKey("IdLogotipo")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Domain.Entities.OrdenImpresion", "OrdenImpresion")
+                        .WithMany()
+                        .HasForeignKey("IdOrdenImpresion")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Formula");
 
-                    b.Navigation("Logotipo");
+                    b.Navigation("OrdenImpresion");
                 });
 
             modelBuilder.Entity("Domain.Entities.OrdenImpresion", b =>
                 {
-                    b.HasOne("Domain.Entities.Logotipo", "Logotipo")
-                        .WithMany("OrdenImpresions")
-                        .HasForeignKey("IdLogotipo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.Usuario", "Usuario")
                         .WithMany("OrdenImpresions")
                         .HasForeignKey("IdUsuario")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Logotipo");
 
                     b.Navigation("Usuario");
                 });
@@ -418,22 +443,16 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Empresa", b =>
                 {
                     b.Navigation("Formulas");
-
-                    b.Navigation("Logotipos");
                 });
 
             modelBuilder.Entity("Domain.Entities.Formula", b =>
                 {
                     b.Navigation("DetalleFormulas");
-
-                    b.Navigation("LogotipoColors");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Logotipo", b =>
+            modelBuilder.Entity("Domain.Entities.OrdenImpresion", b =>
                 {
-                    b.Navigation("LogotipoColors");
-
-                    b.Navigation("OrdenImpresions");
+                    b.Navigation("Formulas");
                 });
 
             modelBuilder.Entity("Domain.Entities.Rol", b =>
@@ -444,6 +463,8 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.TintaBase", b =>
                 {
                     b.Navigation("DetalleFormulas");
+
+                    b.Navigation("InventarioTintas");
                 });
 
             modelBuilder.Entity("Domain.Entities.Usuario", b =>

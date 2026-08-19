@@ -15,7 +15,6 @@ namespace API.Dtos
     {
         public int IdTinta { get; set; }
         public required string NombreTinta { get; set; }
-        public required string CodigoHex { get; set; }
         public decimal Porcentaje { get; set; }        // ej: 0.0875
         public decimal PorcentajeDisplay { get; set; } // ej: 8.75 (para mostrar)
         public decimal GramosNecesarios { get; set; }  // ej: 437.5g

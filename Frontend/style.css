@@ -1168,3 +1168,64 @@ body.dark .advertencia { color: #fbbf24; border-color: rgba(234,179,8,0.2); back
   transform: translateY(-3px) scale(1.04);
   box-shadow: 0 8px 24px rgba(200,32,46,0.25);
 }
+/* ── CHIP CHECK (selección de Pantones) ── */
+.chip-check {
+  position: absolute; top: 4px; right: 4px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--red); color: #fff;
+  font-size: 0.65rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.3);
+}
+
+.color-chip.seleccionando {
+  outline: 3px solid var(--red);
+  outline-offset: 2px;
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(200,32,46,.25);
+}
+
+/* ── BARRA FLOTANTE ORDEN ── */
+.factura-float-bar {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--navy); color: #fff;
+  border-radius: 50px; padding: 12px 20px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.3);
+  z-index: 300; white-space: nowrap;
+}
+
+.factura-float-count { font-size: 0.82rem; font-weight: 600; }
+
+.factura-float-cancel {
+  background: rgba(255,255,255,.12); border: none; border-radius: 20px;
+  color: #fff; padding: 6px 14px; cursor: pointer;
+  font-family: 'Montserrat',sans-serif; font-size: 0.78rem; font-weight: 600;
+  transition: background .2s;
+}
+.factura-float-cancel:hover { background: rgba(255,255,255,.2); }
+
+.factura-float-accept {
+  background: var(--red); border: none; border-radius: 20px;
+  color: #fff; padding: 6px 18px; cursor: pointer;
+  font-family: 'Montserrat',sans-serif; font-size: 0.78rem; font-weight: 700;
+  transition: all .2s; box-shadow: 0 4px 14px rgba(200,32,46,.4);
+}
+.factura-float-accept:hover { background: var(--red-light); }
+
+/* ── TABLA MEZCLA (modal informativo) ── */
+.tabla-mezcla { width: 100%; border-collapse: collapse; }
+.tabla-mezcla th {
+  padding: 8px 12px; font-size: 0.65rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-muted); background: var(--surface-2);
+  border-bottom: 1px solid var(--border); text-align: left;
+}
+.tabla-mezcla td {
+  padding: 10px 12px; font-size: 0.8rem; color: var(--text);
+  border-bottom: 1px solid var(--border); vertical-align: middle;
+}
+.tabla-mezcla tr:last-child td { border-bottom: none; }
+
+/* ── INVENTARIO — quitar columnas color y hex (ya no existen en HTML, CSS limpieza) ── */
+#tabla-inventario td:first-child { font-weight: 600; }

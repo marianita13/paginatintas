@@ -17,19 +17,12 @@ namespace Persistence.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(e => e.Nit)
-                .IsRequired()
-                .HasMaxLength(20);
-
-            builder.HasIndex(e => e.Nit).IsUnique();
-
             builder.Property(e => e.Telefono)
-                .IsRequired()
                 .HasMaxLength(15);
 
-            builder.Property(e => e.CorreoContacto)
+            builder.Property(e => e.Información)
                 .IsRequired()
-                .HasMaxLength(100);
+                .HasMaxLength(500);
         }
     }
 }

@@ -23,7 +23,7 @@ if %count% lss %num_entidades% (
     echo.>API\Dtos\!nombre_entidad!Dto.cs
 
     REM Crea el Repository en API\Repository
-    echo.>Application\Repository\!nombre_entidad!Repository.cs
+    echo.>Aplication\Repository\!nombre_entidad!Repository.cs
 
     REM Crea la Configuracion en Persistencia\Data\Configuration
     echo.>Persistence\Data\Configuration\!nombre_entidad!Configuration.cs

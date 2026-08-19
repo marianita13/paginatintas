@@ -9,12 +9,12 @@ using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
-public class LogotipoColorController: BaseController
+public class InventarioTintaController: BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public LogotipoColorController(IUnitOfWork unitOfWork, IMapper mapper)
+        public InventarioTintaController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -23,56 +23,56 @@ public class LogotipoColorController: BaseController
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<LogotipoColor>>> Get()
+        public async Task<ActionResult<IEnumerable<InventarioTinta>>> Get()
         {
-            var entidades = await _unitOfWork.LogotipoColors.GetAllAsync();
-            return _mapper.Map<List<LogotipoColor>>(entidades);
+            var InventarioTintaes = await _unitOfWork.InventarioTintas.GetAllAsync();
+            return _mapper.Map<List<InventarioTinta>>(InventarioTintaes);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<LogotipoColorDto>> Get(int id)
+        public async Task<ActionResult<InventarioTintaDto>> Get(int id)
         {
-            var entidad = await _unitOfWork.LogotipoColors.GetByIdAsync(id);
-            if(entidad == null)
+            var InventarioTinta = await _unitOfWork.InventarioTintas.GetByIdAsync(id);
+            if(InventarioTinta == null)
             {
                 return NotFound();
             }
-            return _mapper.Map<LogotipoColorDto>(entidad);
+            return _mapper.Map<InventarioTintaDto>(InventarioTinta);
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<LogotipoColor>> Post(LogotipoColorDto LogotipoColorDto)
+        public async Task<ActionResult<InventarioTinta>> Post(InventarioTintaDto InventarioTintaDto)
         {
-            var entidad = _mapper.Map<LogotipoColor>(LogotipoColorDto);
-            this._unitOfWork.LogotipoColors.Add(entidad);
+            var InventarioTinta = _mapper.Map<InventarioTinta>(InventarioTintaDto);
+            this._unitOfWork.InventarioTintas.Add(InventarioTinta);
             await _unitOfWork.SaveAsync();
-            if(entidad == null)
+            if(InventarioTinta == null)
             {
                 return BadRequest();
             }
-            LogotipoColorDto.Id = entidad.Id;
-            return CreatedAtAction(nameof(Post), new {id = LogotipoColorDto.Id}, LogotipoColorDto);
+            InventarioTintaDto.Id = InventarioTinta.Id;
+            return CreatedAtAction(nameof(Post), new {id = InventarioTintaDto.Id}, InventarioTintaDto);
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<LogotipoColorDto>> Put(int id, [FromBody] LogotipoColorDto LogotipoColorDto)
+        public async Task<ActionResult<InventarioTintaDto>> Put(int id, [FromBody] InventarioTintaDto InventarioTintaDto)
         {
-            if(LogotipoColorDto == null)
+            if(InventarioTintaDto == null)
             {
                 return NotFound();
             }
-            var entidades = _mapper.Map<LogotipoColor>(LogotipoColorDto);
-            _unitOfWork.LogotipoColors.Update(entidades);
+            var InventarioTintaes = _mapper.Map<InventarioTinta>(InventarioTintaDto);
+            _unitOfWork.InventarioTintas.Update(InventarioTintaes);
             await _unitOfWork.SaveAsync();
-            return LogotipoColorDto;
+            return InventarioTintaDto;
         }
 
         [HttpDelete("{id}")]
@@ -80,12 +80,12 @@ public class LogotipoColorController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var entidad = await _unitOfWork.LogotipoColors.GetByIdAsync(id);
-            if(entidad == null)
+            var InventarioTinta = await _unitOfWork.InventarioTintas.GetByIdAsync(id);
+            if(InventarioTinta == null)
             {
                 return NotFound();
             }
-            _unitOfWork.LogotipoColors.Remove(entidad);
+            _unitOfWork.InventarioTintas.Remove(InventarioTinta);
             await _unitOfWork.SaveAsync();
             return NoContent();
         }

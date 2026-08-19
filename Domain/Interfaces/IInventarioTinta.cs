@@ -6,8 +6,8 @@ using Domain.Entities;
 
 namespace Domain.Interfaces
 {
-    public interface ILogotipo : IGenericRepository<Logotipo>
+    public interface IInventarioTinta : IGenericRepository<InventarioTinta>
     {
-
+        
     }
 }

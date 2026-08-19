@@ -6,8 +6,8 @@ using Domain.Entities;
 
 namespace Domain.Interfaces
 {
-    public interface ILogotipoColor : IGenericRepository<LogotipoColor>
+    public interface IOrdenFormula : IGenericRepository<OrdenFormula>
     {
-
+        
     }
 }

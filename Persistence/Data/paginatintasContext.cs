@@ -13,13 +13,14 @@ namespace Persistence.Data
         public paginatintasContext(DbContextOptions options) : base(options) { }
         public DbSet<Empresa> Empresa { get; set; }
         public DbSet<Formula> Formula { get; set; }
-        public DbSet<LogotipoColor> LogotipoColor { get; set; }
-        public DbSet<Logotipo> Logotipo { get; set; }
         public DbSet<RefreshToken> RefreshToken { get; set; }
         public DbSet<Rol> Rol { get; set; }
         public DbSet<TintaBase> TintaBase { get; set; }
         public DbSet<OrdenImpresion> OrdenImpresion { get; set; }
         public DbSet<Usuario> Usuario { get; set; }
+        public DbSet<InventarioTinta> InventarioTinta { get; set; }
+        public DbSet<DetalleFormula> DetalleFormula { get; set; }
+        public DbSet<OrdenFormula> OrdenFormula { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

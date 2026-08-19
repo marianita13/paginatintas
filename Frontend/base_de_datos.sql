@@ -55,25 +55,6 @@ CREATE TABLE DetalleFormula (
     FOREIGN KEY (IdTinta) REFERENCES TintaBase(Id)
 );
 
--- 6. Tabla de Logotipos (Asociación RF-03)
-CREATE TABLE Logotipo (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    NombreLogo VARCHAR(100),
-    UrlImagen VARCHAR(255), -- Ruta de la imagen del logo
-    IdEmpresa INT, -- Empresa asociada al logo
-    FOREIGN KEY (IdEmpresa) REFERENCES Empresa(Id)
-);
-
--- 6b. Nueva tabla: Colores por Logotipo
-CREATE TABLE LogotipoColor (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    IdLogotipo INT NOT NULL,
-    IdFormula INT NOT NULL,
-    EsColorPrincipal BOOLEAN DEFAULT FALSE, -- Para saber cuál es el color dominante
-    FOREIGN KEY (IdLogotipo) REFERENCES Logotipo(Id) ON DELETE CASCADE,
-    FOREIGN KEY (IdFormula) REFERENCES Formula(Id)
-);
-
 -- 7. Historial de Órdenes (Control de Inventario RF-04)
 CREATE TABLE OrdenImpresion (
     Id INT AUTO_INCREMENT PRIMARY KEY,

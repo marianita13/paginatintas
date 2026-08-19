@@ -9,15 +9,10 @@
 </head>
 <body>
 
-<!-- Loading -->
-<div class="loading-overlay" id="loading">
-  <div class="loader-ring"></div>
-</div>
+<div class="loading-overlay" id="loading"><div class="loader-ring"></div></div>
 
-<!-- ═══ LOGIN PAGE ═══ -->
+<!-- ═══ LOGIN (sin cambios) ═══ -->
 <div id="login-page">
-
-  <!-- LEFT PANEL -->
   <div class="login-left">
     <div class="login-brand">
       <img src="./images-removebg-preview (1).png" alt="">
@@ -25,21 +20,15 @@
       <p>Ltda — Sistema de Gestión</p>
     </div>
     <div class="login-tagline">
-      <p>
-        <strong>Empacamos sus ideas naturalmente.</strong><br>
-        Accede a tu plataforma de gestión empresarial con total seguridad y eficiencia.
-      </p>
+      <p><strong>Empacamos sus ideas naturalmente.</strong><br>
+      Accede a tu plataforma de gestión empresarial con total seguridad y eficiencia.</p>
     </div>
   </div>
-
-  <!-- RIGHT PANEL — FORM -->
   <div class="login-right">
     <div class="login-form-wrapper">
       <h2>Bienvenido <span>de nuevo</span></h2>
       <p class="subtitle">Ingresa tus credenciales para continuar</p>
-
       <div class="error-msg" id="error-msg">⚠ Credenciales incorrectas</div>
-
       <div class="form-group">
         <label>Correo electrónico</label>
         <div class="input-wrap">
@@ -47,7 +36,6 @@
           <span class="icon">✉️</span>
         </div>
       </div>
-
       <div class="form-group">
         <label>Contraseña</label>
         <div class="input-wrap">
@@ -55,15 +43,10 @@
           <span class="icon">🔒</span>
         </div>
       </div>
-
       <button class="btn-login" onclick="handleLogin()">
-        <div class="btn-shine"></div>
-        Iniciar Sesión
+        <div class="btn-shine"></div>Iniciar Sesión
       </button>
-
-      <div class="login-footer">
-        <p>Sistema protegido — <strong>Carbolsas</strong> © 2026</p>
-      </div>
+      <div class="login-footer"><p>Sistema protegido — <strong>Carbolsas</strong> © 2026</p></div>
     </div>
   </div>
 </div>
@@ -75,9 +58,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo">
-        <div class="logo-mark">
-          <span class="logo-c">C</span>
-        </div>
+        <div class="logo-mark"><span class="logo-c">C</span></div>
         <div class="sidebar-brand-text">
           <div class="s-brand">CARBOLSAS</div>
           <div class="s-sub">Gestión de Color</div>
@@ -93,6 +74,7 @@
     </div>
 
     <nav class="sidebar-nav">
+      <!-- PANTONES — visible para todos -->
       <button class="nav-item active" data-tab="inicio" onclick="switchTab('inicio', this)">
         <span class="nav-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -101,9 +83,10 @@
             <line x1="2" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="22" y2="12"/>
           </svg>
         </span>
-        <span class="nav-label">Inicio</span>
+        <span class="nav-label">Pantones</span>
       </button>
 
+      <!-- EMPRESAS — visible para todos -->
       <button class="nav-item" data-tab="empresas" onclick="switchTab('empresas', this)">
         <span class="nav-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -114,7 +97,19 @@
         <span class="nav-label">Empresas</span>
       </button>
 
-      <button class="nav-item" data-tab="inventario" onclick="switchTab('inventario', this)">
+      <!-- ÓRDENES — visible para todos -->
+      <button class="nav-item" data-tab="ordenes" onclick="switchTab('ordenes', this)">
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+            <path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>
+          </svg>
+        </span>
+        <span class="nav-label">Órdenes</span>
+      </button>
+
+      <!-- INVENTARIO — oculto para Operarios -->
+      <button class="nav-item nav-item-inventario" data-tab="inventario" onclick="switchTab('inventario', this)" style="display:none">
         <span class="nav-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 3h18v4H3z"/><path d="M3 10h18v4H3z"/><path d="M3 17h18v4H3z"/>
@@ -123,31 +118,32 @@
         <span class="nav-label">Inventario</span>
       </button>
 
-      <button class="nav-item" data-tab="facturacion" onclick="switchTab('facturacion', this)">
+      <!-- BASE DE DATOS — oculto para Operarios -->
+      <button class="nav-item nav-item-basedatos" data-tab="basedatos" onclick="switchTab('basedatos', this)" style="display:none">
         <span class="nav-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/> <path d="M14 2v4a2 2 0 0 0 2 2h4"/> <path d="M16 13H8"/> <path d="M16 17H8"/> <path d="M10 9H8"/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
           </svg>
         </span>
-        <span class="nav-label">Facturación</span>
+        <span class="nav-label">Base de Datos</span>
       </button>
 
+      <!-- USUARIOS — solo Admin -->
       <button class="nav-item nav-item-admin" data-tab="usuarios" onclick="switchTab('usuarios', this)" style="display:none">
         <span class="nav-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
             <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
           </svg>
         </span>
         <span class="nav-label">Usuarios</span>
       </button>
     </nav>
 
-    <!-- Bottom: user + theme -->
     <div class="sidebar-footer">
-      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
         <span class="theme-icon-light">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"/>
@@ -186,36 +182,27 @@
 
   <!-- MAIN CONTENT -->
   <div class="main-content" id="main-content">
-
-    <!-- TOPBAR -->
     <header class="topbar">
       <div class="topbar-left">
-        <h1 class="page-title" id="page-title">Inicio</h1>
-        <span class="page-breadcrumb" id="page-breadcrumb">Panel principal</span>
+        <h1 class="page-title" id="page-title">Pantones</h1>
+        <span class="page-breadcrumb" id="page-breadcrumb">Selección de Pantones</span>
       </div>
     </header>
 
-    <!-- ─── INICIO ─── -->
+    <!-- ─── PANTONES (antes Inicio) ─── -->
     <div class="tab-panel active" id="panel-inicio">
-      <div style="height: 80px; width: 100%;">
-        <div class="color-search-bar">
-          <input type="text" id="color-search" placeholder="Buscar color por nombre o código..." oninput="filtrarColores()" />
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
+        <div class="color-search-bar" style="margin-bottom:0;flex:1;min-width:220px">
+          <input type="text" id="color-search" placeholder="Buscar Pantone por nombre..." oninput="filtrarColores()"/>
           <span class="search-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </span>
         </div>
-        <button class="btn-facture" onclick="abrirModalNuevaFactura()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16 " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-          </svg>
-          <p>Crear Nueva Factura</p>
-        </button>
       </div>
       <div class="color-grid" id="color-grid">
-        <div class="loading-state">Cargando colores...</div>
+        <div class="loading-state">Cargando Pantones...</div>
       </div>
     </div>
 
@@ -234,6 +221,32 @@
       </div>
     </div>
 
+    <!-- ─── ÓRDENES ─── -->
+    <div class="tab-panel" id="panel-ordenes">
+      <div class="section-card">
+        <div class="card-header">
+          <h3 class="card-title">Órdenes registradas</h3>
+          <button class="btn-primary" onclick="abrirModalNuevaOrden()">+ Nueva Orden</button>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>N° Orden</th>
+              <th>Fecha</th>
+              <th>Pantones</th>
+              <th>Cajas Prueba</th>
+              <th>Cajas Orden</th>
+              <th>Costo Orden</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-ordenes">
+            <tr><td colspan="7" class="loading-cell">Cargando órdenes...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- ─── INVENTARIO ─── -->
     <div class="tab-panel" id="panel-inventario">
       <div class="inv-stats" id="inv-stats"></div>
@@ -245,45 +258,45 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>Color</th>
-              <th>Nombre</th>
-              <th>Código Hex</th>
+              <th>Nombre Color</th>
               <th>Stock actual</th>
               <th>Stock mínimo</th>
+              <th>Costo/g</th>
               <th>Estado</th>
-              <th>Precio</th>
-              <th>Editar</th>
             </tr>
           </thead>
           <tbody id="tabla-inventario">
-            <tr><td colspan="8" class="loading-cell">Cargando...</td></tr>
+            <tr><td colspan="5" class="loading-cell">Cargando...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-
-    <!-- ─── FACTURACIÓN ─── -->
-    <div class="tab-panel" id="panel-facturacion">
+    <!-- ─── BASE DE DATOS ─── -->
+    <div class="tab-panel" id="panel-basedatos">
       <div class="section-card">
         <div class="card-header">
-          <h3 class="card-title">Facturas registradas</h3>
-          <button class="btn-primary" onclick="abrirModalNuevaFactura()">+ Nueva factura</button>
+          <h3 class="card-title">Base de datos Inventario de Tintas</h3>
+          <button class="btn-primary" onclick="abrirModalNuevaTinta()">+ Registrar entrada</button>
         </div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th># Factura</th>
-              <th>Cliente</th>
-              <th>Fecha</th>
-              <th>Colores</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-facturas">
-            <tr><td colspan="5" class="loading-cell">No hay facturas registradas.</td></tr>
-          </tbody>
-        </table>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID interno</th>
+                <th>N° de Lote</th>
+                <th>Nombre de la Tinta</th>
+                <th>Fabricante</th>
+                <th>Presentación</th>
+                <th>Costo de Tinta</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-basedatos">
+              <tr><td colspan="7" class="loading-cell">Cargando registros...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -296,13 +309,7 @@
         </div>
         <table class="data-table">
           <thead>
-            <tr>
-              <th>Avatar</th>
-              <th>Nombre</th>
-              <th>Correo</th>
-              <th>Rol</th>
-              <th>Acciones</th>
-            </tr>
+            <tr><th>Avatar</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Acciones</th></tr>
           </thead>
           <tbody id="tabla-usuarios">
             <tr><td colspan="5" class="loading-cell">Cargando...</td></tr>
@@ -343,26 +350,20 @@
   </div><!-- /main-content -->
 </div><!-- /main-page -->
 
-<!-- ═══ POPUP MEZCLA ═══ -->
-<div class="modal-overlay" id="modal-mezcla" onclick="cerrarModalMezcla(event)">
-  <div class="modal-box">
+<!-- ═══ MODAL ORDEN (popup completo) ═══ -->
+<div class="modal-overlay" id="modal-orden" onclick="cerrarModalOrden(event)">
+  <div class="modal-box" style="max-width:700px">
     <div class="modal-header">
-      <div class="modal-color-preview" id="modal-color-preview"></div>
-      <div>
-        <h2 class="modal-title" id="modal-color-nombre">—</h2>
-        <p class="modal-subtitle" id="modal-formula-id">Fórmula #—</p>
-      </div>
-      <button class="modal-close" onclick="document.getElementById('modal-mezcla').classList.remove('open')">✕</button>
+      <h2 class="modal-title" id="modal-orden-titulo">Nueva Orden</h2>
+      <button class="modal-close" onclick="document.getElementById('modal-orden').classList.remove('open')">✕</button>
     </div>
-    <div class="modal-body">
-      <div id="resultado-mezcla">
-        <div class="loading-state" style="padding:30px">Cargando fórmula...</div>
-      </div>
+    <div class="modal-body" id="modal-orden-body">
+      <!-- contenido dinámico: modo creación o modo visualización -->
     </div>
   </div>
 </div>
 
-<!-- ═══ MODAL NUEVO USUARIO ═══ -->
+<!-- ═══ MODAL USUARIO ═══ -->
 <div class="modal-overlay" id="modal-usuario" onclick="cerrarModalUsuario(event)">
   <div class="modal-box modal-sm">
     <div class="modal-header">
@@ -370,71 +371,55 @@
       <button class="modal-close" onclick="document.getElementById('modal-usuario').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-group-flat">
-        <label>Nombre completo</label>
-        <input type="text" id="nu-nombre" placeholder="Ej: Ana García">
-      </div>
-      <div class="form-group-flat">
-        <label>Correo electrónico</label>
-        <input type="email" id="nu-correo" placeholder="ana@carbolsas.com">
-      </div>
-      <div class="form-group-flat">
-        <label>Contraseña inicial</label>
-        <input type="password" id="nu-pass" placeholder="••••••••">
-      </div>
-      <div class="form-group-flat">
-        <label>Rol</label>
-        <select id="nu-rol">
-          <option value="Usuario">Usuario</option>
-          <option value="Admin">Administrador</option>
-        </select>
-      </div>
+      <div class="form-group-flat"><label>Nombre completo</label>
+        <input type="text" id="nu-nombre" placeholder="Ej: Ana García"></div>
+      <div class="form-group-flat"><label>Correo electrónico</label>
+        <input type="email" id="nu-correo" placeholder="ana@carbolsas.com"></div>
+      <div class="form-group-flat"><label>Contraseña inicial</label>
+        <input type="password" id="nu-pass" placeholder="••••••••"></div>
+      <div class="form-group-flat"><label>Rol (ID)</label>
+        <input type="number" id="nu-rol-id" placeholder="Ej: 1 = Admin, 2 = Operarios"></div>
       <div id="nu-msg" class="config-msg" style="display:none"></div>
       <button class="btn-primary" onclick="crearUsuario()" style="width:100%;margin-top:8px">Crear usuario</button>
     </div>
   </div>
 </div>
 
-
-<!-- ═══ MODAL NUEVA FACTURA ═══ -->
-<div class="modal-overlay" id="modal-factura" onclick="cerrarModalFactura(event)">
-  <div class="modal-box" style="max-width:700px">
+<!-- ═══ MODAL BASE DE DATOS (nueva entrada tinta) ═══ -->
+<div class="modal-overlay" id="modal-tinta" onclick="cerrarModalTinta(event)">
+  <div class="modal-box modal-sm">
     <div class="modal-header">
-      <h2 class="modal-title">Nueva Factura</h2>
-      <button class="modal-close" onclick="cerrarYLimpiarFactura()">✕</button>
+      <h2 class="modal-title">Registrar entrada de tinta</h2>
+      <button class="modal-close" onclick="document.getElementById('modal-tinta').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-group-flat" style="margin-bottom:20px">
-        <label>Nombre del cliente</label>
-        <input type="text" id="factura-cliente" placeholder="Ej: Empresa XYZ S.A.S">
-      </div>
-
-      <div style="margin-bottom:16px">
-        <label style="display:block;font-size:0.7rem;font-weight:700;letter-spacing:.12em;
-          text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">
-          Colores seleccionados
-        </label>
-        <div id="factura-seleccionados"
-          style="border:1px solid var(--border);border-radius:10px;
-          padding:8px;min-height:50px;display:flex;flex-direction:column;gap:4px">
-        </div>
-      </div>
-
-      <div id="factura-msg" class="config-msg" style="display:none"></div>
-      <button class="btn-primary" onclick="guardarFactura()" style="width:100%">
-        Guardar factura
-      </button>
+      <div class="form-group-flat"><label>Tinta Base (ID)</label>
+        <input type="number" id="nt-idtinta" placeholder="ID de la tinta base"></div>
+      <div class="form-group-flat"><label>ID Interno (N° empresa)</label>
+        <input type="text" id="nt-idinterno" placeholder="Ej: CB-001"></div>
+      <div class="form-group-flat"><label>N° de Lote</label>
+        <input type="text" id="nt-lote" placeholder="Ej: LOT-2026-001"></div>
+      <div class="form-group-flat"><label>Nombre de la Tinta</label>
+        <input type="text" id="nt-nombre" placeholder="Ej: Yellow 012"></div>
+      <div class="form-group-flat"><label>Fabricante</label>
+        <input type="text" id="nt-fabricante" placeholder="Ej: Sun Chemical"></div>
+      <div class="form-group-flat"><label>Presentación</label>
+        <input type="text" id="nt-presentacion" placeholder="Ej: Lata 1kg"></div>
+      <div class="form-group-flat"><label>Costo de Tinta ($)</label>
+        <input type="number" step="0.01" id="nt-costo" placeholder="Ej: 45000"></div>
+      <div id="nt-msg" class="config-msg" style="display:none"></div>
+      <button class="btn-primary" onclick="guardarEntradaTinta()" style="width:100%;margin-top:8px">Guardar registro</button>
     </div>
   </div>
 </div>
-<!-- ═══ BARRA FLOTANTE SELECCIÓN FACTURA ═══ -->
-<div class="factura-float-bar" id="factura-float-bar">
-  <span class="factura-float-count" id="factura-float-count">Selecciona colores</span>
-  <button class="factura-float-cancel" onclick="cancelarSeleccionFactura()">Cancelar</button>
-  <button class="factura-float-accept" onclick="aceptarSeleccionFactura()">
-    Aceptar →
-  </button>
+
+<!-- ═══ BARRA FLOTANTE SELECCIÓN PANTONES (modo nueva orden) ═══ -->
+<div class="factura-float-bar" id="orden-float-bar" style="display:none">
+  <span class="factura-float-count" id="orden-float-count">0 Pantones seleccionados</span>
+  <button class="factura-float-cancel" onclick="cancelarSeleccionOrden()">Cancelar</button>
+  <button class="factura-float-accept" onclick="aceptarSeleccionOrden()">Aceptar →</button>
 </div>
+
 <script src="script.js"></script>
 </body>
 </html>

@@ -15,12 +15,12 @@ namespace API.Profiles
             CreateMap<DetalleFormula, DetalleFormulaDto>().ReverseMap();
             CreateMap<Empresa, EmpresaDto>().ReverseMap();
             CreateMap<Formula, FormulaDto>().ReverseMap();
-            CreateMap<LogotipoColor, LogotipoColorDto>().ReverseMap();
-            CreateMap<Logotipo, LogotipoDto>().ReverseMap();
             CreateMap<OrdenImpresion, OrdenImpresionDto>().ReverseMap();
             CreateMap<Rol, RolDto>().ReverseMap();
             CreateMap<TintaBase, TintaBaseDto>().ReverseMap();
             CreateMap<Usuario, UsuarioDto>().ReverseMap();
+            CreateMap<InventarioTinta, InventarioTintaDto>().ReverseMap();
+            CreateMap<OrdenFormula, OrdenFormulaDto>().ReverseMap();
         }
     }
 }

@@ -9,12 +9,12 @@ using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
-public class LogotipoController: BaseController
+public class OrdenFormulaController: BaseController
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public LogotipoController(IUnitOfWork unitOfWork, IMapper mapper)
+        public OrdenFormulaController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -23,56 +23,56 @@ public class LogotipoController: BaseController
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<Logotipo>>> Get()
+        public async Task<ActionResult<IEnumerable<OrdenFormula>>> Get()
         {
-            var entidades = await _unitOfWork.Logotipos.GetAllAsync();
-            return _mapper.Map<List<Logotipo>>(entidades);
+            var entidades = await _unitOfWork.OrdenFormulas.GetAllAsync();
+            return _mapper.Map<List<OrdenFormula>>(entidades);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<LogotipoDto>> Get(int id)
+        public async Task<ActionResult<OrdenFormulaDto>> Get(int id)
         {
-            var entidad = await _unitOfWork.Logotipos.GetByIdAsync(id);
+            var entidad = await _unitOfWork.OrdenFormulas.GetByIdAsync(id);
             if(entidad == null)
             {
                 return NotFound();
             }
-            return _mapper.Map<LogotipoDto>(entidad);
+            return _mapper.Map<OrdenFormulaDto>(entidad);
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Logotipo>> Post(LogotipoDto LogotipoDto)
+        public async Task<ActionResult<OrdenFormula>> Post(OrdenFormulaDto OrdenFormulaDto)
         {
-            var entidad = _mapper.Map<Logotipo>(LogotipoDto);
-            this._unitOfWork.Logotipos.Add(entidad);
+            var entidad = _mapper.Map<OrdenFormula>(OrdenFormulaDto);
+            this._unitOfWork.OrdenFormulas.Add(entidad);
             await _unitOfWork.SaveAsync();
             if(entidad == null)
             {
                 return BadRequest();
             }
-            LogotipoDto.Id = entidad.Id;
-            return CreatedAtAction(nameof(Post), new {id = LogotipoDto.Id}, LogotipoDto);
+            OrdenFormulaDto.Id = entidad.Id;
+            return CreatedAtAction(nameof(Post), new {id = OrdenFormulaDto.Id}, OrdenFormulaDto);
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<LogotipoDto>> Put(int id, [FromBody] LogotipoDto LogotipoDto)
+        public async Task<ActionResult<OrdenFormulaDto>> Put(int id, [FromBody] OrdenFormulaDto OrdenFormulaDto)
         {
-            if(LogotipoDto == null)
+            if(OrdenFormulaDto == null)
             {
                 return NotFound();
             }
-            var entidades = _mapper.Map<Logotipo>(LogotipoDto);
-            _unitOfWork.Logotipos.Update(entidades);
+            var entidades = _mapper.Map<OrdenFormula>(OrdenFormulaDto);
+            _unitOfWork.OrdenFormulas.Update(entidades);
             await _unitOfWork.SaveAsync();
-            return LogotipoDto;
+            return OrdenFormulaDto;
         }
 
         [HttpDelete("{id}")]
@@ -80,12 +80,12 @@ public class LogotipoController: BaseController
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var entidad = await _unitOfWork.Logotipos.GetByIdAsync(id);
+            var entidad = await _unitOfWork.OrdenFormulas.GetByIdAsync(id);
             if(entidad == null)
             {
                 return NotFound();
             }
-            _unitOfWork.Logotipos.Remove(entidad);
+            _unitOfWork.OrdenFormulas.Remove(entidad);
             await _unitOfWork.SaveAsync();
             return NoContent();
         }
