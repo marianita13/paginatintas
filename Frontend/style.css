@@ -608,7 +608,7 @@ body.dark .empresa-item.active { background: rgba(200,32,46,0.1); border-left-co
 }
 
 .empresa-detail-nit {
-  font-size: 0.78rem; color: var(--text-muted); margin-bottom: 20px;
+  font-size: 1rem; color: var(--text-muted); margin-bottom: 20px;
 }
 
 .detail-section { margin-top: 20px; }
@@ -1122,7 +1122,7 @@ body.dark .advertencia { color: #fbbf24; border-color: rgba(234,179,8,0.2); back
 .factura-float-count {
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--text-2);
+  color: var(--text-1);
   margin-right: 4px;
 }
 

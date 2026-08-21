@@ -28,9 +28,13 @@ namespace Persistence.Data.Configurations
             builder.Property(e => e.Fabricante)
                 .IsRequired()
                 .HasMaxLength(100);
+            
+            builder.Property(e => e.Proveedor)
+                .IsRequired()
+                .HasMaxLength(100);
 
             builder.Property(e => e.Presentacion)
-                .HasMaxLength(100);
+                .HasColumnType("decimal(10,2)");
 
             builder.Property(e => e.Costo)
                 .IsRequired()

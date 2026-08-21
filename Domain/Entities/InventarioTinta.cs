@@ -9,7 +9,8 @@ namespace Domain.Entities
         public required string Lote { get; set; }
         public required string Nombre { get; set; }
         public required string Fabricante { get; set; }
-        public required string Presentacion { get; set; }
+        public required string Proveedor {get; set;}
+        public required decimal Presentacion { get; set; }
         public required decimal Costo { get; set; }
         public TintaBase TintaBase { get; set; }
     }

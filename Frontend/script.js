@@ -17,6 +17,7 @@ function esOperario()  { return (currentUser?.rol || '').toLowerCase() === 'oper
 let token       = localStorage.getItem('token') || null;
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 let allColors   = [];
+let allEmpresas = []; // cache para filtrado local
 
 // Diccionario Pantone → HEX
 let pantoneMap  = {};
@@ -142,34 +143,66 @@ function ordenarPorColorReal(lista) {
 async function apiFetch(endpoint, method = 'GET', body = null) {
   const headers = { 'Content-Type': 'application/json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;
+
   const opts = { method, headers };
   if (body) opts.body = JSON.stringify(body);
   const res = await fetch(`${API_URL}/${endpoint}`, opts);
-  if (res.status === 401) {
+
+  if (res.status === 401 || res.status === 403) {
     const refreshed = await tryRefreshToken();
     if (refreshed) {
       headers['Authorization'] = `Bearer ${token}`;
-      return fetch(`${API_URL}/${endpoint}`, { method, headers, body: opts.body });
-    } else { handleLogout(); throw new Error('Sesión expirada'); }
+      res = await fetch(`${API_URL}/${endpoint}`, { method, headers, body: opts.body });
+    } else { 
+      handleLogout(); 
+      throw new Error('Sesión expirada'); 
+    }
   }
-  return res;
+
+  if (!res.ok) {
+    const textErr = await res.text().catch(() => '');
+    try {
+      const jsonErr = JSON.parse(textErr);
+      throw new Error(jsonErr.mensaje || jsonErr.title || `Error ${res.status}`);
+    } catch {
+      throw new Error(textErr || `Error en la solicitud (${res.status})`);
+    }
+  }
+
+  // Si la respuesta es 204 No Content, se retorna null de inmediato
+  if (res.status === 204) return null;
+
+  // Validación de cuerpo vacío antes de hacer JSON.parse
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
 }
 
 async function tryRefreshToken() {
   const rt = localStorage.getItem('refreshToken');
   if (!rt) return false;
+
   try {
     const res = await fetch(`${API_URL}/Usuario/refresh-token`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(rt)
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' },
+      // Enviar como objeto JSON DTO en lugar de string suelto
+      body: JSON.stringify({ refreshToken: rt })
     });
+
     if (!res.ok) return false;
+    
     const data = await res.json();
-    token = data.token;
+    token = data.token ?? data.Token;
+    const newRefreshToken = data.refreshToken ?? data.RefreshToken;
+
     localStorage.setItem('token', token);
-    localStorage.setItem('refreshToken', data.refreshToken);
+    if (newRefreshToken) {
+      localStorage.setItem('refreshToken', newRefreshToken);
+    }
     return true;
-  } catch { return false; }
+  } catch { 
+    return false; 
+  }
 }
 
 // ════════════════════════════════════════
@@ -349,8 +382,8 @@ async function cargarColores() {
   grid.innerHTML = '<div class="loading-state">Cargando Pantones...</div>';
   try {
     const [, res] = await Promise.all([ cargarPantoneMap(), apiFetch('Formula') ]);
-    const formulas = await res.json();
-    const conHex = formulas.map(f => ({ ...f, hexResuelto: resolverHex(f) }));
+    // const formulas = await res.json();
+    const conHex = res.map(f => ({ ...f, hexResuelto: resolverHex(f) }));
     allColors = ordenarPorColorReal(conHex);
     renderColorGrid(allColors);
   } catch (e) {
@@ -358,10 +391,10 @@ async function cargarColores() {
   }
 }
 
-function renderColorGrid(formulas) {
+function renderColorGrid(res) {
   const grid = document.getElementById('color-grid');
-  if (!formulas.length) { grid.innerHTML = '<div class="loading-state">No hay Pantones registrados.</div>'; return; }
-  grid.innerHTML = formulas.map(f => {
+  if (!res.length) { grid.innerHTML = '<div class="loading-state">No hay Pantones registrados.</div>'; return; }
+  grid.innerHTML = res.map(f => {
     const hex = f.hexResuelto || resolverHex(f);
     const hexDisplay = hex !== 'transparent' ? hex.toUpperCase() : 'Sin hex';
     const selClass = modoSeleccionOrden && ordenPantonesSeleccionados.find(p => p.id === f.id)
@@ -408,7 +441,6 @@ function abrirModalMezcla(idFormula, nombreColor, hex) {
   document.getElementById('modal-orden').classList.add('open');
 
   apiFetch('Mezcla/calcular', 'POST', { idFormula, pesoTotalGramos: 100 })
-    .then(r => r.json())
     .then(data => {
       document.getElementById('modal-orden-body').innerHTML = `
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
@@ -426,7 +458,7 @@ function abrirModalMezcla(idFormula, nombreColor, hex) {
                 <td>${escHtml(t.nombreTinta)}</td>
                 <td><strong>${t.gramosNecesarios}g</strong></td>
                 <td>${t.porcentajeDisplay}%</td>
-                <td><span class="stock-badge ${t.stockSuficiente ? 'ok' : 'warn'}">${t.stockActual}g</span></td>
+                <td><span class="stock-badge ${t.stockSuficiente ? 'ok' : 'warn'}">${t.stockSuficiente ? 'Suficiente' : 'Insuficiente'}</span></td>
               </tr>`).join('')}
           </tbody>
         </table>`;
@@ -504,7 +536,6 @@ function abrirPopupNuevaOrden() {
   document.getElementById('modal-orden-titulo').textContent = 'Nueva Orden';
   document.getElementById('modal-orden-body').innerHTML = renderFormNuevaOrden();
   document.getElementById('modal-orden').classList.add('open');
-  // Mostrar tintas por cada pantone seleccionado
   ordenPantonesSeleccionados.forEach(p => cargarTintasPrueba(p));
 }
 
@@ -512,49 +543,26 @@ function renderFormNuevaOrden() {
   return `
     <div class="form-group-flat" style="margin-bottom:16px">
       <label>N° Orden</label>
-      <input type="number" id="ord-numero" placeholder="Ej: 001" min="1">
+      <input type="text" id="ord-numero" placeholder="Ej: 001" min="1">
     </div>
 
-    <div style="margin-bottom:16px">
+    <div style="margin-bottom:4px">
       <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
         color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)">
-        Pantones seleccionados — Prueba de color (100g base)
+        Pantones seleccionados — Proporciones para 100g
       </div>
       ${ordenPantonesSeleccionados.map(p => `
-        <div style="margin-bottom:12px;padding:12px;background:var(--surface-2);border-radius:10px;border:1px solid var(--border)">
+        <div style="margin-bottom:10px;padding:12px;background:var(--surface-2);border-radius:10px;border:1px solid var(--border)">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <div style="width:20px;height:20px;border-radius:6px;background:${p.hex};border:1px solid rgba(0,0,0,.1);flex-shrink:0"></div>
+            <div style="width:18px;height:18px;border-radius:5px;background:${p.hex};border:1px solid rgba(0,0,0,.1);flex-shrink:0"></div>
             <strong style="font-size:0.82rem">${escHtml(p.nombre)}</strong>
           </div>
           <div id="tintas-prueba-${p.id}" style="font-size:0.78rem;color:var(--text-muted)">Cargando tintas...</div>
         </div>`).join('')}
     </div>
 
-    <div style="background:var(--surface-2);border-radius:10px;padding:16px;border:1px solid var(--border);margin-bottom:16px">
-      <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-        color:var(--text-muted);margin-bottom:12px">Cajas a producir</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div class="form-group-flat" style="margin:0">
-          <label>N° cajas con prueba de color</label>
-          <input type="number" id="ord-prueba-cajas" placeholder="Ej: 6" min="1" oninput="actualizarCalculo()">
-        </div>
-        <div class="form-group-flat" style="margin:0">
-          <label>N° cajas de la orden</label>
-          <input type="number" id="ord-total-cajas" placeholder="Ej: 850" min="1" oninput="actualizarCalculo()">
-        </div>
-      </div>
-    </div>
-
-    <div id="calculo-orden-section" style="display:none;margin-bottom:16px">
-      <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-        color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)">
-        Cantidad de tinta a preparar para la orden
-      </div>
-      <div id="calculo-orden-resultado"></div>
-    </div>
-
     <div id="ord-msg" class="config-msg" style="display:none"></div>
-    <button class="btn-primary" onclick="guardarOrden()" style="width:100%;margin-top:8px">
+    <button class="btn-primary" onclick="guardarOrden()" style="width:100%;margin-top:12px">
       Guardar Orden
     </button>`;
 }
@@ -565,85 +573,43 @@ async function cargarTintasPrueba(pantone) {
   if (!cont) return;
   try {
     const res  = await apiFetch('Mezcla/calcular', 'POST', { idFormula: pantone.id, pesoTotalGramos: 100 });
-    const data = await res.json();
-    // Guardamos los datos de tintas en el pantone para usarlos en la regla de tres
-    pantone.tintas = data.tintas;
+    // const data = await res.json();
+    pantone.tintas = res.tintas; // guardar para la regla de tres en verOrden
     cont.innerHTML = `
       <table style="width:100%;border-collapse:collapse">
-        ${data.tintas.map(t => `
+        ${res.tintas.map(t => `
           <tr>
             <td style="padding:3px 0;color:var(--text)">${escHtml(t.nombreTinta)}</td>
-            <td style="text-align:right;font-weight:700;padding:3px 0" class="tintas-prueba-g" data-tinta="${t.idTinta}" data-formula="${pantone.id}">
-              ${t.gramosNecesarios}g
-            </td>
+            <td style="text-align:right;font-weight:700;padding:3px 0">${t.gramosNecesarios}g</td>
           </tr>`).join('')}
       </table>`;
-    actualizarCalculo();
   } catch {
     if (cont) cont.textContent = 'Error al cargar tintas.';
   }
 }
 
-// Regla de tres: actualiza la sección de tinta para la orden completa
-function actualizarCalculo() {
-  const cajasPrueba = parseFloat(document.getElementById('ord-prueba-cajas')?.value) || 0;
-  const cajasOrden  = parseFloat(document.getElementById('ord-total-cajas')?.value)  || 0;
-  const seccion     = document.getElementById('calculo-orden-section');
-  const resultado   = document.getElementById('calculo-orden-resultado');
-  if (!seccion || !resultado) return;
-
-  if (!cajasPrueba || !cajasOrden) { seccion.style.display = 'none'; return; }
-  seccion.style.display = 'block';
-
-  resultado.innerHTML = ordenPantonesSeleccionados.map(p => {
-    if (!p.tintas || !p.tintas.length) return '';
-    return `
-      <div style="margin-bottom:10px;padding:10px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border)">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-          <div style="width:14px;height:14px;border-radius:4px;background:${p.hex}"></div>
-          <strong style="font-size:0.8rem">${escHtml(p.nombre)}</strong>
-        </div>
-        <table style="width:100%;border-collapse:collapse">
-          ${p.tintas.map(t => {
-            // X = (cajasOrden × gramosPrueba) / cajasPrueba  → redondeado a entero
-            const gramosOrden = Math.round((cajasOrden * t.gramosNecesarios) / cajasPrueba);
-            return `
-              <tr>
-                <td style="padding:3px 0;color:var(--text);font-size:0.78rem">${escHtml(t.nombreTinta)}</td>
-                <td style="text-align:right;font-weight:700;font-size:0.8rem;padding:3px 0">${gramosOrden}g</td>
-              </tr>`;
-          }).join('')}
-        </table>
-      </div>`;
-  }).join('');
-}
-
 async function guardarOrden() {
-  const numero      = parseInt(document.getElementById('ord-numero')?.value) || 0;
-  const cajasPrueba = parseInt(document.getElementById('ord-prueba-cajas')?.value) || 0;
-  const cajasOrden  = parseInt(document.getElementById('ord-total-cajas')?.value)  || 0;
-  const msg         = document.getElementById('ord-msg');
+  const numero = document.getElementById('ord-numero')?.value.trim();
+  const msg    = document.getElementById('ord-msg');
 
-  if (!numero)      { showModalMsg(msg, 'Ingresa el N° de orden.', 'err'); return; }
-  if (!cajasPrueba) { showModalMsg(msg, 'Ingresa las cajas de prueba.', 'err'); return; }
-  if (!cajasOrden)  { showModalMsg(msg, 'Ingresa las cajas de la orden.', 'err'); return; }
+  if (!numero) { showModalMsg(msg, 'Ingresa el N° de orden.', 'err'); return; }
   if (!ordenPantonesSeleccionados.length) { showModalMsg(msg, 'No hay Pantones seleccionados.', 'err'); return; }
 
   try {
     const res = await apiFetch('OrdenImpresion', 'POST', {
-      numeroOrden:  numero,
-      numeroCajas:  cajasOrden,
-      pruebaColor:  cajasPrueba,
-      idsFormulas:  ordenPantonesSeleccionados.map(p => p.id)
+      numeroOrden: String(numero),
+      numeroCajas: 0,
+      pruebaColor: 0,
+      idsFormulas: ordenPantonesSeleccionados.map(p => p.id)
     });
     if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      showModalMsg(msg, data || 'Error al guardar la orden.', 'err'); return;
+      const text = await res.text();
+      showModalMsg(msg, text || 'Error al guardar la orden.', 'err'); return;
     }
     document.getElementById('modal-orden').classList.remove('open');
     ordenPantonesSeleccionados = [];
-    // Si está en panel órdenes, recargar
-    if (document.getElementById('panel-ordenes')?.classList.contains('active')) cargarOrdenes();
+    const btnOrdenes = document.querySelector('[data-tab="ordenes"]');
+    switchTab('ordenes', btnOrdenes);
   } catch (e) {
     showModalMsg(msg, 'Error: ' + e.message, 'err');
   }
@@ -655,143 +621,268 @@ async function guardarOrden() {
 async function cargarOrdenes() {
   const tbody = document.getElementById('tabla-ordenes');
   tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">Cargando...</td></tr>';
+  
   try {
-    const [resOrd, resForm] = await Promise.all([
-      apiFetch('OrdenImpresion'),
-      apiFetch('Formula')
+    // 1. Cargar las 3 tablas en paralelo una sola vez
+    const [resOrd, resForm, resOf] = await Promise.all([
+      apiFetch('OrdenImpresion').catch(() => []),
+      apiFetch('Formula').catch(() => []),
+      apiFetch('OrdenFormula').catch(() => [])
     ]);
-    const ordenes  = await resOrd.json();
-    const formulas = await resForm.json();
-    const formulaMap = Object.fromEntries(formulas.map(f => [f.id, f]));
+
+    const ordenes = resOrd || [];
+    const formulas = resForm || [];
+    const ordenFormulas = resOf || [];
 
     if (!ordenes.length) {
       tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">No hay órdenes registradas.</td></tr>';
       return;
     }
 
-    // Para cada orden obtener sus pantones vía OrdenFormula
-    const rows = await Promise.all(ordenes.map(async o => {
-      let pantonesDots = '—';
-      try {
-        const resOf = await apiFetch(`OrdenFormula?idOrden=${o.id}`).catch(() => null);
-        if (resOf && resOf.ok) {
-          const ofs = await resOf.json();
-          pantonesDots = ofs.map(of => {
-            const f = formulaMap[of.idFormula];
-            if (!f) return '';
-            const hex = resolverHex(f);
-            return `<span title="${escHtml(f.nombreColor)}" style="width:18px;height:18px;border-radius:4px;
-              background:${hex};display:inline-block;border:1px solid rgba(0,0,0,.1)"></span>`;
-          }).join(' ') || '—';
-        }
-      } catch {}
+    // 2. Crear un mapa para buscar fórmulas por su ID rápidamente
+    const formulaMap = Object.fromEntries(formulas.map(f => [f.id ?? f.Id, f]));
 
-      const estadoClass = o.estado ? 'ok' : 'danger';
-      const estadoLabel = o.estado ? 'Completado' : 'Prueba de color';
+    // 3. Renderizar las filas de la tabla
+    const rows = ordenes.map(o => {
+      const idOrden = o.id ?? o.Id;
 
-      return `<tr style="cursor:pointer" onclick="verOrden(${o.id})">
-        <td style="font-weight:700">#${o.numeroOrden}</td>
-        <td>${new Date(o.fechaOrden).toLocaleDateString('es-CO')}</td>
+      // Filtrar las relaciones de OrdenFormula asociadas a esta Orden de Impresión
+      const relacionesDeEstaOrden = ordenFormulas.filter(of => {
+        const fkOrden = of.idOrdenImpresion ?? of.IdOrdenImpresion ?? of.idOrden ?? of.IdOrden;
+        return fkOrden == idOrden;
+      });
+
+      // Mapear los círculos de colores de cada fórmula encontrada
+      let pantonesDots = relacionesDeEstaOrden.map(of => {
+        const idFormula = of.idFormula ?? of.IdFormula;
+        const f = formulaMap[idFormula];
+        if (!f) return '';
+
+        const hex = resolverHex(f);
+        const nombreColor = f.nombreColor ?? f.NombreColor ?? '';
+        return `<span title="${escHtml(nombreColor)}" style="width:18px;height:18px;border-radius:4px;
+          background:${hex};display:inline-block;border:1px solid rgba(0,0,0,.1)"></span>`;
+      }).filter(Boolean).join(' ');
+
+      if (!pantonesDots) pantonesDots = '—';
+
+      const estado = o.estado ?? o.Estado;
+      const estadoClass = estado ? 'ok' : 'danger';
+      const estadoLabel = estado ? 'Completado' : 'Prueba de color';
+
+      const numeroOrden = o.numeroOrden ?? o.NumeroOrden;
+      const fechaOrden = o.fechaOrden ?? o.FechaOrden;
+      const pruebaColor = o.pruebaColor ?? o.PruebaColor ?? 0;
+      const numeroCajas = o.numeroCajas ?? o.NumeroCajas ?? 0;
+      const costoTotal = o.costoTotal ?? o.CostoTotal ?? 0;
+
+      return `<tr style="cursor:pointer" onclick="verOrden(${idOrden})">
+        <td style="font-weight:700">#${numeroOrden}</td>
+        <td>${new Date(fechaOrden).toLocaleDateString('es-CO')}</td>
         <td><div style="display:flex;gap:4px;flex-wrap:wrap">${pantonesDots}</div></td>
-        <td>${o.pruebaColor}</td>
-        <td>${o.numeroCajas}</td>
-        <td>$${(o.costoTotal || 0).toLocaleString('es-CO')}</td>
+        <td>${pruebaColor}</td>
+        <td>${numeroCajas}</td>
+        <td>$${costoTotal.toLocaleString('es-CO')}</td>
         <td><span class="stock-badge ${estadoClass}">${estadoLabel}</span></td>
       </tr>`;
-    }));
+    });
 
     tbody.innerHTML = rows.join('');
   } catch (e) {
+    console.error('Error en cargarOrdenes:', e);
     tbody.innerHTML = `<tr><td colspan="7" class="error-cell">Error: ${escHtml(e.message)}</td></tr>`;
   }
 }
 
-// Ver detalle de una orden existente (popup)
+// Ver detalle de una orden existente (popup completo)
 async function verOrden(id) {
-  document.getElementById('modal-orden-titulo').textContent = 'Detalle de Orden';
+  document.getElementById('modal-orden-titulo').textContent = 'Orden #...';
   document.getElementById('modal-orden-body').innerHTML =
     '<div class="loading-state" style="padding:30px">Cargando orden...</div>';
   document.getElementById('modal-orden').classList.add('open');
 
   try {
-    const res    = await apiFetch(`OrdenImpresion/${id}`);
-    const orden  = await res.json();
+    const res   = await apiFetch(`OrdenImpresion/${id}`);
+    const orden = await res.json();
+
+    document.getElementById('modal-orden-titulo').textContent = `Orden #${orden.numeroOrden}`;
 
     const estadoLabel = orden.estado ? 'Completado' : 'Prueba de color';
     const estadoClass = orden.estado ? 'ok' : 'danger';
 
     document.getElementById('modal-orden-body').innerHTML = `
-      <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px">
-        <div><div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)">N° Orden</div>
-          <div style="font-size:1.1rem;font-weight:800">#${orden.numeroOrden}</div></div>
-        <div><div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)">Fecha</div>
-          <div>${new Date(orden.fechaOrden).toLocaleDateString('es-CO')}</div></div>
-        <div><div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)">Estado</div>
-          <span class="stock-badge ${estadoClass}">${estadoLabel}</span></div>
-        <div><div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)">Costo total</div>
-          <div style="font-weight:700">$${(orden.costoTotal||0).toLocaleString('es-CO')}</div></div>
+      <!-- Info cabecera -->
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+        <div style="flex:1">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)">Fecha</div>
+          <div style="font-weight:600">${new Date(orden.fechaOrden).toLocaleDateString('es-CO')}</div>
+        </div>
+        <span class="stock-badge ${estadoClass}">${estadoLabel}</span>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px;border:1px solid var(--border);text-align:center">
-          <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;color:var(--text-muted)">Cajas prueba</div>
-          <div style="font-size:1.4rem;font-weight:800">${orden.pruebaColor}</div>
-        </div>
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px;border:1px solid var(--border);text-align:center">
-          <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;color:var(--text-muted)">Cajas orden</div>
-          <div style="font-size:1.4rem;font-weight:800">${orden.numeroCajas}</div>
-        </div>
-      </div>
-
+      <!-- Pantones — tintas a 100g -->
       <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
         color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)">
-        Pantones — Prueba (100g base)
+        Pantones seleccionados — Proporciones para 100g
       </div>
       ${orden.pantones.map(p => `
         <div style="margin-bottom:10px;padding:12px;background:var(--surface-2);border-radius:10px;border:1px solid var(--border)">
           <strong style="font-size:0.82rem">${escHtml(p.nombreColor)}</strong>
           <table style="width:100%;border-collapse:collapse;margin-top:6px">
-            ${p.tintasPrueba.map(t => `
+            ${(p.mezclaPrueba?.tintas || []).map(t => `
               <tr>
                 <td style="padding:3px 0;color:var(--text);font-size:0.78rem">${escHtml(t.nombreTinta)}</td>
-                <td style="text-align:right;font-weight:700;font-size:0.78rem">${t.gramosCalculados}g</td>
+                <td style="text-align:right;font-weight:700;font-size:0.78rem">${t.gramosNecesarios}g</td>
               </tr>`).join('')}
           </table>
         </div>`).join('')}
 
-      <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-        color:var(--text-muted);margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)">
-        Cantidad de tinta para la orden completa (${orden.numeroCajas} cajas)
+      <!-- Cajas a producir (editables) -->
+      <div style="background:var(--surface-2);border-radius:10px;padding:16px;
+        border:1px solid var(--border);margin:16px 0">
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+          color:var(--text-muted);margin-bottom:12px">Cajas a producir</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group-flat" style="margin:0">
+            <label>N° cajas con prueba de color</label>
+            <input type="number" id="ord-prueba-cajas" min="1" placeholder="Ej: 6"
+              value="${orden.pruebaColor || ''}" oninput="actualizarCalculoOrden()">
+          </div>
+          <div class="form-group-flat" style="margin:0">
+            <label>N° cajas de la orden</label>
+            <input type="number" id="ord-total-cajas" min="1" placeholder="Ej: 850"
+              value="${orden.numeroCajas || ''}" oninput="actualizarCalculoOrden()">
+          </div>
+        </div>
       </div>
-      ${orden.pantones.map(p => `
-        <div style="margin-bottom:10px;padding:12px;background:var(--surface-2);border-radius:10px;border:1px solid var(--border)">
-          <strong style="font-size:0.82rem">${escHtml(p.nombreColor)}</strong>
-          <table style="width:100%;border-collapse:collapse;margin-top:6px">
-            ${p.tintasOrden.map(t => `
-              <tr>
-                <td style="padding:3px 0;color:var(--text);font-size:0.78rem">${escHtml(t.nombreTinta)}</td>
-                <td style="text-align:right;font-weight:800;color:var(--navy);font-size:0.82rem">${t.gramosCalculados}g</td>
-              </tr>`).join('')}
-          </table>
-        </div>`).join('')}
 
-      <div style="display:flex;gap:10px;margin-top:16px">
-        ${!orden.estado ? `
-          <button class="btn-primary" style="flex:1" onclick="cambiarEstadoOrden(${orden.id}, true)">
-            ✅ Marcar como Completada
-          </button>` : `
-          <button style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px;
-            background:var(--surface-2);cursor:pointer;font-family:inherit;font-size:.78rem"
-            onclick="cambiarEstadoOrden(${orden.id}, false)">
-            Reabrir orden
-          </button>`}
-      </div>`;
+      <!-- Sección de cantidad + costo de tinta para la orden -->
+      <div id="calculo-orden-section" style="display:none;margin-bottom:16px">
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+          color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)">
+          Cantidad de tinta a preparar para la orden
+        </div>
+        <div id="calculo-orden-resultado"></div>
+        <div id="calculo-costo-total" style="margin-top:12px;padding:12px;border-radius:8px;
+          background:var(--navy);color:#fff;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:0.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">Costo total estimado</span>
+          <span id="calculo-costo-valor" style="font-size:1.2rem;font-weight:800">$0</span>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn-primary" style="flex:1" onclick="actualizarCajasOrden(${orden.id})">
+          Guardar cajas
+        </button>
+        ${!orden.estado
+          ? `<button class="btn-primary" style="flex:1;background:linear-gradient(135deg,#16a34a,#15803d)"
+              onclick="cambiarEstadoOrden(${orden.id}, true)">✅ Completada</button>`
+          : `<button style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px;
+              background:var(--surface-2);cursor:pointer;font-family:inherit;font-size:.78rem"
+              onclick="cambiarEstadoOrden(${orden.id}, false)">Reabrir orden</button>`}
+      </div>
+      <div id="ord-upd-msg" class="config-msg" style="display:none;margin-top:8px"></div>`;
+
+    // Pasar los pantones al estado para el cálculo
+    _ordenDetalleActual = orden;
+
+    // Si ya tiene cajas, mostrar el cálculo directo
+    if (orden.pruebaColor > 0 && orden.numeroCajas > 0) {
+      actualizarCalculoOrden();
+    }
+
   } catch (e) {
     document.getElementById('modal-orden-body').innerHTML =
       `<div class="error-cell">Error: ${escHtml(e.message)}</div>`;
   }
 }
 
+// Orden actualmente abierta en el popup (para cálculo reactivo)
+let _ordenDetalleActual = null;
+
+// Recalcula en tiempo real cuando cambian las cajas
+function actualizarCalculoOrden() {
+  const cajasPrueba = parseFloat(document.getElementById('ord-prueba-cajas')?.value) || 0;
+  const cajasOrden  = parseFloat(document.getElementById('ord-total-cajas')?.value)  || 0;
+  const seccion     = document.getElementById('calculo-orden-section');
+  const resultado   = document.getElementById('calculo-orden-resultado');
+  const costoEl     = document.getElementById('calculo-costo-valor');
+  if (!seccion || !resultado || !_ordenDetalleActual) return;
+
+  if (!cajasPrueba || !cajasOrden) { seccion.style.display = 'none'; return; }
+  seccion.style.display = 'block';
+
+  let costoTotal = 0;
+
+  resultado.innerHTML = _ordenDetalleActual.pantones.map(p => {
+    const tintas = p.mezclaPrueba?.tintas || [];
+    if (!tintas.length) return '';
+    return `
+      <div style="margin-bottom:10px;padding:10px;background:var(--surface-2);
+        border-radius:8px;border:1px solid var(--border)">
+        <strong style="font-size:0.8rem">${escHtml(p.nombreColor)}</strong>
+        <table style="width:100%;border-collapse:collapse;margin-top:6px">
+          <thead>
+            <tr>
+              <th style="text-align:left;font-size:.65rem;font-weight:700;letter-spacing:.08em;
+                text-transform:uppercase;color:var(--text-muted);padding:3px 0">Tinta</th>
+              <th style="text-align:right;font-size:.65rem;font-weight:700;letter-spacing:.08em;
+                text-transform:uppercase;color:var(--text-muted);padding:3px 0">Gramos</th>
+              <th style="text-align:right;font-size:.65rem;font-weight:700;letter-spacing:.08em;
+                text-transform:uppercase;color:var(--text-muted);padding:3px 0">Costo/g</th>
+              <th style="text-align:right;font-size:.65rem;font-weight:700;letter-spacing:.08em;
+                text-transform:uppercase;color:var(--text-muted);padding:3px 0">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tintas.map(t => {
+              // Regla de tres: X = (cajasOrden × gramosBase) / cajasPrueba
+              const gramosOrden   = Math.round((cajasOrden * t.gramosNecesarios) / cajasPrueba);
+              const costoPorGramo = t.precioUnitario || 0;
+              const subtotal      = gramosOrden * costoPorGramo;
+              costoTotal += subtotal;
+              return `
+                <tr>
+                  <td style="padding:4px 0;font-size:0.78rem;color:var(--text)">${escHtml(t.nombreTinta)}</td>
+                  <td style="text-align:right;font-weight:700;font-size:0.78rem;color:var(--navy);
+                    padding:4px 0">${gramosOrden}g</td>
+                  <td style="text-align:right;font-size:0.72rem;color:var(--text-muted);padding:4px 0">
+                    $${costoPorGramo.toLocaleString('es-CO')}</td>
+                  <td style="text-align:right;font-weight:700;font-size:0.78rem;padding:4px 0">
+                    $${Math.round(subtotal).toLocaleString('es-CO')}</td>
+                </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }).join('');
+
+  if (costoEl) costoEl.textContent = '$' + Math.round(costoTotal).toLocaleString('es-CO');
+}
+
+// Guarda los valores de cajas en la orden existente
+async function actualizarCajasOrden(id) {
+  const cajasPrueba = parseInt(document.getElementById('ord-prueba-cajas')?.value) || 0;
+  const cajasOrden  = parseInt(document.getElementById('ord-total-cajas')?.value)  || 0;
+  const costoTotal  = parseFloat(document.getElementById('calculo-costo-valor')?.textContent.replace(/\D/g, '')) || 0;
+  const msg         = document.getElementById('ord-upd-msg');
+
+  if (!cajasPrueba || !cajasOrden) {
+    showModalMsg(msg, 'Ingresa ambos valores de cajas.', 'err'); return;
+  }
+
+  try {
+    const res = await apiFetch(`OrdenImpresion/${id}/cajas`, 'PUT', {
+      pruebaColor: cajasPrueba,
+      numeroCajas: cajasOrden,
+      costoTotal: costoTotal // TODO: Calcular el costo total
+    });
+    if (!res.ok) { showModalMsg(msg, 'No se pudo actualizar.', 'err'); return; }
+    showModalMsg(msg, 'Cajas guardadas correctamente.', 'ok');
+    cargarOrdenes();
+  } catch (e) { showModalMsg(msg, 'Error: ' + e.message, 'err'); }
+}
 async function cambiarEstadoOrden(id, nuevoEstado) {
   try {
     const res = await apiFetch(`OrdenImpresion/${id}/estado`, 'PUT', nuevoEstado);
@@ -814,17 +905,33 @@ async function cargarEmpresas() {
   lista.innerHTML = '<div class="loading-state">Cargando empresas...</div>';
   try {
     const res = await apiFetch('Empresa');
-    const empresas = await res.json();
-    if (!empresas.length) { lista.innerHTML = '<div class="no-data">No hay empresas registradas.</div>'; return; }
-    lista.innerHTML = empresas.map(e => `
-      <div class="empresa-item" onclick="verEmpresa(${e.id}, this)">
-        <div class="empresa-icon">${iniciales(e.nombreComercial)}</div>
-        <div>
-          <div class="empresa-name">${escHtml(e.nombreComercial)}</div>
-          <div class="empresa-nit">${e.telefono || ''}</div>
-        </div>
-      </div>`).join('');
+    allEmpresas = await res.json();
+    renderEmpresas(allEmpresas);
   } catch (e) { lista.innerHTML = `<div class="error-cell">Error: ${escHtml(e.message)}</div>`; }
+}
+
+function filtrarEmpresas() {
+  const q = document.getElementById('empresa-search')?.value.trim().toLowerCase() || '';
+  renderEmpresas(q ? allEmpresas.filter(e =>
+    (e.nombreComercial || '').toLowerCase().includes(q) ||
+    (e.telefono || '').toLowerCase().includes(q)
+  ) : allEmpresas);
+}
+
+function renderEmpresas(lista) {
+  const cont = document.getElementById('empresas-list');
+  if (!lista.length) {
+    cont.innerHTML = '<div class="no-data">Sin resultados.</div>';
+    return;
+  }
+  cont.innerHTML = lista.map(e => `
+    <div class="empresa-item" onclick="verEmpresa(${e.id}, this)">
+      <div class="empresa-icon">${iniciales(e.nombreComercial)}</div>
+      <div>
+        <div class="empresa-name">${escHtml(e.nombreComercial)}</div>
+        <div class="empresa-nit">${e.telefono || ''}</div>
+      </div>
+    </div>`).join('');
 }
 
 async function verEmpresa(id, el) {
@@ -841,9 +948,35 @@ async function verEmpresa(id, el) {
     const formulas = resForm ? (await resForm.json().catch(() => [])) : [];
     const exclusivas = formulas.filter ? formulas.filter(f => f.idEmpresa == id) : formulas;
 
+    // Leer informacion sin tilde (así viene del backend C#)
+    const infoActual = emp.informacion || emp.Informacion || emp.información || '';
+
     detail.innerHTML = `
       <div class="empresa-detail-name">${escHtml(emp.nombreComercial || emp.NombreComercial)}</div>
-      <div class="empresa-detail-nit">Tel: ${emp.telefono || '—'} · ${emp.informacion || ''}</div>
+      <div class="empresa-detail-nit">Tel: ${emp.telefono || '—'}</div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Información / Comentarios</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input
+            type="text"
+            id="info-empresa-${id}"
+            value="${escHtml(infoActual)}"
+            placeholder="Añade un comentario sobre esta empresa..."
+            style="flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:8px;
+                   background:var(--surface-2);font-family:inherit;font-size:0.82rem;
+                   color:var(--text);outline:none;"
+          />
+          <button
+            class="btn-primary"
+            style="white-space:nowrap;padding:9px 16px"
+            onclick="guardarInformacionEmpresa(${id})">
+            Guardar
+          </button>
+        </div>
+        <div id="info-empresa-msg-${id}" style="display:none;margin-top:6px;font-size:0.75rem"></div>
+      </div>
+
       ${exclusivas.length ? `
         <div class="detail-section">
           <div class="detail-section-title">Colores exclusivos (${exclusivas.length})</div>
@@ -858,6 +991,49 @@ async function verEmpresa(id, el) {
           </div>
         </div>` : '<div class="no-data" style="margin-top:20px">Sin colores exclusivos registrados.</div>'}`;
   } catch (e) { detail.innerHTML = `<div class="error-cell">Error: ${escHtml(e.message)}</div>`; }
+}
+
+async function guardarInformacionEmpresa(id) {
+  const input = document.getElementById(`info-empresa-${id}`);
+  const msgEl = document.getElementById(`info-empresa-msg-${id}`);
+  if (!input) return;
+
+  try {
+    // Primero traer la empresa completa para no pisar otros campos con el PUT
+    const resGet = await apiFetch(`Empresa/${id}`);
+    const emp    = await resGet.json();
+
+    // Actualizar solo el campo informacion
+    const body = {
+      ...emp,
+      informacion: input.value.trim()   // sin tilde — nombre exacto en la entidad C#
+    };
+
+    const res = await apiFetch(`Empresa/${id}`, 'PUT', body);
+
+    if (res.ok) {
+      if (msgEl) {
+        msgEl.textContent  = '✅ Información guardada.';
+        msgEl.style.color  = '#16a34a';
+        msgEl.style.display = 'block';
+        setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+      }
+    } else {
+      const data = await res.json().catch(() => ({}));
+      if (msgEl) {
+        msgEl.textContent  = '⚠ ' + (data.mensaje || 'No se pudo guardar.');
+        msgEl.style.color  = 'var(--red)';
+        msgEl.style.display = 'block';
+      }
+    }
+  } catch (error) {
+    if (msgEl) {
+      msgEl.textContent  = '⚠ Error de conexión.';
+      msgEl.style.color  = 'var(--red)';
+      msgEl.style.display = 'block';
+    }
+    console.error('Error al actualizar empresa:', error);
+  }
 }
 
 // ════════════════════════════════════════
@@ -884,8 +1060,8 @@ async function cargarInventario() {
       const el = t.stockActual === 0 ? 'Sin stock' : esBajo ? 'Bajo' : 'Normal';
       return `<tr>
         <td style="font-weight:600">${escHtml(t.nombreTinta)}</td>
-        <td class="${esBajo ? 'stock-low' : ''}">${Math.round(t.stockActual)}g</td>
-        <td>${Math.round(t.stockMinimo_alerta)}g</td>
+        <td class="${esBajo ? 'stock-low' : ''}">${Math.round(t.stockActual/1000)}kg</td>
+        <td>${Math.round(t.stockMinimo_alerta / 1000)}kg</td>
         <td>$${(t.precioUnitario || 0).toLocaleString('es-CO')}/g</td>
         <td><span class="stock-badge ${ec}">${el}</span></td>
       </tr>`;
@@ -898,12 +1074,14 @@ async function cargarInventario() {
 // ════════════════════════════════════════
 async function cargarBaseDatos() {
   const tbody = document.getElementById('tabla-basedatos');
-  tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">Cargando...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="8" class="loading-cell">Cargando...</td></tr>';
   try {
     const res      = await apiFetch('InventarioTinta');
     const registros = await res.json();
+    console.log(registros);
+    
     if (!registros.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">No hay registros. Usa el botón "+" para agregar.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="loading-cell">No hay registros. Usa el botón "+" para agregar.</td></tr>';
       return;
     }
     tbody.innerHTML = registros.map(r => `
@@ -911,19 +1089,76 @@ async function cargarBaseDatos() {
         <td style="font-family:monospace;font-size:.78rem">${escHtml(r.idInterno || '—')}</td>
         <td>${escHtml(r.lote || '—')}</td>
         <td style="font-weight:600">${escHtml(r.nombre || '—')}</td>
+        <td>${escHtml(r.proveedor || '—')}</td>
         <td>${escHtml(r.fabricante || '—')}</td>
-        <td>${escHtml(r.presentacion || '—')}</td>
+        <td>${escHtml(r.presentacion || '—')}kg</td>
         <td>$${(r.costo || 0).toLocaleString('es-CO')}</td>
         <td><button class="btn-danger" onclick="eliminarRegistroTinta(${r.id})">Eliminar</button></td>
       </tr>`).join('');
-  } catch (e) { tbody.innerHTML = `<tr><td colspan="7" class="error-cell">Error: ${escHtml(e.message)}</td></tr>`; }
+  } catch (e) { tbody.innerHTML = `<tr><td colspan="8" class="error-cell">Error: ${escHtml(e.message)}</td></tr>`; }
 }
 
-function abrirModalNuevaTinta() {
-  ['nt-idtinta','nt-idinterno','nt-lote','nt-nombre','nt-fabricante','nt-presentacion','nt-costo']
-    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  document.getElementById('nt-msg').style.display = 'none';
-  document.getElementById('modal-tinta').classList.add('open');
+async function cargarTintasBase() {
+    const select = document.getElementById('nt-idtinta');
+    if (!select) return;
+
+    select.innerHTML = '<option value="">Cargando tintas...</option>';
+
+    try {
+        const res = await apiFetch('TintaBase');
+        if (!res.ok) throw new Error('No se pudieron cargar las tintas base.');
+
+        const tintas = await res.json();
+
+        select.innerHTML = '<option value="">-- Selecciona una tinta --</option>';
+
+        if (!tintas || !tintas.length) {
+            select.innerHTML = '<option value="">No hay tintas disponibles</option>';
+            return;
+        }
+
+        // Ordenar alfabéticamente por nombre
+        tintas.sort((a, b) => (a.nombreTinta || '').localeCompare(b.nombreTinta || ''));
+
+        tintas.forEach(tinta => {
+            const option = document.createElement('option');
+            option.value = tinta.id;                    // ID para el backend
+            option.textContent = tinta.nombreTinta;     // Nombre visible al usuario
+            option.dataset.nombre = tinta.nombreTinta;  // Guardamos nombre para autocompletar
+            select.appendChild(option);
+        });
+
+        // Al seleccionar una tinta, autocompletar el campo "Nombre de la Tinta"
+        select.onchange = () => {
+            const seleccionada = select.options[select.selectedIndex];
+            const campoNombre  = document.getElementById('nt-nombre');
+            if (campoNombre && seleccionada.value) {
+                campoNombre.value = seleccionada.dataset.nombre || '';
+            } else if (campoNombre) {
+                campoNombre.value = '';
+            }
+        };
+
+    } catch (e) {
+        console.error('Error cargando tintas base:', e);
+        select.innerHTML = '<option value="">Error al cargar las tintas</option>';
+    }
+}
+
+async function abrirModalNuevaTinta() {
+    // Limpiar todos los campos
+    ['nt-idinterno','nt-lote','nt-nombre','nt-fabricante', 'nt-proveedor','nt-presentacion','nt-costo']
+        .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+
+    // Resetear select al estado inicial
+    const select = document.getElementById('nt-idtinta');
+    if (select) select.innerHTML = '<option value="">-- Selecciona una tinta --</option>';
+
+    document.getElementById('nt-msg').style.display = 'none';
+    document.getElementById('modal-tinta').classList.add('open');
+
+    // Cargar las tintas en el selector
+    await cargarTintasBase();
 }
 
 function cerrarModalTinta(e) {
@@ -932,23 +1167,70 @@ function cerrarModalTinta(e) {
 }
 
 async function guardarEntradaTinta() {
-  const msg = document.getElementById('nt-msg');
-  const dto = {
-    idTintaBase:  parseInt(document.getElementById('nt-idtinta').value) || 0,
-    idInterno:    document.getElementById('nt-idinterno').value.trim(),
-    lote:         document.getElementById('nt-lote').value.trim(),
-    nombre:       document.getElementById('nt-nombre').value.trim(),
-    fabricante:   document.getElementById('nt-fabricante').value.trim(),
-    presentacion: document.getElementById('nt-presentacion').value.trim(),
-    costo:        parseFloat(document.getElementById('nt-costo').value) || 0
-  };
-  if (!dto.nombre) { showModalMsg(msg, 'El nombre es obligatorio.', 'err'); return; }
-  try {
+
+    const msg = document.getElementById('nt-msg');
+    const idTintaBase = parseInt(
+        document.getElementById('nt-idtinta').value
+    );
+
+    // Validar que haya seleccionado una tinta
+    if (!idTintaBase) {
+        showModalMsg(
+            msg,
+            'Debes seleccionar una tinta base.',
+            'err'
+        );
+        return;
+    }
+    const dto = {
+
+        // ID obtenido automáticamente del nombre seleccionado
+        idTintaBase: idTintaBase,
+
+        idInterno:document.getElementById('nt-idinterno').value.trim(),
+
+        lote:document.getElementById('nt-lote').value.trim(),
+
+        nombre:document.getElementById('nt-nombre').value.trim(),
+
+        fabricante:document.getElementById('nt-fabricante').value.trim(),
+
+        proveedor:document.getElementById('nt-proveedor').value.trim(),
+
+        presentacion:document.getElementById('nt-presentacion').value.trim(),
+
+        costo:parseFloat(document.getElementById('nt-costo').value) || 0
+    };
+
+    // Validar nombre
+    if (!dto.nombre) {
+        showModalMsg(
+            msg,
+            'El nombre es obligatorio.',
+            'err'
+        );
+        return;
+    }
+    try {
     const res = await apiFetch('InventarioTinta', 'POST', dto);
-    if (!res.ok) { const d = await res.json().catch(()=>({})); showModalMsg(msg, d.mensaje || 'Error al guardar.', 'err'); return; }
+    
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      // Si ASP.NET devuelve errores de validación de ModelState
+      if (d.errors) {
+        const primerosErrores = Object.values(d.errors).flat().join(' ');
+        showModalMsg(msg, primerosErrores || 'Error de validación.', 'err');
+        return;
+      }
+      showModalMsg(msg, d.mensaje || d.title || 'Error al guardar.', 'err');
+      return;
+    }
+
     document.getElementById('modal-tinta').classList.remove('open');
     cargarBaseDatos();
-  } catch (e) { showModalMsg(msg, 'Error: ' + e.message, 'err'); }
+  } catch (e) {
+    showModalMsg(msg, 'Error: ' + e.message, 'err');
+  }
 }
 
 async function eliminarRegistroTinta(id) {

@@ -6,7 +6,7 @@ namespace Domain.Entities
     public class OrdenImpresion : BaseEntity
     {
         public int IdUsuario { get; set; }
-        public int NumeroOrden { get; set; }
+        public string NumeroOrden { get; set; }
         public DateTime FechaOrden { get; set; }
         public decimal VolumenTotal { get; set; }
 
@@ -18,5 +18,6 @@ namespace Domain.Entities
         public int PruebaColor { get; set; }
 
         public Usuario Usuario { get; set; }
+
     }
 }

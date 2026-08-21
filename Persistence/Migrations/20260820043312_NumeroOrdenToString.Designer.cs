@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence.Data;
 
@@ -11,9 +12,11 @@ using Persistence.Data;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(paginatintasContext))]
-    partial class paginatintasContextModelSnapshot : ModelSnapshot
+    [Migration("20260820043312_NumeroOrdenToString")]
+    partial class NumeroOrdenToString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,10 +140,7 @@ namespace Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<decimal>("Presentacion")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("Proveedor")
+                    b.Property<string>("Presentacion")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");

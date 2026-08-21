@@ -20,5 +20,6 @@ namespace API.Dtos
         public decimal GramosNecesarios { get; set; }  // ej: 437.5g
         public decimal StockActual { get; set; }
         public bool StockSuficiente { get; set; }
+        public decimal PrecioUnitario { get; set; } 
     }
 }

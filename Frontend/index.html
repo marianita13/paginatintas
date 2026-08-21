@@ -208,6 +208,16 @@
 
     <!-- ─── EMPRESAS ─── -->
     <div class="tab-panel" id="panel-empresas">
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
+        <div class="color-search-bar" style="margin-bottom:0;flex:1;min-width:220px">
+          <input type="text" id="empresa-search" placeholder="Buscar Empresa por nombre..." oninput="filtrarEmpresas()"/>
+          <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </span>
+        </div>
+      </div>
       <div class="empresas-layout">
         <div class="empresas-list" id="empresas-list">
           <div class="loading-state">Cargando empresas...</div>
@@ -286,6 +296,7 @@
                 <th>ID interno</th>
                 <th>N° de Lote</th>
                 <th>Nombre de la Tinta</th>
+                <th>Proveedor</th>
                 <th>Fabricante</th>
                 <th>Presentación</th>
                 <th>Costo de Tinta</th>
@@ -393,14 +404,18 @@
       <button class="modal-close" onclick="document.getElementById('modal-tinta').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-group-flat"><label>Tinta Base (ID)</label>
-        <input type="number" id="nt-idtinta" placeholder="ID de la tinta base"></div>
+      <div class="form-group-flat"><label>Tinta base</label>
+        <select id="nt-idtinta">
+            <option value="">Selecciona una tinta</option>
+        </select></div>
       <div class="form-group-flat"><label>ID Interno (N° empresa)</label>
         <input type="text" id="nt-idinterno" placeholder="Ej: CB-001"></div>
       <div class="form-group-flat"><label>N° de Lote</label>
         <input type="text" id="nt-lote" placeholder="Ej: LOT-2026-001"></div>
       <div class="form-group-flat"><label>Nombre de la Tinta</label>
         <input type="text" id="nt-nombre" placeholder="Ej: Yellow 012"></div>
+      <div class="form-group-flat"><label>Proveedor</label>
+        <input type="text" id="nt-proveedor" placeholder="Ej: Sun Chemical"></div>
       <div class="form-group-flat"><label>Fabricante</label>
         <input type="text" id="nt-fabricante" placeholder="Ej: Sun Chemical"></div>
       <div class="form-group-flat"><label>Presentación</label>
