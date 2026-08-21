@@ -37,6 +37,8 @@ builder.Services.AddDbContext<paginatintasContext>(options =>
 
 var app = builder.Build();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
@@ -65,8 +67,13 @@ using (var scope = app.Services.CreateScope())
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapGet("/health", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
 app.MapControllers();
 app.Run();
+
+public partial class Program
+{
+}
 
 // dotnet ef migrations add InitialCreate --project Persistence --startup-project API|x|
 // dotnet ef database update --project Persistence --startup-project API

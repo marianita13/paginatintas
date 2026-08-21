@@ -1,0 +1,10 @@
+.git
+.gitignore
+.vscode
+**/bin
+**/obj
+Frontend.zip
+Frontend/*.mwb
+*.user
+*.suo
+docs
