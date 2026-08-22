@@ -32,7 +32,11 @@ builder.Services.AddScoped<IMezclaService, MezclaService>();
 builder.Services.AddDbContext<paginatintasContext>(options =>
 {
     string connectionString = builder.Configuration.GetConnectionString("ConexMysql");
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+
+    options.UseMySql(
+        connectionString,
+        new MySqlServerVersion(new Version(8, 0, 0))
+    );
 });
 
 var app = builder.Build();

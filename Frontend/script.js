@@ -3,6 +3,13 @@
 // ════════════════════════════════════════
 const API_URL = '/api';
 
+// MYSQLHOST: mysql.railway.internal
+// MYSQLPORT: 3306
+// MYSQLDATABASE: railway
+// MYSQLUSER: root
+// MYSQLPASSWORD: ofdGxMnVHtQewtTGPaWNuAxxOWKFNprw
+// MYSQLURL: mysql://root:ofdGxMnVHtQewtTGPaWNuAxxOWKFNprw@mysql.railway.internal:3306/railway
+
 // ════════════════════════════════════════
 //  HELPERS DE ROL
 //  Roles del backend: "Administrador", "Operarios", "Admin2"

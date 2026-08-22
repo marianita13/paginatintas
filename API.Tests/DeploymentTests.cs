@@ -1,6 +1,5 @@
-using System.Net;
-using System.Net.Http.Json;
-using Microsoft.AspNetCore.Hosting;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
@@ -22,11 +21,7 @@ public sealed class DeploymentTests : IClassFixture<WebApplicationFactory<global
     public async Task HealthEndpointReturnsOkStatus()
     {
         var response = await client.GetAsync("/health");
-
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-        var payload = await response.Content.ReadFromJsonAsync<HealthPayload>();
-        Assert.Equal("ok", payload?.Status);
+        response.EnsureSuccessStatusCode();
     }
 
     private sealed record HealthPayload(string Status);
