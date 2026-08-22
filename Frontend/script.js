@@ -309,10 +309,10 @@ function showMainPage() {
       document.querySelector('.nav-item-basedatos').style.display  = 'flex';
     }
     // // Usuarios: solo Admin
-    if (rol === 'administrador') {
-      document.querySelector('.nav-item-admin').style.display = 'flex';
-      document.querySelector('.nav-item-empresas').style.display = 'flex';
-    }
+    // if (rol === 'administrador') {
+    //   document.querySelector('.nav-item-admin').style.display = 'flex';
+    //   document.querySelector('.nav-item-empresas').style.display = 'flex';
+    // }
     // // Empresas: Admin y Operarios (no Admin2)
     // if (rol === 'admin2') {
     //   const btnEmpresas = document.querySelector('[data-tab="empresas"]');
