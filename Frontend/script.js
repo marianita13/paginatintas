@@ -301,18 +301,18 @@ function showMainPage() {
     document.getElementById('user-initials').textContent   = ini;
     document.getElementById('user-role-label').textContent = currentUser.rol || '—';
 
-    // const rol = (currentUser.rol || '').toLowerCase();
+    const rol = (currentUser.rol || '').toLowerCase();
 
     // // Inventario y Base de Datos: Admin y Admin2
-    // if (rol === 'administrador' || rol === 'admin2') {
-    //   document.querySelector('.nav-item-inventario').style.display = 'flex';
-    //   document.querySelector('.nav-item-basedatos').style.display  = 'flex';
-    // }
+    if (rol === 'administrador' || rol === 'admin2') {
+      document.querySelector('.nav-item-inventario').style.display = 'flex';
+      document.querySelector('.nav-item-basedatos').style.display  = 'flex';
+    }
     // // Usuarios: solo Admin
-    // if (rol === 'administrador') {
-    //   document.querySelector('.nav-item-admin').style.display = 'flex';
-    //   document.querySelector('.nav-item-empresas').style.display = 'flex';
-    // }
+    if (rol === 'administrador') {
+      document.querySelector('.nav-item-admin').style.display = 'flex';
+      document.querySelector('.nav-item-empresas').style.display = 'flex';
+    }
     // // Empresas: Admin y Operarios (no Admin2)
     // if (rol === 'admin2') {
     //   const btnEmpresas = document.querySelector('[data-tab="empresas"]');
