@@ -10,7 +10,7 @@ namespace Persistence.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<OrdenImpresion> builder)
         {
-            builder.ToTable("ordenImpresion");
+            builder.ToTable("ordenimpresion");
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.VolumenTotal)

@@ -12,7 +12,7 @@ using Persistence.Data;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(paginatintasContext))]
-    [Migration("20260818182820_InitialCreate")]
+    [Migration("20260822092258_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -48,7 +48,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("IdTinta");
 
-                    b.ToTable("DetalleFormula", (string)null);
+                    b.ToTable("detalleformula", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Empresa", b =>
@@ -80,7 +80,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Empresa", (string)null);
+                    b.ToTable("empresa", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Formula", b =>
@@ -94,9 +94,6 @@ namespace Persistence.Migrations
                     b.Property<int?>("IdEmpresa")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IdOrdenImpresion")
-                        .HasColumnType("int");
-
                     b.Property<string>("NombreColor")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -106,9 +103,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("IdEmpresa");
 
-                    b.HasIndex("IdOrdenImpresion");
-
-                    b.ToTable("Formula", (string)null);
+                    b.ToTable("formula", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.InventarioTinta", b =>
@@ -145,19 +140,42 @@ namespace Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<string>("Presentacion")
+                    b.Property<decimal>("Presentacion")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Proveedor")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<int>("TintaBaseId")
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdTintaBase");
+
+                    b.ToTable("inventariotinta", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.OrdenFormula", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdFormula")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdOrdenImpresion")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TintaBaseId");
+                    b.HasIndex("IdFormula");
 
-                    b.ToTable("InventarioTinta", (string)null);
+                    b.HasIndex("IdOrdenImpresion");
+
+                    b.ToTable("ordenformula", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.OrdenImpresion", b =>
@@ -199,7 +217,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("IdUsuario");
 
-                    b.ToTable("OrdenImpresion", (string)null);
+                    b.ToTable("ordenimpresion", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
@@ -254,7 +272,7 @@ namespace Persistence.Migrations
                     b.HasIndex("Nombre")
                         .IsUnique();
 
-                    b.ToTable("Rol", (string)null);
+                    b.ToTable("rol", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.TintaBase", b =>
@@ -281,7 +299,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TintaBase", (string)null);
+                    b.ToTable("tintabase", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Usuario", b =>
@@ -322,7 +340,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("IdRol");
 
-                    b.ToTable("Usuario", (string)null);
+                    b.ToTable("usuario", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.DetalleFormula", b =>
@@ -350,24 +368,35 @@ namespace Persistence.Migrations
                         .WithMany("Formulas")
                         .HasForeignKey("IdEmpresa");
 
-                    b.HasOne("Domain.Entities.OrdenImpresion", "OrdenImpresion")
-                        .WithMany("Formulas")
-                        .HasForeignKey("IdOrdenImpresion");
-
                     b.Navigation("Empresa");
-
-                    b.Navigation("OrdenImpresion");
                 });
 
             modelBuilder.Entity("Domain.Entities.InventarioTinta", b =>
                 {
                     b.HasOne("Domain.Entities.TintaBase", "TintaBase")
-                        .WithMany()
-                        .HasForeignKey("TintaBaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("InventarioTintas")
+                        .HasForeignKey("IdTintaBase");
 
                     b.Navigation("TintaBase");
+                });
+
+            modelBuilder.Entity("Domain.Entities.OrdenFormula", b =>
+                {
+                    b.HasOne("Domain.Entities.Formula", "Formula")
+                        .WithMany()
+                        .HasForeignKey("IdFormula")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.OrdenImpresion", "OrdenImpresion")
+                        .WithMany()
+                        .HasForeignKey("IdOrdenImpresion")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Formula");
+
+                    b.Navigation("OrdenImpresion");
                 });
 
             modelBuilder.Entity("Domain.Entities.OrdenImpresion", b =>
@@ -413,11 +442,6 @@ namespace Persistence.Migrations
                     b.Navigation("DetalleFormulas");
                 });
 
-            modelBuilder.Entity("Domain.Entities.OrdenImpresion", b =>
-                {
-                    b.Navigation("Formulas");
-                });
-
             modelBuilder.Entity("Domain.Entities.Rol", b =>
                 {
                     b.Navigation("Usuarios");
@@ -426,6 +450,8 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.TintaBase", b =>
                 {
                     b.Navigation("DetalleFormulas");
+
+                    b.Navigation("InventarioTintas");
                 });
 
             modelBuilder.Entity("Domain.Entities.Usuario", b =>

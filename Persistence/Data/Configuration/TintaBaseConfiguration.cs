@@ -10,7 +10,7 @@ namespace Persistence.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<TintaBase> builder)
         {
-            builder.ToTable("tintaBase");
+            builder.ToTable("tintabase");
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.NombreTinta)

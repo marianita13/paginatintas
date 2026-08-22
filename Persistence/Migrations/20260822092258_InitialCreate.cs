@@ -16,7 +16,7 @@ namespace Persistence.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Empresa",
+                name: "empresa",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -32,12 +32,12 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Empresa", x => x.Id);
+                    table.PrimaryKey("PK_empresa", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Rol",
+                name: "rol",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -47,12 +47,12 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Rol", x => x.Id);
+                    table.PrimaryKey("PK_rol", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "TintaBase",
+                name: "tintabase",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -65,12 +65,33 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TintaBase", x => x.Id);
+                    table.PrimaryKey("PK_tintabase", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Usuario",
+                name: "formula",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    IdEmpresa = table.Column<int>(type: "int", nullable: true),
+                    NombreColor = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_formula", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_formula_empresa_IdEmpresa",
+                        column: x => x.IdEmpresa,
+                        principalTable: "empresa",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "usuario",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -86,18 +107,18 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Usuario", x => x.Id);
+                    table.PrimaryKey("PK_usuario", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Usuario_Rol_IdRol",
+                        name: "FK_usuario_rol_IdRol",
                         column: x => x.IdRol,
-                        principalTable: "Rol",
+                        principalTable: "rol",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "InventarioTinta",
+                name: "inventariotinta",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -111,25 +132,52 @@ namespace Persistence.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Fabricante = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Presentacion = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                    Proveedor = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Costo = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TintaBaseId = table.Column<int>(type: "int", nullable: false)
+                    Presentacion = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Costo = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InventarioTinta", x => x.Id);
+                    table.PrimaryKey("PK_inventariotinta", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_InventarioTinta_TintaBase_TintaBaseId",
-                        column: x => x.TintaBaseId,
-                        principalTable: "TintaBase",
+                        name: "FK_inventariotinta_tintabase_IdTintaBase",
+                        column: x => x.IdTintaBase,
+                        principalTable: "tintabase",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "detalleformula",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    IdFormula = table.Column<int>(type: "int", nullable: false),
+                    IdTinta = table.Column<int>(type: "int", nullable: false),
+                    Porcentaje = table.Column<decimal>(type: "decimal(10,6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_detalleformula", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_detalleformula_formula_IdFormula",
+                        column: x => x.IdFormula,
+                        principalTable: "formula",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_detalleformula_tintabase_IdTinta",
+                        column: x => x.IdTinta,
+                        principalTable: "tintabase",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "OrdenImpresion",
+                name: "ordenimpresion",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -146,11 +194,11 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrdenImpresion", x => x.Id);
+                    table.PrimaryKey("PK_ordenimpresion", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OrdenImpresion_Usuario_IdUsuario",
+                        name: "FK_ordenimpresion_usuario_IdUsuario",
                         column: x => x.IdUsuario,
-                        principalTable: "Usuario",
+                        principalTable: "usuario",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -174,97 +222,74 @@ namespace Persistence.Migrations
                 {
                     table.PrimaryKey("PK_RefreshToken", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RefreshToken_Usuario_UsuarioId",
+                        name: "FK_RefreshToken_usuario_UsuarioId",
                         column: x => x.UsuarioId,
-                        principalTable: "Usuario",
+                        principalTable: "usuario",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Formula",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    IdEmpresa = table.Column<int>(type: "int", nullable: true),
-                    IdOrdenImpresion = table.Column<int>(type: "int", nullable: true),
-                    NombreColor = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Formula", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Formula_Empresa_IdEmpresa",
-                        column: x => x.IdEmpresa,
-                        principalTable: "Empresa",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Formula_OrdenImpresion_IdOrdenImpresion",
-                        column: x => x.IdOrdenImpresion,
-                        principalTable: "OrdenImpresion",
-                        principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "DetalleFormula",
+                name: "ordenformula",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     IdFormula = table.Column<int>(type: "int", nullable: false),
-                    IdTinta = table.Column<int>(type: "int", nullable: false),
-                    Porcentaje = table.Column<decimal>(type: "decimal(10,6)", nullable: false)
+                    IdOrdenImpresion = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DetalleFormula", x => x.Id);
+                    table.PrimaryKey("PK_ordenformula", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DetalleFormula_Formula_IdFormula",
+                        name: "FK_ordenformula_formula_IdFormula",
                         column: x => x.IdFormula,
-                        principalTable: "Formula",
+                        principalTable: "formula",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DetalleFormula_TintaBase_IdTinta",
-                        column: x => x.IdTinta,
-                        principalTable: "TintaBase",
+                        name: "FK_ordenformula_ordenimpresion_IdOrdenImpresion",
+                        column: x => x.IdOrdenImpresion,
+                        principalTable: "ordenimpresion",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetalleFormula_IdFormula",
-                table: "DetalleFormula",
+                name: "IX_detalleformula_IdFormula",
+                table: "detalleformula",
                 column: "IdFormula");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetalleFormula_IdTinta",
-                table: "DetalleFormula",
+                name: "IX_detalleformula_IdTinta",
+                table: "detalleformula",
                 column: "IdTinta");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Formula_IdEmpresa",
-                table: "Formula",
+                name: "IX_formula_IdEmpresa",
+                table: "formula",
                 column: "IdEmpresa");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Formula_IdOrdenImpresion",
-                table: "Formula",
+                name: "IX_inventariotinta_IdTintaBase",
+                table: "inventariotinta",
+                column: "IdTintaBase");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ordenformula_IdFormula",
+                table: "ordenformula",
+                column: "IdFormula");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ordenformula_IdOrdenImpresion",
+                table: "ordenformula",
                 column: "IdOrdenImpresion");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InventarioTinta_TintaBaseId",
-                table: "InventarioTinta",
-                column: "TintaBaseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrdenImpresion_IdUsuario",
-                table: "OrdenImpresion",
+                name: "IX_ordenimpresion_IdUsuario",
+                table: "ordenimpresion",
                 column: "IdUsuario");
 
             migrationBuilder.CreateIndex(
@@ -273,20 +298,20 @@ namespace Persistence.Migrations
                 column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rol_Nombre",
-                table: "Rol",
+                name: "IX_rol_Nombre",
+                table: "rol",
                 column: "Nombre",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Usuario_Correo",
-                table: "Usuario",
+                name: "IX_usuario_Correo",
+                table: "usuario",
                 column: "Correo",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Usuario_IdRol",
-                table: "Usuario",
+                name: "IX_usuario_IdRol",
+                table: "usuario",
                 column: "IdRol");
         }
 
@@ -294,31 +319,34 @@ namespace Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DetalleFormula");
+                name: "detalleformula");
 
             migrationBuilder.DropTable(
-                name: "InventarioTinta");
+                name: "inventariotinta");
+
+            migrationBuilder.DropTable(
+                name: "ordenformula");
 
             migrationBuilder.DropTable(
                 name: "RefreshToken");
 
             migrationBuilder.DropTable(
-                name: "Formula");
+                name: "tintabase");
 
             migrationBuilder.DropTable(
-                name: "TintaBase");
+                name: "formula");
 
             migrationBuilder.DropTable(
-                name: "Empresa");
+                name: "ordenimpresion");
 
             migrationBuilder.DropTable(
-                name: "OrdenImpresion");
+                name: "empresa");
 
             migrationBuilder.DropTable(
-                name: "Usuario");
+                name: "usuario");
 
             migrationBuilder.DropTable(
-                name: "Rol");
+                name: "rol");
         }
     }
 }

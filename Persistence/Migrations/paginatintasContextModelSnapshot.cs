@@ -45,7 +45,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("IdTinta");
 
-                    b.ToTable("detalleFormula", (string)null);
+                    b.ToTable("detalleformula", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Empresa", b =>
@@ -149,7 +149,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("IdTintaBase");
 
-                    b.ToTable("inventarioTinta", (string)null);
+                    b.ToTable("inventariotinta", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.OrdenFormula", b =>
@@ -172,7 +172,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("IdOrdenImpresion");
 
-                    b.ToTable("ordenFormula", (string)null);
+                    b.ToTable("ordenformula", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.OrdenImpresion", b =>
@@ -214,7 +214,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("IdUsuario");
 
-                    b.ToTable("ordenImpresion", (string)null);
+                    b.ToTable("ordenimpresion", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
@@ -296,7 +296,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("tintaBase", (string)null);
+                    b.ToTable("tintabase", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Usuario", b =>
@@ -309,30 +309,35 @@ namespace Persistence.Migrations
 
                     b.Property<string>("Correo")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int>("IdRol")
                         .HasColumnType("int");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar(60)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("PrimerInicio")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RolId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RolId");
+                    b.HasIndex("Correo")
+                        .IsUnique();
 
-                    b.ToTable("Usuario");
+                    b.HasIndex("IdRol");
+
+                    b.ToTable("usuario", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.DetalleFormula", b =>
@@ -417,7 +422,7 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Domain.Entities.Rol", "Rol")
                         .WithMany("Usuarios")
-                        .HasForeignKey("RolId")
+                        .HasForeignKey("IdRol")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

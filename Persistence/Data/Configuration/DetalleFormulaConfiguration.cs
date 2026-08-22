@@ -9,7 +9,7 @@ namespace Persistence.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<DetalleFormula> builder)
         {
-            builder.ToTable("detalleFormula");
+            builder.ToTable("detalleformula");
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Porcentaje)

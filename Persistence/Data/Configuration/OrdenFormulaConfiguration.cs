@@ -9,7 +9,7 @@ namespace Persistence.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<OrdenFormula> builder)
         {
-            builder.ToTable("ordenFormula")
+            builder.ToTable("ordenformula")
             .HasKey(e => e.Id);
 
             builder.HasOne(e => e.Formula)
