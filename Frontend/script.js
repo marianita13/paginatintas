@@ -307,7 +307,6 @@ function showMainPage() {
     if (rol === 'administrador' || rol === 'admin2') {
       document.querySelector('.nav-item-inventario').style.display = 'flex';
       document.querySelector('.nav-item-basedatos').style.display  = 'flex';
-      document.querySelector('.nav-item-empresas').style.display = 'flex';
     }
     // Usuarios: solo Admin
     if (rol === 'administrador') {
