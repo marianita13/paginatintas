@@ -10,7 +10,7 @@ namespace Persistence.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Empresa> builder)
         {
-            builder.ToTable("Empresa");
+            builder.ToTable("empresa");
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.NombreComercial)

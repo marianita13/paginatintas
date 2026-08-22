@@ -10,7 +10,7 @@ namespace Persistence.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Formula> builder)
         {
-            builder.ToTable("Formula");
+            builder.ToTable("formula");
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.NombreColor)

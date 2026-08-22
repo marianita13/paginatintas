@@ -10,7 +10,7 @@ namespace Persistence.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Rol> builder)
         {
-            builder.ToTable("Rol");
+            builder.ToTable("rol");
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Nombre)

@@ -10,7 +10,7 @@ namespace Persistence.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<InventarioTinta> builder)
         {
-            builder.ToTable("InventarioTinta");
+            builder.ToTable("inventarioTinta");
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.IdInterno)
