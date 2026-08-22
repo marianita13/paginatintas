@@ -631,17 +631,13 @@ async function cargarOrdenes() {
   
   try {
     // 1. Cargar las 3 tablas en paralelo una sola vez
-    const [resOrd, resForm, resOf] = await Promise.all([
-      apiFetch('OrdenImpresion').catch(() => []),
-      apiFetch('Formula').catch(() => []),
-      apiFetch('OrdenFormula').catch(() => [])
-    ]);
+    const [ordenes, formulas, ordenFormulas] = await Promise.all([
+    apiFetch('OrdenImpresion').catch(() => []),
+    apiFetch('Formula').catch(() => []),
+    apiFetch('OrdenFormula').catch(() => [])
+  ]);
 
-    const ordenes = resOrd || [];
-    const formulas = resForm || [];
-    const ordenFormulas = resOf || [];
-
-    if (!ordenes.length) {
+    if (!ordenes || !ordenes.length) {
       tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">No hay órdenes registradas.</td></tr>';
       return;
     }
@@ -1262,7 +1258,7 @@ async function cargarUsuarios() {
         <td><div class="user-row-avatar">${iniciales(u.nombre)}</div></td>
         <td>${escHtml(u.nombre)}</td>
         <td>${escHtml(u.correo)}</td>
-        <td><span class="role-badge ${(u.rol||'').toLowerCase()==='administrador'?'admin':'user'}">${escHtml(u.rol||'—')}</span></td>
+        <td><span class="role-badge ${(u.rol||'').toLowerCase()==='administrador'?'admin2':'user'}">${escHtml(u.rol||'—')}</span></td>
         <td>${u.correo !== currentUser.correo
           ? `<button class="btn-danger" onclick="eliminarUsuario(${u.id},'${escHtml(u.nombre)}')">Eliminar</button>`
           : '<span style="font-size:.7rem;color:var(--text-muted)">(tú)</span>'}</td>
