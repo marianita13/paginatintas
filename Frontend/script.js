@@ -609,10 +609,10 @@ async function guardarOrden() {
       pruebaColor: 0,
       idsFormulas: ordenPantonesSeleccionados.map(p => p.id)
     });
-    if (!res.ok) {
-      const text = await res.text();
-      showModalMsg(msg, text || 'Error al guardar la orden.', 'err'); return;
-    }
+    // if (!res.ok) {
+    //   const text = await res.text();
+    //   showModalMsg(msg, text || 'Error al guardar la orden.', 'err'); return;
+    // }
     document.getElementById('modal-orden').classList.remove('open');
     ordenPantonesSeleccionados = [];
     const btnOrdenes = document.querySelector('[data-tab="ordenes"]');
@@ -710,19 +710,19 @@ async function verOrden(id) {
 
   try {
     const res   = await apiFetch(`OrdenImpresion/${id}`);
-    const orden = await res.json();
+    // const orden = await res.json();
 
-    document.getElementById('modal-orden-titulo').textContent = `Orden #${orden.numeroOrden}`;
+    document.getElementById('modal-orden-titulo').textContent = `Orden #${res.numeroOrden}`;
 
-    const estadoLabel = orden.estado ? 'Completado' : 'Prueba de color';
-    const estadoClass = orden.estado ? 'ok' : 'danger';
+    const estadoLabel = res.estado ? 'Completado' : 'Prueba de color';
+    const estadoClass = res.estado ? 'ok' : 'danger';
 
     document.getElementById('modal-orden-body').innerHTML = `
       <!-- Info cabecera -->
       <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
         <div style="flex:1">
           <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)">Fecha</div>
-          <div style="font-weight:600">${new Date(orden.fechaOrden).toLocaleDateString('es-CO')}</div>
+          <div style="font-weight:600">${new Date(res.fechaOrden).toLocaleDateString('es-CO')}</div>
         </div>
         <span class="stock-badge ${estadoClass}">${estadoLabel}</span>
       </div>
@@ -732,7 +732,7 @@ async function verOrden(id) {
         color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)">
         Pantones seleccionados — Proporciones para 100g
       </div>
-      ${orden.pantones.map(p => `
+      ${res.pantones.map(p => `
         <div style="margin-bottom:10px;padding:12px;background:var(--surface-2);border-radius:10px;border:1px solid var(--border)">
           <strong style="font-size:0.82rem">${escHtml(p.nombreColor)}</strong>
           <table style="width:100%;border-collapse:collapse;margin-top:6px">
@@ -753,12 +753,12 @@ async function verOrden(id) {
           <div class="form-group-flat" style="margin:0">
             <label>N° cajas con prueba de color</label>
             <input type="number" id="ord-prueba-cajas" min="1" placeholder="Ej: 6"
-              value="${orden.pruebaColor || ''}" oninput="actualizarCalculoOrden()">
+              value="${res.pruebaColor || ''}" oninput="actualizarCalculoOrden()">
           </div>
           <div class="form-group-flat" style="margin:0">
             <label>N° cajas de la orden</label>
             <input type="number" id="ord-total-cajas" min="1" placeholder="Ej: 850"
-              value="${orden.numeroCajas || ''}" oninput="actualizarCalculoOrden()">
+              value="${res.numeroCajas || ''}" oninput="actualizarCalculoOrden()">
           </div>
         </div>
       </div>
@@ -779,23 +779,23 @@ async function verOrden(id) {
 
       <!-- Acciones -->
       <div style="display:flex;gap:10px;margin-top:4px">
-        <button class="btn-primary" style="flex:1" onclick="actualizarCajasOrden(${orden.id})">
+        <button class="btn-primary" style="flex:1" onclick="actualizarCajasOrden(${res.id})">
           Guardar cajas
         </button>
-        ${!orden.estado
+        ${!res.estado
           ? `<button class="btn-primary" style="flex:1;background:linear-gradient(135deg,#16a34a,#15803d)"
-              onclick="cambiarEstadoOrden(${orden.id}, true)">✅ Completada</button>`
+              onclick="cambiarEstadoOrden(${res.id}, true)">✅ Completada</button>`
           : `<button style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px;
               background:var(--surface-2);cursor:pointer;font-family:inherit;font-size:.78rem"
-              onclick="cambiarEstadoOrden(${orden.id}, false)">Reabrir orden</button>`}
+              onclick="cambiarEstadoOrden(${res.id}, false)">Reabrir orden</button>`}
       </div>
       <div id="ord-upd-msg" class="config-msg" style="display:none;margin-top:8px"></div>`;
 
     // Pasar los pantones al estado para el cálculo
-    _ordenDetalleActual = orden;
+    _ordenDetalleActual = res;
 
     // Si ya tiene cajas, mostrar el cálculo directo
-    if (orden.pruebaColor > 0 && orden.numeroCajas > 0) {
+    if (res.pruebaColor > 0 && res.numeroCajas > 0) {
       actualizarCalculoOrden();
     }
 
@@ -912,8 +912,8 @@ async function cargarEmpresas() {
   lista.innerHTML = '<div class="loading-state">Cargando empresas...</div>';
   try {
     const res = await apiFetch('Empresa');
-    allEmpresas = await res.json();
-    renderEmpresas(allEmpresas);
+    // allEmpresas = await res.json();
+    renderEmpresas(res);
   } catch (e) { lista.innerHTML = `<div class="error-cell">Error: ${escHtml(e.message)}</div>`; }
 }
 
@@ -951,16 +951,15 @@ async function verEmpresa(id, el) {
       apiFetch(`Empresa/${id}`),
       apiFetch(`Formula?idEmpresa=${id}`).catch(() => null)
     ]);
-    const emp = await resEmp.json();
-    const formulas = resForm ? (await resForm.json().catch(() => [])) : [];
-    const exclusivas = formulas.filter ? formulas.filter(f => f.idEmpresa == id) : formulas;
+    const listaFormulas = Array.isArray(resForm) ? resForm : [];
+    const exclusivas = listaFormulas.filter(f => (f.idEmpresa ?? f.IdEmpresa) == id);
 
     // Leer informacion sin tilde (así viene del backend C#)
-    const infoActual = emp.informacion || emp.Informacion || emp.información || '';
+    const infoActual = resEmp.informacion || resEmp.Informacion || resEmp.información || '';
 
     detail.innerHTML = `
-      <div class="empresa-detail-name">${escHtml(emp.nombreComercial || emp.NombreComercial)}</div>
-      <div class="empresa-detail-nit">Tel: ${emp.telefono || '—'}</div>
+      <div class="empresa-detail-name">${escHtml(resEmp.nombreComercial || resEmp.NombreComercial)}</div>
+      <div class="empresa-detail-nit">Tel: ${resEmp.telefono || '—'}</div>
 
       <div class="detail-section">
         <div class="detail-section-title">Información / Comentarios</div>
@@ -1008,11 +1007,11 @@ async function guardarInformacionEmpresa(id) {
   try {
     // Primero traer la empresa completa para no pisar otros campos con el PUT
     const resGet = await apiFetch(`Empresa/${id}`);
-    const emp    = await resGet.json();
+    // const emp    = await resGet.json();
 
     // Actualizar solo el campo informacion
     const body = {
-      ...emp,
+      ...resGet,
       informacion: input.value.trim()   // sin tilde — nombre exacto en la entidad C#
     };
 
@@ -1026,9 +1025,9 @@ async function guardarInformacionEmpresa(id) {
         setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
       }
     } else {
-      const data = await res.json().catch(() => ({}));
+      // const data = await res.json().catch(() => ({}));
       if (msgEl) {
-        msgEl.textContent  = '⚠ ' + (data.mensaje || 'No se pudo guardar.');
+        msgEl.textContent  = '⚠ ' + (res.mensaje || 'No se pudo guardar.');
         msgEl.style.color  = 'var(--red)';
         msgEl.style.display = 'block';
       }
@@ -1052,16 +1051,16 @@ async function cargarInventario() {
   tbody.innerHTML = '<tr><td colspan="5" class="loading-cell">Cargando...</td></tr>';
   try {
     const res    = await apiFetch('TintaBase');
-    const tintas = await res.json();
-    const total  = tintas.length;
-    const bajo   = tintas.filter(t => t.stockActual <= t.stockMinimo_alerta).length;
-    const cero   = tintas.filter(t => t.stockActual === 0).length;
+    // const tintas = await res.json();
+    const total  = res.length;
+    const bajo   = res.filter(t => t.stockActual <= t.stockMinimo_alerta).length;
+    const cero   = res.filter(t => t.stockActual === 0).length;
     document.getElementById('inv-count').textContent = total + ' tintas';
     stats.innerHTML = `
       <div class="inv-stat-card"><div class="inv-stat-val">${total}</div><div class="inv-stat-label">Tintas base</div></div>
       <div class="inv-stat-card ${bajo ? 'alert' : ''}"><div class="inv-stat-val">${bajo}</div><div class="inv-stat-label">Stock bajo</div></div>
       <div class="inv-stat-card ${cero ? 'alert' : ''}"><div class="inv-stat-val">${cero}</div><div class="inv-stat-label">Sin stock</div></div>`;
-    tbody.innerHTML = tintas.map(t => {
+    tbody.innerHTML = res.map(t => {
       const esBajo = t.stockActual <= t.stockMinimo_alerta;
       const ec = t.stockActual === 0 ? 'danger' : esBajo ? 'warn' : 'ok';
       const el = t.stockActual === 0 ? 'Sin stock' : esBajo ? 'Bajo' : 'Normal';
@@ -1084,14 +1083,14 @@ async function cargarBaseDatos() {
   tbody.innerHTML = '<tr><td colspan="8" class="loading-cell">Cargando...</td></tr>';
   try {
     const res      = await apiFetch('InventarioTinta');
-    const registros = await res.json();
-    console.log(registros);
+    // const registros = await res.json();
+    console.log(res);
     
-    if (!registros.length) {
+    if (!res.length) {
       tbody.innerHTML = '<tr><td colspan="8" class="loading-cell">No hay registros. Usa el botón "+" para agregar.</td></tr>';
       return;
     }
-    tbody.innerHTML = registros.map(r => `
+    tbody.innerHTML = res.map(r => `
       <tr>
         <td style="font-family:monospace;font-size:.78rem">${escHtml(r.idInterno || '—')}</td>
         <td>${escHtml(r.lote || '—')}</td>
@@ -1115,19 +1114,19 @@ async function cargarTintasBase() {
         const res = await apiFetch('TintaBase');
         if (!res.ok) throw new Error('No se pudieron cargar las tintas base.');
 
-        const tintas = await res.json();
+        // const tintas = await res.json();
 
         select.innerHTML = '<option value="">-- Selecciona una tinta --</option>';
 
-        if (!tintas || !tintas.length) {
+        if (!res || !res.length) {
             select.innerHTML = '<option value="">No hay tintas disponibles</option>';
             return;
         }
 
         // Ordenar alfabéticamente por nombre
-        tintas.sort((a, b) => (a.nombreTinta || '').localeCompare(b.nombreTinta || ''));
+        res.sort((a, b) => (a.nombreTinta || '').localeCompare(b.nombreTinta || ''));
 
-        tintas.forEach(tinta => {
+        res.forEach(tinta => {
             const option = document.createElement('option');
             option.value = tinta.id;                    // ID para el backend
             option.textContent = tinta.nombreTinta;     // Nombre visible al usuario
@@ -1222,10 +1221,10 @@ async function guardarEntradaTinta() {
     const res = await apiFetch('InventarioTinta', 'POST', dto);
     
     if (!res.ok) {
-      const d = await res.json().catch(() => ({}));
+      // const d = await res.json().catch(() => ({}));
       // Si ASP.NET devuelve errores de validación de ModelState
-      if (d.errors) {
-        const primerosErrores = Object.values(d.errors).flat().join(' ');
+      if (res.errors) {
+        const primerosErrores = Object.values(res.errors).flat().join(' ');
         showModalMsg(msg, primerosErrores || 'Error de validación.', 'err');
         return;
       }
@@ -1257,8 +1256,8 @@ async function cargarUsuarios() {
   tbody.innerHTML = '<tr><td colspan="5" class="loading-cell">Cargando...</td></tr>';
   try {
     const res = await apiFetch('Usuario');
-    const usuarios = await res.json();
-    tbody.innerHTML = usuarios.map(u => `
+    // const usuarios = await res.json();
+    tbody.innerHTML = res.map(u => `
       <tr>
         <td><div class="user-row-avatar">${iniciales(u.nombre)}</div></td>
         <td>${escHtml(u.nombre)}</td>
@@ -1300,8 +1299,8 @@ async function crearUsuario() {
   if (!nombre || !correo || !password || !idRol) { showModalMsg(msg, 'Completa todos los campos.', 'err'); return; }
   try {
     const res  = await apiFetch('Usuario/register', 'POST', { nombre, correo, password, idRol });
-    const data = await res.json();
-    if (!res.ok) { showModalMsg(msg, data.mensaje || 'Error al crear usuario.', 'err'); return; }
+    // const data = await res.json();
+    if (!res.ok) { showModalMsg(msg, res.mensaje || 'Error al crear usuario.', 'err'); return; }
     document.getElementById('modal-usuario').classList.remove('open');
     cargarUsuarios();
   } catch (e) { showModalMsg(msg, 'Error: ' + e.message, 'err'); }
@@ -1331,7 +1330,7 @@ async function cambiarContrasena() {
   if (nueva.length < 6)               { showModalMsg(msg, 'Mínimo 6 caracteres.', 'err'); return; }
   try {
     const res = await apiFetch('Usuario/cambiar-password', 'PUT', { passwordActual: actual, passwordNueva: nueva });
-    if (!res.ok) { const d = await res.json().catch(()=>({})); showModalMsg(msg, d.mensaje||'Error.', 'err'); return; }
+    if (!res.ok) { showModalMsg(msg, res.mensaje||'Error.', 'err'); return; }
     showModalMsg(msg, 'Contraseña actualizada.', 'ok');
     ['pass-actual','pass-nueva','pass-confirmar'].forEach(id => document.getElementById(id).value = '');
   } catch (e) { showModalMsg(msg, 'Error: ' + e.message, 'err'); }
