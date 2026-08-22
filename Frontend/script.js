@@ -315,10 +315,10 @@ function showMainPage() {
       document.querySelector('.nav-item-empresas').style.display = 'flex';
     }
     // Empresas: Admin y Operarios (no Admin2)
-    // if (rol === 'admin2') {
-    //   const btnEmpresas = document.querySelector('[data-tab="empresas"]');
-    //   if (btnEmpresas) btnEmpresas.style.display = 'none';
-    // }
+    if (rol === 'admin2') {
+      const btnEmpresas = document.querySelector('[data-tab="empresas"]');
+      if (btnEmpresas) btnEmpresas.style.display = 'flex';
+    }
   }
 
   loginPage.style.opacity = '0'; loginPage.style.transition = 'opacity 0.4s ease';
