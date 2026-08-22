@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Persistence.Data;
 using Serilog;
+using MySqlConnector;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,15 @@ builder.Services.AddScoped<IMezclaService, MezclaService>();
 builder.Services.AddDbContext<paginatintasContext>(options =>
 {
     string connectionString = builder.Configuration.GetConnectionString("ConexMysql");
+
+    var mysqlBuilder = new MySqlConnectionStringBuilder(connectionString);
+
+Console.WriteLine("========== MYSQL DEBUG ==========");
+Console.WriteLine($"MYSQL HOST: {mysqlBuilder.Server}");
+Console.WriteLine($"MYSQL PORT: {mysqlBuilder.Port}");
+Console.WriteLine($"MYSQL DATABASE: {mysqlBuilder.Database}");
+Console.WriteLine($"MYSQL USER: {mysqlBuilder.UserID}");
+Console.WriteLine("=================================");
 
     options.UseMySql(
         connectionString,
