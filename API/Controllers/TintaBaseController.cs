@@ -7,6 +7,7 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using API.Services;
 
 namespace API.Controllers;
 public class TintaBaseController: BaseController
@@ -63,16 +64,24 @@ public class TintaBaseController: BaseController
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<TintaBaseDto>> Put(int id, [FromBody] TintaBaseDto TintaBaseDto)
+        public async Task<IActionResult> Put(int id, [FromBody] TintaBaseDto TintaBaseDto)
         {
             if(TintaBaseDto == null)
             {
+                return BadRequest();
+            }
+
+            var tintaExistente = await _unitOfWork.TintaBases.GetByIdAsync(id);
+            if (tintaExistente == null)
+            {
                 return NotFound();
             }
-            var entidades = _mapper.Map<TintaBase>(TintaBaseDto);
-            _unitOfWork.TintaBases.Update(entidades);
+            tintaExistente.StockActual = TintaBaseDto.StockActual;
+            tintaExistente.StockMinimo_alerta = TintaBaseDto.StockMinimo_alerta;
+            tintaExistente.PrecioUnitario = TintaBaseDto.PrecioUnitario;
+            _unitOfWork.TintaBases.Update(tintaExistente);
             await _unitOfWork.SaveAsync();
-            return TintaBaseDto;
+            return Ok(TintaBaseDto);
         }
 
         [HttpDelete("{id}")]
@@ -88,5 +97,12 @@ public class TintaBaseController: BaseController
             _unitOfWork.TintaBases.Remove(entidad);
             await _unitOfWork.SaveAsync();
             return NoContent();
+        }
+
+        [HttpGet("probar-correo")]
+        public async Task<IActionResult> ProbarCorreo([FromServices] IEmailService emailService)
+        {
+            await emailService.EnviarCorreoStockBajoAsync("Tinta de prueba", 100, 500);
+            return Ok("Correo enviado");
         }
     }

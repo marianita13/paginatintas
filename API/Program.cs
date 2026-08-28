@@ -29,16 +29,11 @@ builder.Services.ConfigureCors();
 builder.Services.AddAplicationServices();
 builder.Services.AddJwt(builder.Configuration);
 builder.Services.AddScoped<IMezclaService, MezclaService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHostedService<StockAlertaService>();
 
 var connectionString = builder.Configuration.GetConnectionString("ConexMysql");
 var mysqlBuilder = new MySqlConnectionStringBuilder(connectionString);
-
-Console.WriteLine("========== MYSQL DEBUG ==========");
-Console.WriteLine($"MYSQL HOST: {mysqlBuilder.Server}");
-Console.WriteLine($"MYSQL PORT: {mysqlBuilder.Port}");
-Console.WriteLine($"MYSQL DATABASE: {mysqlBuilder.Database}");
-Console.WriteLine($"MYSQL USER: {mysqlBuilder.UserID}");
-Console.WriteLine("=================================");
 
 builder.Services.AddDbContext<paginatintasContext>(options =>
 {

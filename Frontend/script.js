@@ -1,7 +1,9 @@
 // ════════════════════════════════════════
 //  CONFIGURACIÓN
 // ════════════════════════════════════════
-const API_URL = '/api';
+const API_URL = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+  ? 'http://localhost:5115/api' 
+  : '/api';
 
 // MYSQLHOST: mysql.railway.internal
 // MYSQLPORT: 3306
@@ -24,7 +26,8 @@ function esOperario()  { return (currentUser?.rol || '').toLowerCase() === 'oper
 let token       = localStorage.getItem('token') || null;
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 let allColors   = [];
-let allEmpresas = []; // cache para filtrado local
+let allEmpresas = [];
+let allOrdenes  = []; // cache para filtrado local // cache para filtrado local
 
 // Diccionario Pantone → HEX
 let pantoneMap  = {};
@@ -307,6 +310,7 @@ function showMainPage() {
     if (rol === 'administrador' || rol === 'admin2') {
       document.querySelector('.nav-item-inventario').style.display = 'flex';
       document.querySelector('.nav-item-basedatos').style.display  = 'flex';
+      document.querySelector('.nav-item-usuarios').style.display   = 'flex';
     }
     // // Usuarios: solo Admin
     // if (rol === 'administrador') {
@@ -629,74 +633,90 @@ async function guardarOrden() {
 async function cargarOrdenes() {
   const tbody = document.getElementById('tabla-ordenes');
   tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">Cargando...</td></tr>';
-  
   try {
-    // 1. Cargar las 3 tablas en paralelo una sola vez
     const [ordenes, formulas, ordenFormulas] = await Promise.all([
-    apiFetch('OrdenImpresion').catch(() => []),
-    apiFetch('Formula').catch(() => []),
-    apiFetch('OrdenFormula').catch(() => [])
-  ]);
-
+      apiFetch('OrdenImpresion').catch(() => []),
+      apiFetch('Formula').catch(() => []),
+      apiFetch('OrdenFormula').catch(() => [])
+    ]);
     if (!ordenes || !ordenes.length) {
       tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">No hay órdenes registradas.</td></tr>';
       return;
     }
-
-    // 2. Crear un mapa para buscar fórmulas por su ID rápidamente
     const formulaMap = Object.fromEntries(formulas.map(f => [f.id ?? f.Id, f]));
-
-    // 3. Renderizar las filas de la tabla
-    const rows = ordenes.map(o => {
-      const idOrden = o.id ?? o.Id;
-
-      // Filtrar las relaciones de OrdenFormula asociadas a esta Orden de Impresión
+    
+    allOrdenes = ordenes.map(o => {
+      const idOrden = o.id;
       const relacionesDeEstaOrden = ordenFormulas.filter(of => {
         const fkOrden = of.idOrdenImpresion ?? of.IdOrdenImpresion ?? of.idOrden ?? of.IdOrden;
         return fkOrden == idOrden;
+        
       });
-
-      // Mapear los círculos de colores de cada fórmula encontrada
-      let pantonesDots = relacionesDeEstaOrden.map(of => {
+      const pantonesDots = relacionesDeEstaOrden.map(of => {
         const idFormula = of.idFormula ?? of.IdFormula;
         const f = formulaMap[idFormula];
         if (!f) return '';
-
         const hex = resolverHex(f);
         const nombreColor = f.nombreColor ?? f.NombreColor ?? '';
-        return `<span title="${escHtml(nombreColor)}" style="width:18px;height:18px;border-radius:4px;
-          background:${hex};display:inline-block;border:1px solid rgba(0,0,0,.1)"></span>`;
-      }).filter(Boolean).join(' ');
-
-      if (!pantonesDots) pantonesDots = '—';
-
-      const estado = o.estado ?? o.Estado;
-      const estadoClass = estado ? 'ok' : 'danger';
-      const estadoLabel = estado ? 'Completado' : 'Prueba de color';
-
-      const numeroOrden = o.numeroOrden ?? o.NumeroOrden;
-      const fechaOrden = o.fechaOrden ?? o.FechaOrden;
-      const pruebaColor = o.pruebaColor ?? o.PruebaColor ?? 0;
-      const numeroCajas = o.numeroCajas ?? o.NumeroCajas ?? 0;
-      const costoTotal = o.costoTotal ?? o.CostoTotal ?? 0;
-
-      return `<tr style="cursor:pointer" onclick="verOrden(${idOrden})">
-        <td style="font-weight:700">#${numeroOrden}</td>
-        <td>${new Date(fechaOrden).toLocaleDateString('es-CO')}</td>
-        <td><div style="display:flex;gap:4px;flex-wrap:wrap">${pantonesDots}</div></td>
-        <td>${pruebaColor}</td>
-        <td>${numeroCajas}</td>
-        <td>$${costoTotal.toLocaleString('es-CO')}</td>
-        <td><span class="stock-badge ${estadoClass}">${estadoLabel}</span></td>
-      </tr>`;
+        return `<span title="${escHtml(nombreColor)}" style="width:18px;height:18px;border-radius:4px;background:${hex};display:inline-block;border:1px solid rgba(0,0,0,.1)"></span>`;
+      }).filter(Boolean).join(' ') || '—';
+      return { ...o, _pantonesDots: pantonesDots };
     });
-
-    tbody.innerHTML = rows.join('');
+    renderOrdenes(allOrdenes);
   } catch (e) {
     console.error('Error en cargarOrdenes:', e);
     tbody.innerHTML = `<tr><td colspan="7" class="error-cell">Error: ${escHtml(e.message)}</td></tr>`;
   }
 }
+
+function renderOrdenes(lista) {
+  const tbody = document.getElementById('tabla-ordenes');
+  if (!lista.length) { tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">Sin resultados.</td></tr>'; return; }
+  tbody.innerHTML = lista.map(o => {
+    
+    const idOrden     = o.id;
+    const estado      = o.estado;
+    const estadoClass = estado ? 'ok' : 'danger';
+    const estadoLabel = estado ? 'Completado' : 'Prueba de color';
+    const numeroOrden = o.numeroOrden;
+    const fechaOrden  = o.fechaOrden;
+    const pruebaColor = o.pruebaColor ?? 0;
+    const numeroCajas = o.numeroCajas ?? 0;
+    const costoTotal  = o.costoTotal  ?? 0;
+    return `<tr style="cursor:pointer" onclick="verOrden(${idOrden})">
+      <td style="font-weight:700">#${numeroOrden}</td>
+      <td>${new Date(fechaOrden).toLocaleDateString('es-CO')}</td>
+      <td><div style="display:flex;gap:4px;flex-wrap:wrap">${o._pantonesDots}</div></td>
+      <td>${pruebaColor}</td>
+      <td>${numeroCajas}</td>
+      <td>$${costoTotal.toLocaleString('es-CO', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0
+})}</td>
+      <td><span class="stock-badge ${estadoClass}">${estadoLabel}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarOrdenes() {
+  const q     = (document.getElementById('orden-search-num')?.value || '').trim().toLowerCase();
+  const fecha = document.getElementById('orden-search-fecha')?.value || '';
+  const filtradas = allOrdenes.filter(o => {
+    const numero     = String(o.numeroOrden ?? '').toLowerCase();
+    const fechaOrden =o.fechaOrden.split('T')[0];
+    return (!q || numero.includes(q)) && (!fecha || fechaOrden === fecha);
+  });
+  renderOrdenes(filtradas);
+}
+
+function limpiarFiltrosOrdenes() {
+  const num   = document.getElementById('orden-search-num');
+  const fecha = document.getElementById('orden-search-fecha');
+  if (num)   num.value   = '';
+  if (fecha) fecha.value = '';
+  renderOrdenes(allOrdenes);
+}
+
 
 // Ver detalle de una orden existente (popup completo)
 async function verOrden(id) {
@@ -706,16 +726,13 @@ async function verOrden(id) {
   document.getElementById('modal-orden').classList.add('open');
 
   try {
-    const res   = await apiFetch(`OrdenImpresion/${id}`);
-    // const orden = await res.json();
-
+    const res = await apiFetch(`OrdenImpresion/${id}`);
     document.getElementById('modal-orden-titulo').textContent = `Orden #${res.numeroOrden}`;
 
     const estadoLabel = res.estado ? 'Completado' : 'Prueba de color';
     const estadoClass = res.estado ? 'ok' : 'danger';
 
     document.getElementById('modal-orden-body').innerHTML = `
-      <!-- Info cabecera -->
       <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
         <div style="flex:1">
           <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)">Fecha</div>
@@ -724,7 +741,6 @@ async function verOrden(id) {
         <span class="stock-badge ${estadoClass}">${estadoLabel}</span>
       </div>
 
-      <!-- Pantones — tintas a 100g -->
       <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
         color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)">
         Pantones seleccionados — Proporciones para 100g
@@ -741,9 +757,7 @@ async function verOrden(id) {
           </table>
         </div>`).join('')}
 
-      <!-- Cajas a producir (editables) -->
-      <div style="background:var(--surface-2);border-radius:10px;padding:16px;
-        border:1px solid var(--border);margin:16px 0">
+      <div style="background:var(--surface-2);border-radius:10px;padding:16px;border:1px solid var(--border);margin:16px 0">
         <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
           color:var(--text-muted);margin-bottom:12px">Cajas a producir</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -760,47 +774,36 @@ async function verOrden(id) {
         </div>
       </div>
 
-      <!-- Sección de cantidad + costo de tinta para la orden -->
       <div id="calculo-orden-section" style="display:none;margin-bottom:16px">
         <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
           color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)">
           Cantidad de tinta a preparar para la orden
         </div>
         <div id="calculo-orden-resultado"></div>
-        <div id="calculo-costo-total" style="margin-top:12px;padding:12px;border-radius:8px;
-          background:var(--navy);color:#fff;display:flex;justify-content:space-between;align-items:center">
+        <div style="margin-top:12px;padding:12px;border-radius:8px;background:var(--navy);color:#fff;
+          display:flex;justify-content:space-between;align-items:center">
           <span style="font-size:0.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">Costo total estimado</span>
           <span id="calculo-costo-valor" style="font-size:1.2rem;font-weight:800">$0</span>
         </div>
       </div>
 
-      <!-- Acciones -->
       <div style="display:flex;gap:10px;margin-top:4px">
-        <button class="btn-primary" style="flex:1" onclick="actualizarCajasOrden(${res.id})">
-          Guardar cajas
+        <button class="btn-primary" style="flex:1;background:linear-gradient(135deg,#16a34a,#15803d)"
+          onclick="guardarYCompletar(${res.id})">
+          ✅ Guardar y completar
         </button>
-        ${!res.estado
-          ? `<button class="btn-primary" style="flex:1;background:linear-gradient(135deg,#16a34a,#15803d)"
-              onclick="cambiarEstadoOrden(${res.id}, true)">✅ Completada</button>`
-          : `<button style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px;
-              background:var(--surface-2);cursor:pointer;font-family:inherit;font-size:.78rem"
-              onclick="cambiarEstadoOrden(${res.id}, false)">Reabrir orden</button>`}
       </div>
       <div id="ord-upd-msg" class="config-msg" style="display:none;margin-top:8px"></div>`;
 
-    // Pasar los pantones al estado para el cálculo
     _ordenDetalleActual = res;
-
-    // Si ya tiene cajas, mostrar el cálculo directo
-    if (res.pruebaColor > 0 && res.numeroCajas > 0) {
-      actualizarCalculoOrden();
-    }
+    if (res.pruebaColor > 0 && res.numeroCajas > 0) actualizarCalculoOrden();
 
   } catch (e) {
     document.getElementById('modal-orden-body').innerHTML =
       `<div class="error-cell">Error: ${escHtml(e.message)}</div>`;
   }
 }
+
 
 // Orden actualmente abierta en el popup (para cálculo reactivo)
 let _ordenDetalleActual = null;
@@ -865,32 +868,44 @@ function actualizarCalculoOrden() {
   if (costoEl) costoEl.textContent = '$' + Math.round(costoTotal).toLocaleString('es-CO');
 }
 
-// Guarda los valores de cajas en la orden existente
-async function actualizarCajasOrden(id) {
+// Guarda cajas + costo + marca como completada en una sola acción
+async function guardarYCompletar(id) {
   const cajasPrueba = parseInt(document.getElementById('ord-prueba-cajas')?.value) || 0;
   const cajasOrden  = parseInt(document.getElementById('ord-total-cajas')?.value)  || 0;
-  const costoTotal  = parseFloat(document.getElementById('calculo-costo-valor')?.textContent.replace(/\D/g, '')) || 0;
   const msg         = document.getElementById('ord-upd-msg');
 
   if (!cajasPrueba || !cajasOrden) {
     showModalMsg(msg, 'Ingresa ambos valores de cajas.', 'err'); return;
   }
 
+  // Leer costo total del display calculado
+  const costoText  = document.getElementById('calculo-costo-valor')?.textContent || '0';
+  const costoTotal = parseInt(costoText.replace(/\D/g, ''), 10);
+
   try {
-    const res = await apiFetch(`OrdenImpresion/${id}/cajas`, 'PUT', {
+    // 1. Guardar cajas y costo
+    const r1 = await apiFetch(`OrdenImpresion/${id}/cajas`, 'PUT', {
       pruebaColor: cajasPrueba,
       numeroCajas: cajasOrden,
-      costoTotal: costoTotal // TODO: Calcular el costo total
+      costoTotal:  costoTotal
     });
-    if (!res.ok) { showModalMsg(msg, 'No se pudo actualizar.', 'err'); return; }
-    showModalMsg(msg, 'Cajas guardadas correctamente.', 'ok');
+    if (r1?.error || !r1) { showModalMsg(msg, 'No se pudo actualizar las cajas.', 'err'); return; }
+
+    // 2. Marcar como completada
+    const r2 = await apiFetch(`OrdenImpresion/${id}/estado`, 'PUT', true);
+    if (r2?.error || !r2) { showModalMsg(msg, 'Cajas guardadas pero no se pudo completar.', 'err'); return; }
+
+    document.getElementById('modal-orden').classList.remove('open');
+    cambiarEstadoOrden(id, true); // actualizar estado en la tabla
     cargarOrdenes();
   } catch (e) { showModalMsg(msg, 'Error: ' + e.message, 'err'); }
 }
+
+
 async function cambiarEstadoOrden(id, nuevoEstado) {
   try {
     const res = await apiFetch(`OrdenImpresion/${id}/estado`, 'PUT', nuevoEstado);
-    if (!res.ok) { alert('No se pudo cambiar el estado.'); return; }
+    if (res?.error || !res) { alert('No se pudo cambiar el estado.'); return; }
     document.getElementById('modal-orden').classList.remove('open');
     cargarOrdenes();
   } catch (e) { alert('Error: ' + e.message); }
@@ -955,8 +970,7 @@ async function verEmpresa(id, el) {
     const infoActual = resEmp.informacion || resEmp.Informacion || resEmp.información || '';
 
     detail.innerHTML = `
-      <div class="empresa-detail-name">${escHtml(resEmp.nombreComercial || resEmp.NombreComercial)}</div>
-      <div class="empresa-detail-nit">Tel: ${resEmp.telefono || '—'}</div>
+      <div class="empresa-detail-name">${escHtml(resEmp.nombreComercial || resEmp.NombreComercial)}</div> 
 
       <div class="detail-section">
         <div class="detail-section-title">Información / Comentarios</div>
@@ -978,43 +992,27 @@ async function verEmpresa(id, el) {
           </button>
         </div>
         <div id="info-empresa-msg-${id}" style="display:none;margin-top:6px;font-size:0.75rem"></div>
-      </div>
-
-      ${exclusivas.length ? `
-        <div class="detail-section">
-          <div class="detail-section-title">Colores exclusivos (${exclusivas.length})</div>
-          <div class="empresa-colores-grid">
-            ${exclusivas.map(f => {
-              const hex = resolverHex(f);
-              return `<div class="color-chip" onclick="abrirModalMezcla(${f.id},'${escHtml(f.nombreColor)}','${hex}')">
-                <div class="chip-swatch" style="background:${hex}"></div>
-                <div class="chip-info"><div class="chip-name">${escHtml(f.nombreColor)}</div></div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>` : '<div class="no-data" style="margin-top:20px">Sin colores exclusivos registrados.</div>'}`;
+      </div>`;
   } catch (e) { detail.innerHTML = `<div class="error-cell">Error: ${escHtml(e.message)}</div>`; }
 }
 
 async function guardarInformacionEmpresa(id) {
   const input = document.getElementById(`info-empresa-${id}`);
   const msgEl = document.getElementById(`info-empresa-msg-${id}`);
-  if (!input) return;
 
   try {
     // Primero traer la empresa completa para no pisar otros campos con el PUT
     const resGet = await apiFetch(`Empresa/${id}`);
-    // const emp    = await resGet.json();
 
     // Actualizar solo el campo informacion
     const body = {
       ...resGet,
-      informacion: input.value.trim()   // sin tilde — nombre exacto en la entidad C#
+      Información: input.value.trim()   // sin tilde — nombre exacto en la entidad C#
     };
 
     const res = await apiFetch(`Empresa/${id}`, 'PUT', body);
 
-    if (res.ok) {
+    if (res && (res.id || res.Información || !res.error)) {
       if (msgEl) {
         msgEl.textContent  = '✅ Información guardada.';
         msgEl.style.color  = '#16a34a';
@@ -1045,7 +1043,7 @@ async function guardarInformacionEmpresa(id) {
 async function cargarInventario() {
   const tbody = document.getElementById('tabla-inventario');
   const stats = document.getElementById('inv-stats');
-  tbody.innerHTML = '<tr><td colspan="5" class="loading-cell">Cargando...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" class="loading-cell">Cargando...</td></tr>';
   try {
     const res    = await apiFetch('TintaBase');
     // const tintas = await res.json();
@@ -1063,24 +1061,72 @@ async function cargarInventario() {
       const el = t.stockActual === 0 ? 'Sin stock' : esBajo ? 'Bajo' : 'Normal';
       return `<tr>
         <td style="font-weight:600">${escHtml(t.nombreTinta)}</td>
-        <td class="${esBajo ? 'stock-low' : ''}">${Math.round(t.stockActual/1000)}kg</td>
-        <td>${Math.round(t.stockMinimo_alerta / 1000)}kg</td>
+        <td class="${esBajo ? 'stock-low' : ''}">${t.stockActual/1000}kg</td>
+        <td>${t.stockMinimo_alerta / 1000}kg</td>
         <td>$${(t.precioUnitario || 0).toLocaleString('es-CO')}/g</td>
         <td><span class="stock-badge ${ec}">${el}</span></td>
+        <td><button class="btn-primary" style="padding:5px 12px;font-size:.72rem"
+          onclick="abrirEditarTinta(${t.id}, '${escHtml(t.nombreTinta)}', ${t.stockActual}, ${t.stockMinimo_alerta}, ${t.precioUnitario || 0})">
+          ✏ Editar
+        </button></td>
       </tr>`;
-    }).join('') || '<tr><td colspan="5" class="loading-cell">No hay tintas.</td></tr>';
+    }).join('') || '<tr><td colspan="6" class="loading-cell">No hay tintas.</td></tr>';
   } catch (e) { tbody.innerHTML = `<tr><td colspan="5" class="error-cell">Error: ${escHtml(e.message)}</td></tr>`; }
 }
 
 // ════════════════════════════════════════
 //  BASE DE DATOS
 // ════════════════════════════════════════
+// ════════════════════════════════════════
+//  EDITAR TINTA BASE (modal)
+// ════════════════════════════════════════
+let _editarTintaId = null;
+
+function abrirEditarTinta(id, nombre, stockActual, stockMinimo, precio) {
+  _editarTintaId = id;
+  document.getElementById('editar-tinta-titulo').textContent = `Editar — ${nombre}`;
+  document.getElementById('et-stock-actual').value  = stockActual/1000;
+  document.getElementById('et-stock-minimo').value  = stockMinimo/1000;
+  document.getElementById('et-precio').value        = precio;
+  document.getElementById('et-msg').style.display   = 'none';
+  document.getElementById('modal-editar-tinta').classList.add('open');
+}
+
+function cerrarModalEditarTinta(e) {
+  if (e.target === document.getElementById('modal-editar-tinta'))
+    document.getElementById('modal-editar-tinta').classList.remove('open');
+}
+
+async function guardarEdicionTinta() {
+  const msg         = document.getElementById('et-msg');
+  const stockActual = parseFloat(document.getElementById('et-stock-actual').value);
+  const stockMinimo = parseFloat(document.getElementById('et-stock-minimo').value);
+  const precio      = parseFloat(document.getElementById('et-precio').value);
+  const nombreTinta = document.getElementById('editar-tinta-titulo').textContent.replace('Editar — ', '').trim();
+
+  if (isNaN(stockActual) || isNaN(stockMinimo) || isNaN(precio)) {
+    showModalMsg(msg, 'Completa todos los campos con valores válidos.', 'err'); return;
+  }
+
+  try {
+    const res = await apiFetch(`TintaBase/${_editarTintaId}`, 'PUT', {
+      id: _editarTintaId,
+      nombreTinta: nombreTinta,
+      stockActual:       stockActual*1000,
+      stockMinimo_alerta: stockMinimo*1000,
+      precioUnitario:    precio
+    });
+    if (!res || res.error) { showModalMsg(msg, 'No se pudo guardar.', 'err'); return; }
+    document.getElementById('modal-editar-tinta').classList.remove('open');
+    cargarInventario();
+  } catch (e) { showModalMsg(msg, 'Error: ' + e.message, 'err'); }
+}
+
 async function cargarBaseDatos() {
   const tbody = document.getElementById('tabla-basedatos');
   tbody.innerHTML = '<tr><td colspan="8" class="loading-cell">Cargando...</td></tr>';
   try {
-    const res      = await apiFetch('InventarioTinta');
-    // const registros = await res.json();
+    const res = await apiFetch('InventarioTinta');
     console.log(res);
     
     if (!res.length) {
@@ -1109,9 +1155,7 @@ async function cargarTintasBase() {
 
     try {
         const res = await apiFetch('TintaBase');
-        if (!res.ok) throw new Error('No se pudieron cargar las tintas base.');
-
-        // const tintas = await res.json();
+        if (!res || res.error) throw new Error('No se pudieron cargar las tintas base.');
 
         select.innerHTML = '<option value="">-- Selecciona una tinta --</option>';
 
@@ -1185,39 +1229,25 @@ async function guardarEntradaTinta() {
         );
         return;
     }
+    const select      = document.getElementById('nt-idtinta');
+    const seleccionada = select?.options[select.selectedIndex];
     const dto = {
-
-        // ID obtenido automáticamente del nombre seleccionado
-        idTintaBase: idTintaBase,
-
-        idInterno:document.getElementById('nt-idinterno').value.trim(),
-
-        lote:document.getElementById('nt-lote').value.trim(),
-
-        nombre:document.getElementById('nt-nombre').value.trim(),
-
-        fabricante:document.getElementById('nt-fabricante').value.trim(),
-
-        proveedor:document.getElementById('nt-proveedor').value.trim(),
-
-        presentacion:document.getElementById('nt-presentacion').value.trim(),
-
-        costo:parseFloat(document.getElementById('nt-costo').value) || 0
+        idTintaBase:  idTintaBase,
+        idInterno:    document.getElementById('nt-idinterno').value.trim(),
+        lote:         document.getElementById('nt-lote').value.trim(),
+        nombre:       seleccionada?.dataset.nombre || seleccionada?.textContent || '',
+        fabricante:   document.getElementById('nt-fabricante').value.trim(),
+        proveedor:    document.getElementById('nt-proveedor').value.trim(),
+        presentacion: document.getElementById('nt-presentacion').value.trim(),
+        costo:        parseFloat(document.getElementById('nt-costo').value) || 0
     };
-
-    // Validar nombre
     if (!dto.nombre) {
-        showModalMsg(
-            msg,
-            'El nombre es obligatorio.',
-            'err'
-        );
-        return;
+        showModalMsg(msg, 'No se pudo determinar el nombre de la tinta.', 'err'); return;
     }
     try {
     const res = await apiFetch('InventarioTinta', 'POST', dto);
     
-    if (!res.ok) {
+    if (!res || res.error) {
       // const d = await res.json().catch(() => ({}));
       // Si ASP.NET devuelve errores de validación de ModelState
       if (res.errors) {
@@ -1259,7 +1289,7 @@ async function cargarUsuarios() {
         <td><div class="user-row-avatar">${iniciales(u.nombre)}</div></td>
         <td>${escHtml(u.nombre)}</td>
         <td>${escHtml(u.correo)}</td>
-        <td><span class="role-badge ${(u.rol||'').toLowerCase()==='administrador'?'admin2':'user'}">${escHtml(u.rol||'—')}</span></td>
+        <td><span class="role-badge ${(u.rol||'').toLowerCase()==='1'?'2':'3'}">${u.rol}</span></td>
         <td>${u.correo !== currentUser.correo
           ? `<button class="btn-danger" onclick="eliminarUsuario(${u.id},'${escHtml(u.nombre)}')">Eliminar</button>`
           : '<span style="font-size:.7rem;color:var(--text-muted)">(tú)</span>'}</td>
@@ -1271,7 +1301,7 @@ async function eliminarUsuario(id, nombre) {
   if (!confirm(`¿Eliminar a "${nombre}"?`)) return;
   try {
     const res = await apiFetch(`Usuario/${id}`, 'DELETE');
-    if (!res.ok) { alert('No se pudo eliminar.'); return; }
+    if (!res && res.error) { alert('No se pudo eliminar.'); return; }
     cargarUsuarios();
   } catch (e) { alert('Error: ' + e.message); }
 }
@@ -1297,7 +1327,7 @@ async function crearUsuario() {
   try {
     const res  = await apiFetch('Usuario/register', 'POST', { nombre, correo, password, idRol });
     // const data = await res.json();
-    if (!res.ok) { showModalMsg(msg, res.mensaje || 'Error al crear usuario.', 'err'); return; }
+    if (!res || res.error) { showModalMsg(msg, res.mensaje || 'Error al crear usuario.', 'err'); return; }
     document.getElementById('modal-usuario').classList.remove('open');
     cargarUsuarios();
   } catch (e) { showModalMsg(msg, 'Error: ' + e.message, 'err'); }

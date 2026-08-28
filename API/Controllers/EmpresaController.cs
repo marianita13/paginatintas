@@ -25,8 +25,8 @@ public class EmpresaController: BaseController
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<Empresa>>> Get()
         {
-            var Empresaes = await _unitOfWork.Empresas.GetAllAsync();
-            return _mapper.Map<List<Empresa>>(Empresaes);
+            var Empresas = await _unitOfWork.Empresas.GetAllAsync();
+            return _mapper.Map<List<Empresa>>(Empresas);
         }
 
         [HttpGet("{id}")]
@@ -69,8 +69,9 @@ public class EmpresaController: BaseController
             {
                 return NotFound();
             }
-            var Empresaes = _mapper.Map<Empresa>(EmpresaDto);
-            _unitOfWork.Empresas.Update(Empresaes);
+            var empresa = await _unitOfWork.Empresas.GetByIdAsync(id);
+            empresa.Información = EmpresaDto.Información;
+            _unitOfWork.Empresas.Update(empresa);
             await _unitOfWork.SaveAsync();
             return EmpresaDto;
         }

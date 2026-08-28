@@ -13,6 +13,6 @@ namespace API.Dtos
         public decimal StockActual { get; set; }
         public decimal StockMinimo_alerta { get; set; }
         public decimal PrecioUnitario { get; set; }
-        public ICollection<DetalleFormula> DetalleFormulas { get; set; }
+        public ICollection<DetalleFormula>? DetalleFormulas { get; set; }
     }
 }
