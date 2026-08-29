@@ -130,7 +130,7 @@
       </button>
 
       <!-- USUARIOS — solo Admin -->
-      <button class="nav-item nav-item-usuarios" data-tab="usuarios" onclick="switchTab('usuarios', this)" style="display:none">
+      <button class="nav-item nav-item-admin" data-tab="usuarios" onclick="switchTab('usuarios', this)" style="display:none">
         <span class="nav-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -208,7 +208,7 @@
 
     <!-- ─── EMPRESAS ─── -->
     <div class="tab-panel" id="panel-empresas">
-      <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap; justify-content:space-between">
         <div class="color-search-bar" style="margin-bottom:0;flex:1;min-width:220px">
           <input type="text" id="empresa-search" placeholder="Buscar Empresa por nombre..." oninput="filtrarEmpresas()"/>
           <span class="search-icon">
@@ -217,6 +217,7 @@
             </svg>
           </span>
         </div>
+        <button class="btn-primary" onclick="abrirModalNuevaEmpresa()">+ Nueva Empresa</button>
       </div>
       <div class="empresas-layout">
         <div class="empresas-list" id="empresas-list">
@@ -250,12 +251,6 @@
           </div>
           <div class="color-search-bar" style="margin-bottom:0;flex:1;min-width:180px">
             <input type="date" id="orden-search-fecha" oninput="filtrarOrdenes()" style="padding-left:16px"/>
-            <!-- <span class="search-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-              </svg>
-            </span> -->
           </div>
           <button onclick="limpiarFiltrosOrdenes()" style="padding:8px 14px;border:1px solid var(--border);
             border-radius:8px;background:var(--surface-2);cursor:pointer;font-family:inherit;
@@ -469,7 +464,7 @@
     <div class="modal-body">
       <div class="form-group-flat">
         <label>Stock actual (kg)</label>
-        <input type="number" step="0.01" id="et-stock-actual" placeholder="Ej: 2">
+        <input type="number" step="0.01" id="et-stock-actual" placeholder="Ej: 10">
       </div>
       <div class="form-group-flat">
         <label>Stock mínimo de alerta (kg)</label>
@@ -481,6 +476,30 @@
       </div>
       <div id="et-msg" class="config-msg" style="display:none"></div>
       <button class="btn-primary" onclick="guardarEdicionTinta()" style="width:100%;margin-top:8px">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL NUEVA EMPRESA ═══ -->
+<div class="modal-overlay" id="modal-nueva-empresa" onclick="cerrarModalNuevaEmpresa(event)">
+  <div class="modal-box modal-sm">
+    <div class="modal-header">
+      <h2 class="modal-title">Nueva Empresa</h2>
+      <button class="modal-close" onclick="document.getElementById('modal-nueva-empresa').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group-flat">
+        <label>Nombre comercial</label>
+        <input type="text" id="ne-nombre" placeholder="Ej: Distribuidores Plásticos S.A.S">
+      </div>
+      <div class="form-group-flat">
+        <label>Información / Fórmulas</label>
+        <textarea id="ne-informacion" placeholder="Ej: Pantone 244 — Trans. White 87.5g..." rows="4"
+          style="width:100%;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);
+          border-radius:8px;font-family:inherit;font-size:0.85rem;color:var(--text);resize:vertical;outline:none"></textarea>
+      </div>
+      <div id="ne-msg" class="config-msg" style="display:none"></div>
+      <button class="btn-primary" onclick="guardarNuevaEmpresa()" style="width:100%;margin-top:8px">Guardar empresa</button>
     </div>
   </div>
 </div>

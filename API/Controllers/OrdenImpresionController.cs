@@ -24,7 +24,6 @@ public class OrdenImpresionController : BaseController
         _mapper = mapper;
     }
 
-    // GET /api/OrdenImpresion
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<OrdenImpresionDto>>> Get()
@@ -33,7 +32,6 @@ public class OrdenImpresionController : BaseController
         return Ok(_mapper.Map<List<OrdenImpresionDto>>(entidades));
     }
 
-    // GET /api/OrdenImpresion/{id} — detalle enriquecido con pantones y mezclas calculadas
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -98,7 +96,7 @@ public class OrdenImpresionController : BaseController
                     GramosNecesarios  = gramosPrueba,
                     StockActual       = d.TintaBase.StockActual,
                     StockSuficiente   = d.TintaBase.StockActual >= gramosPrueba,
-                    PrecioUnitario    = d.TintaBase.PrecioUnitario   // ← NUEVO
+                    PrecioUnitario    = d.TintaBase.PrecioUnitario
                 });
 
                 decimal gramosOrden = orden.PruebaColor > 0
@@ -122,7 +120,7 @@ public class OrdenImpresionController : BaseController
                     GramosNecesarios  = gramosOrden,
                     StockActual       = d.TintaBase.StockActual,
                     StockSuficiente   = tieneStockOrden,
-                    PrecioUnitario    = d.TintaBase.PrecioUnitario   // ← NUEVO
+                    PrecioUnitario    = d.TintaBase.PrecioUnitario
                 });
             }
 
@@ -140,18 +138,17 @@ public class OrdenImpresionController : BaseController
         return Ok(detalle);
     }
 
-    // POST /api/OrdenImpresion — crea orden con sus fórmulas
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<OrdenImpresionDto>> Post([FromBody] CrearOrdenDto dto)
+    public async Task<ActionResult> Post([FromBody] CrearOrdenDto dto)
     {
         if (dto.IdsFormulas == null || !dto.IdsFormulas.Any())
             return BadRequest("Debes seleccionar al menos un Pantone.");
 
         var orden = new OrdenImpresion
         {
-            IdUsuario    = 2, // TODO: User.FindFirstValue(ClaimTypes.NameIdentifier)
+            IdUsuario    = 2,
             NumeroOrden  = dto.NumeroOrden,
             FechaOrden   = DateTime.UtcNow,
             VolumenTotal = 0,
@@ -177,7 +174,8 @@ public class OrdenImpresionController : BaseController
         return CreatedAtAction(nameof(Get), new { id = orden.Id }, new { id = orden.Id });
     }
 
-    // PUT /api/OrdenImpresion/{id}/cajas — actualiza cajas de prueba y cajas de orden
+    // PUT /api/OrdenImpresion/{id}/cajas
+    // Guarda cajas, costo y descuenta el stock de cada tinta usada
     [HttpPut("{id}/cajas")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -185,15 +183,69 @@ public class OrdenImpresionController : BaseController
     {
         var orden = await _unitOfWork.OrdenImpresions.GetByIdAsync(id);
         if (orden == null) return NotFound();
+
+        // Guardar antes los valores anteriores para saber si las cajas cambiaron
+        int cajasPruebaAnterior = orden.PruebaColor;
+        int cajasOrdenAnterior  = orden.NumeroCajas;
+
         orden.PruebaColor = dto.PruebaColor;
         orden.NumeroCajas = dto.NumeroCajas;
-        orden.CostoTotal = dto.CostoTotal;
+        orden.CostoTotal  = dto.CostoTotal;
+
+        // Descontar stock solo si las cajas cambiaron o la orden no estaba completada
+        // Usamos PruebaColor > 0 para validar que hay datos reales
+        if (dto.PruebaColor > 0 && dto.NumeroCajas > 0)
+        {
+            var ordenFormulas = _unitOfWork.OrdenFormulas
+                .Find(of => of.IdOrdenImpresion == id)
+                .ToList();
+
+            // Si ya había cajas guardadas, restaurar el stock anterior antes de descontar
+            if (cajasPruebaAnterior > 0 && cajasOrdenAnterior > 0)
+            {
+                foreach (var of in ordenFormulas)
+                {
+                    var formula = await _unitOfWork.Formulas.GetFormulaConDetallesAsync(of.IdFormula);
+                    if (formula == null) continue;
+
+                    foreach (var d in formula.DetalleFormulas)
+                    {
+                        decimal gramosPrueba    = Math.Round(d.Porcentaje * 100m, 2);
+                        decimal gramosAnterior  = Math.Round((cajasOrdenAnterior * gramosPrueba) / cajasPruebaAnterior, 0);
+
+                        // Restaurar lo que se había descontado antes
+                        d.TintaBase.StockActual += gramosAnterior;
+                        _unitOfWork.TintaBases.Update(d.TintaBase);
+                    }
+                }
+            }
+
+            // Descontar el nuevo cálculo
+            foreach (var of in ordenFormulas)
+            {
+                var formula = await _unitOfWork.Formulas.GetFormulaConDetallesAsync(of.IdFormula);
+                if (formula == null) continue;
+
+                foreach (var d in formula.DetalleFormulas)
+                {
+                    decimal gramosPrueba  = Math.Round(d.Porcentaje * 100m, 2);
+                    decimal gramosOrden   = Math.Round((dto.NumeroCajas * gramosPrueba) / dto.PruebaColor, 0);
+
+                    d.TintaBase.StockActual -= gramosOrden;
+
+                    // No permitir stock negativo
+                    if (d.TintaBase.StockActual < 0) d.TintaBase.StockActual = 0;
+
+                    _unitOfWork.TintaBases.Update(d.TintaBase);
+                }
+            }
+        }
+
         _unitOfWork.OrdenImpresions.Update(orden);
         await _unitOfWork.SaveAsync();
-        return Ok(new { mensaje = "Cajas actualizadas." });
+        return Ok(new { mensaje = "Cajas actualizadas y stock descontado." });
     }
 
-    // PUT /api/OrdenImpresion/{id}/estado — cambia estado 0↔1
     [HttpPut("{id}/estado")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -207,7 +259,6 @@ public class OrdenImpresionController : BaseController
         return Ok(new { mensaje = "Estado actualizado." });
     }
 
-    // DELETE /api/OrdenImpresion/{id}
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

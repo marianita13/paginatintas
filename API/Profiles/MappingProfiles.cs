@@ -18,7 +18,10 @@ namespace API.Profiles
             CreateMap<OrdenImpresion, OrdenImpresionDto>().ReverseMap();
             CreateMap<Rol, RolDto>().ReverseMap();
             CreateMap<TintaBase, TintaBaseDto>().ReverseMap();
-            CreateMap<Usuario, UsuarioDto>().ReverseMap();
+            CreateMap<Usuario, UsuarioDto>()
+            .ForMember(dest => dest.Rol, opt => opt.MapFrom(src => src.IdRol));
+            CreateMap<UsuarioDto, Usuario>()
+            .ForMember(dest => dest.IdRol, opt => opt.MapFrom(src => src.Rol));
             CreateMap<InventarioTinta, InventarioTintaDto>().ReverseMap();
             CreateMap<OrdenFormula, OrdenFormulaDto>().ReverseMap();
         }

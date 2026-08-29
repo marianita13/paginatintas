@@ -1,0 +1,1626 @@
+[
+  {
+    "pantone": "Pantone 4001",
+    "hex": "#EADB9C"
+  },
+  {
+    "pantone": "Pantone 4002",
+    "hex": "#DDC680"
+  },
+  {
+    "pantone": "Pantone 4003",
+    "hex": "#D4C898"
+  },
+  {
+    "pantone": "Pantone 4004",
+    "hex": "#CAB777"
+  },
+  {
+    "pantone": "Pantone 4005",
+    "hex": "#C1AE7B"
+  },
+  {
+    "pantone": "Pantone 4006",
+    "hex": "#BBA370"
+  },
+  {
+    "pantone": "Pantone 4007",
+    "hex": "#AD965E"
+  },
+  {
+    "pantone": "Pantone 4008",
+    "hex": "#F3AF22"
+  },
+  {
+    "pantone": "Pantone 4009",
+    "hex": "#F19D49"
+  },
+  {
+    "pantone": "Pantone 4010",
+    "hex": "#E5690F"
+  },
+  {
+    "pantone": "Pantone 4011",
+    "hex": "#DF764C"
+  },
+  {
+    "pantone": "Pantone 4012",
+    "hex": "#EA733E"
+  },
+  {
+    "pantone": "Pantone 4013",
+    "hex": "#CC6C28"
+  },
+  {
+    "pantone": "Pantone 4014",
+    "hex": "#B86747"
+  },
+  {
+    "pantone": "Pantone 3514",
+    "hex": "#F1B300"
+  },
+  {
+    "pantone": "Pantone 3596",
+    "hex": "#DEB681"
+  },
+  {
+    "pantone": "Pantone 3547",
+    "hex": "#C18722"
+  },
+  {
+    "pantone": "Pantone 3588",
+    "hex": "#FE8F1D"
+  },
+  {
+    "pantone": "Pantone 3564",
+    "hex": "#F06400"
+  },
+  {
+    "pantone": "Pantone 2428",
+    "hex": "#DD872C"
+  },
+  {
+    "pantone": "Pantone 2429",
+    "hex": "#C25E1C"
+  },
+  {
+    "pantone": "Pantone 4015",
+    "hex": "#D2C762"
+  },
+  {
+    "pantone": "Pantone 4016",
+    "hex": "#D5C03A"
+  },
+  {
+    "pantone": "Pantone 4017",
+    "hex": "#DFB83D"
+  },
+  {
+    "pantone": "Pantone 4018",
+    "hex": "#D1B349"
+  },
+  {
+    "pantone": "Pantone 4019",
+    "hex": "#C2A84D"
+  },
+  {
+    "pantone": "Pantone 4020",
+    "hex": "#BE9F00"
+  },
+  {
+    "pantone": "Pantone 4021",
+    "hex": "#AF9334"
+  },
+  {
+    "pantone": "Pantone 4022",
+    "hex": "#CEB47D"
+  },
+  {
+    "pantone": "Pantone 4023",
+    "hex": "#D3B468"
+  },
+  {
+    "pantone": "Pantone 4024",
+    "hex": "#D4AE66"
+  },
+  {
+    "pantone": "Pantone 4025",
+    "hex": "#D6A148"
+  },
+  {
+    "pantone": "Pantone 4026",
+    "hex": "#BD8C3D"
+  },
+  {
+    "pantone": "Pantone 4027",
+    "hex": "#8F6320"
+  },
+  {
+    "pantone": "Pantone 4028",
+    "hex": "#82602A"
+  },
+  {
+    "pantone": "Pantone 4029",
+    "hex": "#E8CDA4"
+  },
+  {
+    "pantone": "Pantone 4030",
+    "hex": "#F1CAAE"
+  },
+  {
+    "pantone": "Pantone 4031",
+    "hex": "#EBCBBB"
+  },
+  {
+    "pantone": "Pantone 4032",
+    "hex": "#F6CAC0"
+  },
+  {
+    "pantone": "Pantone 4033",
+    "hex": "#F7BCAB"
+  },
+  {
+    "pantone": "Pantone 4034",
+    "hex": "#CB9575"
+  },
+  {
+    "pantone": "Pantone 4035",
+    "hex": "#C79674"
+  },
+  {
+    "pantone": "Pantone 2430",
+    "hex": "#D7A179"
+  },
+  {
+    "pantone": "Pantone 2431",
+    "hex": "#DE9252"
+  },
+  {
+    "pantone": "Pantone 2432",
+    "hex": "#DD8C59"
+  },
+  {
+    "pantone": "Pantone 2433",
+    "hex": "#DB7A51"
+  },
+  {
+    "pantone": "Pantone 2434",
+    "hex": "#E3775E"
+  },
+  {
+    "pantone": "Pantone 2435",
+    "hex": "#C16F58"
+  },
+  {
+    "pantone": "Pantone 2436",
+    "hex": "#B6523D"
+  },
+  {
+    "pantone": "Pantone 3544",
+    "hex": "#E1B6A1"
+  },
+  {
+    "pantone": "Pantone 2444",
+    "hex": "#DCA59C"
+  },
+  {
+    "pantone": "Pantone 3519",
+    "hex": "#E0A4A1"
+  },
+  {
+    "pantone": "Pantone 3572",
+    "hex": "#FE9B96"
+  },
+  {
+    "pantone": "Pantone 2445",
+    "hex": "#DD878D"
+  },
+  {
+    "pantone": "Pantone 2446",
+    "hex": "#D0858A"
+  },
+  {
+    "pantone": "Pantone 2447",
+    "hex": "#B06F76"
+  },
+  {
+    "pantone": "Pantone 4036",
+    "hex": "#C09A97"
+  },
+  {
+    "pantone": "Pantone 4037",
+    "hex": "#B57D77"
+  },
+  {
+    "pantone": "Pantone 4038",
+    "hex": "#B17368"
+  },
+  {
+    "pantone": "Pantone 4039",
+    "hex": "#AE6960"
+  },
+  {
+    "pantone": "Pantone 4040",
+    "hex": "#976A65"
+  },
+  {
+    "pantone": "Pantone 4041",
+    "hex": "#815E57"
+  },
+  {
+    "pantone": "Pantone 4042",
+    "hex": "#795D52"
+  },
+  {
+    "pantone": "Pantone 2437",
+    "hex": "#F1BF9F"
+  },
+  {
+    "pantone": "Pantone 2438",
+    "hex": "#E3A184"
+  },
+  {
+    "pantone": "Pantone 2439",
+    "hex": "#C48571"
+  },
+  {
+    "pantone": "Pantone 2440",
+    "hex": "#B49289"
+  },
+  {
+    "pantone": "Pantone 2441",
+    "hex": "#A76E5E"
+  },
+  {
+    "pantone": "Pantone 2442",
+    "hex": "#9F5F53"
+  },
+  {
+    "pantone": "Pantone 2443",
+    "hex": "#8D3921"
+  },
+  {
+    "pantone": "Pantone 4043",
+    "hex": "#E1C5AE"
+  },
+  {
+    "pantone": "Pantone 4044",
+    "hex": "#C5A28A"
+  },
+  {
+    "pantone": "Pantone 4045",
+    "hex": "#B99682"
+  },
+  {
+    "pantone": "Pantone 4046",
+    "hex": "#B19780"
+  },
+  {
+    "pantone": "Pantone 4047",
+    "hex": "#AB8C74"
+  },
+  {
+    "pantone": "Pantone 4048",
+    "hex": "#A28168"
+  },
+  {
+    "pantone": "Pantone 4049",
+    "hex": "#96826E"
+  },
+  {
+    "pantone": "Pantone 4050",
+    "hex": "#DAAC95"
+  },
+  {
+    "pantone": "Pantone 4051",
+    "hex": "#DF8978"
+  },
+  {
+    "pantone": "Pantone 4052",
+    "hex": "#D98878"
+  },
+  {
+    "pantone": "Pantone 4053",
+    "hex": "#CF7C6A"
+  },
+  {
+    "pantone": "Pantone 4054",
+    "hex": "#A8533E"
+  },
+  {
+    "pantone": "Pantone 4055",
+    "hex": "#A55344"
+  },
+  {
+    "pantone": "Pantone 4056",
+    "hex": "#864F46"
+  },
+  {
+    "pantone": "Pantone 4057",
+    "hex": "#E2675C"
+  },
+  {
+    "pantone": "Pantone 4058",
+    "hex": "#E54B56"
+  },
+  {
+    "pantone": "Pantone 4059",
+    "hex": "#C22F41"
+  },
+  {
+    "pantone": "Pantone 4060",
+    "hex": "#BD3742"
+  },
+  {
+    "pantone": "Pantone 4061",
+    "hex": "#BC625E"
+  },
+  {
+    "pantone": "Pantone 4062",
+    "hex": "#A94545"
+  },
+  {
+    "pantone": "Pantone 4063",
+    "hex": "#9B4033"
+  },
+  {
+    "pantone": "Pantone 2448",
+    "hex": "#DA6253"
+  },
+  {
+    "pantone": "Pantone 3558",
+    "hex": "#949CD0"
+  },
+  {
+    "pantone": "Pantone 3516",
+    "hex": "#D1350F"
+  },
+  {
+    "pantone": "Pantone 3546",
+    "hex": "#C00D1E"
+  },
+  {
+    "pantone": "Pantone 3523",
+    "hex": "#733438"
+  },
+  {
+    "pantone": "Pantone 2449",
+    "hex": "#472426"
+  },
+  {
+    "pantone": "Pantone 4064",
+    "hex": "#EBB3BB"
+  },
+  {
+    "pantone": "Pantone 4065",
+    "hex": "#E5AEB1"
+  },
+  {
+    "pantone": "Pantone 4066",
+    "hex": "#EAA09B"
+  },
+  {
+    "pantone": "Pantone 4067",
+    "hex": "#E89F9E"
+  },
+  {
+    "pantone": "Pantone 4068",
+    "hex": "#E48F93"
+  },
+  {
+    "pantone": "Pantone 4069",
+    "hex": "#C74E60"
+  },
+  {
+    "pantone": "Pantone 4070",
+    "hex": "#B53B50"
+  },
+  {
+    "pantone": "Pantone 4071",
+    "hex": "#CF889D"
+  },
+  {
+    "pantone": "Pantone 4072",
+    "hex": "#ED7A9B"
+  },
+  {
+    "pantone": "Pantone 4073",
+    "hex": "#C74772"
+  },
+  {
+    "pantone": "Pantone 4074",
+    "hex": "#7E1B4A"
+  },
+  {
+    "pantone": "Pantone 4075",
+    "hex": "#823551"
+  },
+  {
+    "pantone": "Pantone 4076",
+    "hex": "#814259"
+  },
+  {
+    "pantone": "Pantone 4077",
+    "hex": "#834654"
+  },
+  {
+    "pantone": "Pantone 3568",
+    "hex": "#F1C3D3"
+  },
+  {
+    "pantone": "Pantone 3595",
+    "hex": "#EFB8CD"
+  },
+  {
+    "pantone": "Pantone 2450",
+    "hex": "#D64388"
+  },
+  {
+    "pantone": "Pantone 3527",
+    "hex": "#D12B92"
+  },
+  {
+    "pantone": "Pantone 3582",
+    "hex": "#C8689A"
+  },
+  {
+    "pantone": "Pantone 2451",
+    "hex": "#B74271"
+  },
+  {
+    "pantone": "Pantone 2452",
+    "hex": "#C2366F"
+  },
+  {
+    "pantone": "Pantone 4078",
+    "hex": "#E7C2D5"
+  },
+  {
+    "pantone": "Pantone 4079",
+    "hex": "#CEA7C2"
+  },
+  {
+    "pantone": "Pantone 4080",
+    "hex": "#D0B0CB"
+  },
+  {
+    "pantone": "Pantone 4081",
+    "hex": "#AF90A8"
+  },
+  {
+    "pantone": "Pantone 4082",
+    "hex": "#A76590"
+  },
+  {
+    "pantone": "Pantone 4083",
+    "hex": "#875992"
+  },
+  {
+    "pantone": "Pantone 4084",
+    "hex": "#703D62"
+  },
+  {
+    "pantone": "Pantone 4085",
+    "hex": "#C8B8AD"
+  },
+  {
+    "pantone": "Pantone 4086",
+    "hex": "#BCA5A6"
+  },
+  {
+    "pantone": "Pantone 4087",
+    "hex": "#B79F97"
+  },
+  {
+    "pantone": "Pantone 4088",
+    "hex": "#A98B81"
+  },
+  {
+    "pantone": "Pantone 4089",
+    "hex": "#A48C89"
+  },
+  {
+    "pantone": "Pantone 4090",
+    "hex": "#8F7368"
+  },
+  {
+    "pantone": "Pantone 4091",
+    "hex": "#7B605E"
+  },
+  {
+    "pantone": "Pantone 4092",
+    "hex": "#CAA8B5"
+  },
+  {
+    "pantone": "Pantone 4093",
+    "hex": "#AE9094"
+  },
+  {
+    "pantone": "Pantone 4094",
+    "hex": "#926977"
+  },
+  {
+    "pantone": "Pantone 4095",
+    "hex": "#8B5B6B"
+  },
+  {
+    "pantone": "Pantone 4096",
+    "hex": "#77494D"
+  },
+  {
+    "pantone": "Pantone 4097",
+    "hex": "#754D52"
+  },
+  {
+    "pantone": "Pantone 4098",
+    "hex": "#65443D"
+  },
+  {
+    "pantone": "Pantone 4099",
+    "hex": "#AC8584"
+  },
+  {
+    "pantone": "Pantone 4100",
+    "hex": "#7E4E4E"
+  },
+  {
+    "pantone": "Pantone 4101",
+    "hex": "#622227"
+  },
+  {
+    "pantone": "Pantone 4102",
+    "hex": "#561C24"
+  },
+  {
+    "pantone": "Pantone 4103",
+    "hex": "#52252F"
+  },
+  {
+    "pantone": "Pantone 4104",
+    "hex": "#543B3C"
+  },
+  {
+    "pantone": "Pantone 4105",
+    "hex": "#663F33"
+  },
+  {
+    "pantone": "Pantone 4106",
+    "hex": "#C5AAB3"
+  },
+  {
+    "pantone": "Pantone 4107",
+    "hex": "#AC92A4"
+  },
+  {
+    "pantone": "Pantone 4108",
+    "hex": "#A58596"
+  },
+  {
+    "pantone": "Pantone 4109",
+    "hex": "#9F788A"
+  },
+  {
+    "pantone": "Pantone 4110",
+    "hex": "#8B6D80"
+  },
+  {
+    "pantone": "Pantone 4111",
+    "hex": "#7C576A"
+  },
+  {
+    "pantone": "Pantone 4112",
+    "hex": "#8C6D73"
+  },
+  {
+    "pantone": "Pantone 4113",
+    "hex": "#A28D90"
+  },
+  {
+    "pantone": "Pantone 4114",
+    "hex": "#9B8D92"
+  },
+  {
+    "pantone": "Pantone 4115",
+    "hex": "#947F82"
+  },
+  {
+    "pantone": "Pantone 4116",
+    "hex": "#988383"
+  },
+  {
+    "pantone": "Pantone 4117",
+    "hex": "#726476"
+  },
+  {
+    "pantone": "Pantone 4118",
+    "hex": "#45394D"
+  },
+  {
+    "pantone": "Pantone 4119",
+    "hex": "#3F3843"
+  },
+  {
+    "pantone": "Pantone 2453",
+    "hex": "#B896C3"
+  },
+  {
+    "pantone": "Pantone 3520",
+    "hex": "#AC75BD"
+  },
+  {
+    "pantone": "Pantone 3559",
+    "hex": "#85459F"
+  },
+  {
+    "pantone": "Pantone 3593",
+    "hex": "#9063AD"
+  },
+  {
+    "pantone": "Pantone 3575",
+    "hex": "#926EBF"
+  },
+  {
+    "pantone": "Pantone 3543",
+    "hex": "#A08ACC"
+  },
+  {
+    "pantone": "Pantone 3515",
+    "hex": "#590776"
+  },
+  {
+    "pantone": "Pantone 4120",
+    "hex": "#B8ABD0"
+  },
+  {
+    "pantone": "Pantone 4121",
+    "hex": "#9B8CB5"
+  },
+  {
+    "pantone": "Pantone 4122",
+    "hex": "#776BB1"
+  },
+  {
+    "pantone": "Pantone 4123",
+    "hex": "#A6A7BB"
+  },
+  {
+    "pantone": "Pantone 4124",
+    "hex": "#A6A7BB"
+  },
+  {
+    "pantone": "Pantone 4125",
+    "hex": "#5F5D77"
+  },
+  {
+    "pantone": "Pantone 4126",
+    "hex": "#514064"
+  },
+  {
+    "pantone": "Pantone 3558",
+    "hex": "#949CD0"
+  },
+  {
+    "pantone": "Pantone 3555",
+    "hex": "#491D70"
+  },
+  {
+    "pantone": "Pantone 3583",
+    "hex": "#471D7C"
+  },
+  {
+    "pantone": "Pantone 3574",
+    "hex": "#574676"
+  },
+  {
+    "pantone": "Pantone 3566",
+    "hex": "#452B6F"
+  },
+  {
+    "pantone": "Pantone 3535",
+    "hex": "#370178"
+  },
+  {
+    "pantone": "Pantone 3542",
+    "hex": "#2E1373"
+  },
+  {
+    "pantone": "Pantone 4127",
+    "hex": "#7F8195"
+  },
+  {
+    "pantone": "Pantone 4128",
+    "hex": "#6D7184"
+  },
+  {
+    "pantone": "Pantone 4129",
+    "hex": "#67707F"
+  },
+  {
+    "pantone": "Pantone 4130",
+    "hex": "#525A6C"
+  },
+  {
+    "pantone": "Pantone 4131",
+    "hex": "#474B5C"
+  },
+  {
+    "pantone": "Pantone 4132",
+    "hex": "#3B3B4B"
+  },
+  {
+    "pantone": "Pantone 4133",
+    "hex": "#3B3B47"
+  },
+  {
+    "pantone": "Pantone 4134",
+    "hex": "#A0A2AF"
+  },
+  {
+    "pantone": "Pantone 4135",
+    "hex": "#7B859B"
+  },
+  {
+    "pantone": "Pantone 4136",
+    "hex": "#616E80"
+  },
+  {
+    "pantone": "Pantone 4137",
+    "hex": "#475E76"
+  },
+  {
+    "pantone": "Pantone 4138",
+    "hex": "#4C6072"
+  },
+  {
+    "pantone": "Pantone 4139",
+    "hex": "#4F5A6B"
+  },
+  {
+    "pantone": "Pantone 4140",
+    "hex": "#393C47"
+  },
+  {
+    "pantone": "Pantone 3506",
+    "hex": "#2460A7"
+  },
+  {
+    "pantone": "Pantone 3590",
+    "hex": "#3C539A"
+  },
+  {
+    "pantone": "Pantone 3584",
+    "hex": "#333D79"
+  },
+  {
+    "pantone": "Pantone 3591",
+    "hex": "#142E7B"
+  },
+  {
+    "pantone": "Pantone 3597",
+    "hex": "#21366E"
+  },
+  {
+    "pantone": "Pantone 3581",
+    "hex": "#283266"
+  },
+  {
+    "pantone": "Pantone 3524",
+    "hex": "#2F2B4E"
+  },
+  {
+    "pantone": "Pantone 4141",
+    "hex": "#4964A1"
+  },
+  {
+    "pantone": "Pantone 4142",
+    "hex": "#3E4F80"
+  },
+  {
+    "pantone": "Pantone 4143",
+    "hex": "#43556F"
+  },
+  {
+    "pantone": "Pantone 4144",
+    "hex": "#3B3A5A"
+  },
+  {
+    "pantone": "Pantone 4145",
+    "hex": "#2E334F"
+  },
+  {
+    "pantone": "Pantone 4146",
+    "hex": "#1B1E36"
+  },
+  {
+    "pantone": "Pantone 4147",
+    "hex": "#262141"
+  },
+  {
+    "pantone": "Pantone 4148",
+    "hex": "#6196B0"
+  },
+  {
+    "pantone": "Pantone 4149",
+    "hex": "#8BABC6"
+  },
+  {
+    "pantone": "Pantone 4150",
+    "hex": "#527DB9"
+  },
+  {
+    "pantone": "Pantone 4151",
+    "hex": "#0167AD"
+  },
+  {
+    "pantone": "Pantone 4152",
+    "hex": "#135193"
+  },
+  {
+    "pantone": "Pantone 4153",
+    "hex": "#1B4E8A"
+  },
+  {
+    "pantone": "Pantone 4154",
+    "hex": "#0E4174"
+  },
+  {
+    "pantone": "Pantone 4155",
+    "hex": "#BAC9CD"
+  },
+  {
+    "pantone": "Pantone 4156",
+    "hex": "#98BFCB"
+  },
+  {
+    "pantone": "Pantone 4157",
+    "hex": "#66AEC1"
+  },
+  {
+    "pantone": "Pantone 4158",
+    "hex": "#387F97"
+  },
+  {
+    "pantone": "Pantone 4159",
+    "hex": "#005682"
+  },
+  {
+    "pantone": "Pantone 4160",
+    "hex": "#014860"
+  },
+  {
+    "pantone": "Pantone 4161",
+    "hex": "#304B59"
+  },
+  {
+    "pantone": "Pantone 3577",
+    "hex": "#85B3D1"
+  },
+  {
+    "pantone": "Pantone 3545",
+    "hex": "#00B8DE"
+  },
+  {
+    "pantone": "Pantone 3551",
+    "hex": "#009EC0"
+  },
+  {
+    "pantone": "Pantone 3538",
+    "hex": "#008BCD"
+  },
+  {
+    "pantone": "Pantone 3553",
+    "hex": "#006CB0"
+  },
+  {
+    "pantone": "Pantone 2454",
+    "hex": "#277DA1"
+  },
+  {
+    "pantone": "Pantone 3526",
+    "hex": "#788F98"
+  },
+  {
+    "pantone": "Pantone 4162",
+    "hex": "#A8D3C5"
+  },
+  {
+    "pantone": "Pantone 4163",
+    "hex": "#8FCBB9"
+  },
+  {
+    "pantone": "Pantone 4164",
+    "hex": "#1C8073"
+  },
+  {
+    "pantone": "Pantone 4165",
+    "hex": "#1D6A60"
+  },
+  {
+    "pantone": "Pantone 4166",
+    "hex": "#417671"
+  },
+  {
+    "pantone": "Pantone 4167",
+    "hex": "#31645C"
+  },
+  {
+    "pantone": "Pantone 4168",
+    "hex": "#234645"
+  },
+  {
+    "pantone": "Pantone 2455",
+    "hex": "#92BCB3"
+  },
+  {
+    "pantone": "Pantone 3533",
+    "hex": "#52D2BC"
+  },
+  {
+    "pantone": "Pantone 3534",
+    "hex": "#00AD9F"
+  },
+  {
+    "pantone": "Pantone 2456",
+    "hex": "#309B8A"
+  },
+  {
+    "pantone": "Pantone 3560",
+    "hex": "#009F92"
+  },
+  {
+    "pantone": "Pantone 3557",
+    "hex": "#00797C"
+  },
+  {
+    "pantone": "Pantone 3541",
+    "hex": "#00919D"
+  },
+  {
+    "pantone": "Pantone 2457",
+    "hex": "#8BAA99"
+  },
+  {
+    "pantone": "Pantone 2458",
+    "hex": "#689881"
+  },
+  {
+    "pantone": "Pantone 2459",
+    "hex": "#55AF92"
+  },
+  {
+    "pantone": "Pantone 2460",
+    "hex": "#6AAEAA"
+  },
+  {
+    "pantone": "Pantone 2461",
+    "hex": "#259490"
+  },
+  {
+    "pantone": "Pantone 2462",
+    "hex": "#5A8D84"
+  },
+  {
+    "pantone": "Pantone 2463",
+    "hex": "#5B7570"
+  },
+  {
+    "pantone": "Pantone 4169",
+    "hex": "#B6C9C2"
+  },
+  {
+    "pantone": "Pantone 4170",
+    "hex": "#A4BEBA"
+  },
+  {
+    "pantone": "Pantone 4171",
+    "hex": "#9BB9B6"
+  },
+  {
+    "pantone": "Pantone 4172",
+    "hex": "#82B1AA"
+  },
+  {
+    "pantone": "Pantone 4173",
+    "hex": "#84C5C1"
+  },
+  {
+    "pantone": "Pantone 4174",
+    "hex": "#84C1C1"
+  },
+  {
+    "pantone": "Pantone 4175",
+    "hex": "#93BBC2"
+  },
+  {
+    "pantone": "Pantone 4176",
+    "hex": "#C6CDC1"
+  },
+  {
+    "pantone": "Pantone 4177",
+    "hex": "#BBBEAF"
+  },
+  {
+    "pantone": "Pantone 4178",
+    "hex": "#A8AE98"
+  },
+  {
+    "pantone": "Pantone 4179",
+    "hex": "#96A580"
+  },
+  {
+    "pantone": "Pantone 4180",
+    "hex": "#8E997F"
+  },
+  {
+    "pantone": "Pantone 4181",
+    "hex": "#738670"
+  },
+  {
+    "pantone": "Pantone 4182",
+    "hex": "#6A7966"
+  },
+  {
+    "pantone": "Pantone 4183",
+    "hex": "#B9C2B6"
+  },
+  {
+    "pantone": "Pantone 4184",
+    "hex": "#9BAA9E"
+  },
+  {
+    "pantone": "Pantone 4185",
+    "hex": "#88A39A"
+  },
+  {
+    "pantone": "Pantone 4186",
+    "hex": "#698E88"
+  },
+  {
+    "pantone": "Pantone 4187",
+    "hex": "#677C7A"
+  },
+  {
+    "pantone": "Pantone 4188",
+    "hex": "#435D5B"
+  },
+  {
+    "pantone": "Pantone 4189",
+    "hex": "#1B4A51"
+  },
+  {
+    "pantone": "Pantone 4190",
+    "hex": "#A7B3A3"
+  },
+  {
+    "pantone": "Pantone 4191",
+    "hex": "#94A69D"
+  },
+  {
+    "pantone": "Pantone 4192",
+    "hex": "#869687"
+  },
+  {
+    "pantone": "Pantone 4193",
+    "hex": "#61685A"
+  },
+  {
+    "pantone": "Pantone 4194",
+    "hex": "#576361"
+  },
+  {
+    "pantone": "Pantone 4195",
+    "hex": "#646667"
+  },
+  {
+    "pantone": "Pantone 4196",
+    "hex": "#46565A"
+  },
+  {
+    "pantone": "Pantone 4197",
+    "hex": "#8A9C8F"
+  },
+  {
+    "pantone": "Pantone 4198",
+    "hex": "#6A7E71"
+  },
+  {
+    "pantone": "Pantone 4199",
+    "hex": "#59695D"
+  },
+  {
+    "pantone": "Pantone 4200",
+    "hex": "#5A6C61"
+  },
+  {
+    "pantone": "Pantone 4201",
+    "hex": "#50685D"
+  },
+  {
+    "pantone": "Pantone 4202",
+    "hex": "#394E47"
+  },
+  {
+    "pantone": "Pantone 4203",
+    "hex": "#2D483F"
+  },
+  {
+    "pantone": "Pantone 2464",
+    "hex": "#78BD70"
+  },
+  {
+    "pantone": "Pantone 2465",
+    "hex": "#1D6E2F"
+  },
+  {
+    "pantone": "Pantone 3522",
+    "hex": "#008330"
+  },
+  {
+    "pantone": "Pantone 3536",
+    "hex": "#007B3E"
+  },
+  {
+    "pantone": "Pantone 3500",
+    "hex": "#006B38"
+  },
+  {
+    "pantone": "Pantone 3537",
+    "hex": "#00482B"
+  },
+  {
+    "pantone": "Pantone 2466",
+    "hex": "#29504D"
+  },
+  {
+    "pantone": "Pantone 4204",
+    "hex": "#C1D1A7"
+  },
+  {
+    "pantone": "Pantone 4205",
+    "hex": "#A7C086"
+  },
+  {
+    "pantone": "Pantone 4206",
+    "hex": "#8EAE81"
+  },
+  {
+    "pantone": "Pantone 4207",
+    "hex": "#7DA177"
+  },
+  {
+    "pantone": "Pantone 4208",
+    "hex": "#3E7154"
+  },
+  {
+    "pantone": "Pantone 4209",
+    "hex": "#38584B"
+  },
+  {
+    "pantone": "Pantone 4210",
+    "hex": "#305043"
+  },
+  {
+    "pantone": "Pantone 3570",
+    "hex": "#A8C700"
+  },
+  {
+    "pantone": "Pantone 3507",
+    "hex": "#ADCB00"
+  },
+  {
+    "pantone": "Pantone 3561",
+    "hex": "#79C000"
+  },
+  {
+    "pantone": "Pantone 3501",
+    "hex": "#44A705"
+  },
+  {
+    "pantone": "Pantone 3529",
+    "hex": "#1CA421"
+  },
+  {
+    "pantone": "Pantone 3539",
+    "hex": "#3D9525"
+  },
+  {
+    "pantone": "Pantone 3508",
+    "hex": "#5B792F"
+  },
+  {
+    "pantone": "Pantone 4211",
+    "hex": "#CED994"
+  },
+  {
+    "pantone": "Pantone 4212",
+    "hex": "#87AD40"
+  },
+  {
+    "pantone": "Pantone 4213",
+    "hex": "#6A9034"
+  },
+  {
+    "pantone": "Pantone 4214",
+    "hex": "#5C7954"
+  },
+  {
+    "pantone": "Pantone 4215",
+    "hex": "#526F3E"
+  },
+  {
+    "pantone": "Pantone 4216",
+    "hex": "#3E5824"
+  },
+  {
+    "pantone": "Pantone 4217",
+    "hex": "#4B5E23"
+  },
+  {
+    "pantone": "Pantone 4218",
+    "hex": "#AFB69D"
+  },
+  {
+    "pantone": "Pantone 4219",
+    "hex": "#A5AA96"
+  },
+  {
+    "pantone": "Pantone 4220",
+    "hex": "#878A77"
+  },
+  {
+    "pantone": "Pantone 4221",
+    "hex": "#7B7D61"
+  },
+  {
+    "pantone": "Pantone 4222",
+    "hex": "#727562"
+  },
+  {
+    "pantone": "Pantone 4223",
+    "hex": "#636852"
+  },
+  {
+    "pantone": "Pantone 4224",
+    "hex": "#3D4937"
+  },
+  {
+    "pantone": "Pantone 4225",
+    "hex": "#8C8371"
+  },
+  {
+    "pantone": "Pantone 4226",
+    "hex": "#858165"
+  },
+  {
+    "pantone": "Pantone 4227",
+    "hex": "#6A6952"
+  },
+  {
+    "pantone": "Pantone 4228",
+    "hex": "#59563E"
+  },
+  {
+    "pantone": "Pantone 4229",
+    "hex": "#5B5C4A"
+  },
+  {
+    "pantone": "Pantone 4230",
+    "hex": "#5953AC"
+  },
+  {
+    "pantone": "Pantone 4231",
+    "hex": "#645D4F"
+  },
+  {
+    "pantone": "Pantone 4232",
+    "hex": "#D3CF06"
+  },
+  {
+    "pantone": "Pantone 4233",
+    "hex": "#C1BE00"
+  },
+  {
+    "pantone": "Pantone 4234",
+    "hex": "#BBC25C"
+  },
+  {
+    "pantone": "Pantone 4235",
+    "hex": "#B0B07C"
+  },
+  {
+    "pantone": "Pantone 4236",
+    "hex": "#C0BD6A"
+  },
+  {
+    "pantone": "Pantone 4237",
+    "hex": "#ABA460"
+  },
+  {
+    "pantone": "Pantone 4238",
+    "hex": "#8D8A52"
+  },
+  {
+    "pantone": "Pantone 4239",
+    "hex": "#C7C3B2"
+  },
+  {
+    "pantone": "Pantone 4240",
+    "hex": "#CABEA5"
+  },
+  {
+    "pantone": "Pantone 4241",
+    "hex": "#BBAC88"
+  },
+  {
+    "pantone": "Pantone 4242",
+    "hex": "#88764E"
+  },
+  {
+    "pantone": "Pantone 4243",
+    "hex": "#836A4E"
+  },
+  {
+    "pantone": "Pantone 4244",
+    "hex": "#7E6950"
+  },
+  {
+    "pantone": "Pantone 4245",
+    "hex": "#5B503F"
+  },
+  {
+    "pantone": "Pantone 4246",
+    "hex": "#CDC4A9"
+  },
+  {
+    "pantone": "Pantone 4247",
+    "hex": "#D2C1A9"
+  },
+  {
+    "pantone": "Pantone 4248",
+    "hex": "#D5C3A7"
+  },
+  {
+    "pantone": "Pantone 4249",
+    "hex": "#C3AD8C"
+  },
+  {
+    "pantone": "Pantone 4250",
+    "hex": "#BCA888"
+  },
+  {
+    "pantone": "Pantone 4251",
+    "hex": "#B7A37A"
+  },
+  {
+    "pantone": "Pantone 4252",
+    "hex": "#B6A184"
+  },
+  {
+    "pantone": "Pantone 4253",
+    "hex": "#BAA58D"
+  },
+  {
+    "pantone": "Pantone 4254",
+    "hex": "#BE9971"
+  },
+  {
+    "pantone": "Pantone 4255",
+    "hex": "#AD9777"
+  },
+  {
+    "pantone": "Pantone 4256",
+    "hex": "#AA9070"
+  },
+  {
+    "pantone": "Pantone 4257",
+    "hex": "#947D6E"
+  },
+  {
+    "pantone": "Pantone 4258",
+    "hex": "#6F5D58"
+  },
+  {
+    "pantone": "Pantone 4259",
+    "hex": "#312923"
+  },
+  {
+    "pantone": "Pantone 3599",
+    "hex": "#D7BB77"
+  },
+  {
+    "pantone": "Pantone 2467",
+    "hex": "#B7916C"
+  },
+  {
+    "pantone": "Pantone 2468",
+    "hex": "#97694C"
+  },
+  {
+    "pantone": "Pantone 2469",
+    "hex": "#8F573A"
+  },
+  {
+    "pantone": "Pantone 2470",
+    "hex": "#9A7F61"
+  },
+  {
+    "pantone": "Pantone 2471",
+    "hex": "#A58876"
+  },
+  {
+    "pantone": "Pantone 2472",
+    "hex": "#5F4028"
+  },
+  {
+    "pantone": "Pantone 4260",
+    "hex": "#CEA991"
+  },
+  {
+    "pantone": "Pantone 4261",
+    "hex": "#9E6E45"
+  },
+  {
+    "pantone": "Pantone 4262",
+    "hex": "#A9714F"
+  },
+  {
+    "pantone": "Pantone 4263",
+    "hex": "#AC6E4A"
+  },
+  {
+    "pantone": "Pantone 4264",
+    "hex": "#AC7153"
+  },
+  {
+    "pantone": "Pantone 4265",
+    "hex": "#9A6449"
+  },
+  {
+    "pantone": "Pantone 4266",
+    "hex": "#9B5F3A"
+  },
+  {
+    "pantone": "Pantone 4267",
+    "hex": "#C1B1A2"
+  },
+  {
+    "pantone": "Pantone 4268",
+    "hex": "#B4A08E"
+  },
+  {
+    "pantone": "Pantone 4269",
+    "hex": "#AB9278"
+  },
+  {
+    "pantone": "Pantone 4270",
+    "hex": "#958670"
+  },
+  {
+    "pantone": "Pantone 4271",
+    "hex": "#8F7B6B"
+  },
+  {
+    "pantone": "Pantone 4272",
+    "hex": "#7F6A5E"
+  },
+  {
+    "pantone": "Pantone 4273",
+    "hex": "#4F4644"
+  },
+  {
+    "pantone": "Pantone 4274",
+    "hex": "#B1B7BA"
+  },
+  {
+    "pantone": "Pantone 4275",
+    "hex": "#ABAEAA"
+  },
+  {
+    "pantone": "Pantone 4276",
+    "hex": "#9D9D9F"
+  },
+  {
+    "pantone": "Pantone 4277",
+    "hex": "#8E8B91"
+  },
+  {
+    "pantone": "Pantone 4278",
+    "hex": "#7E7D81"
+  },
+  {
+    "pantone": "Pantone 4279",
+    "hex": "#5B5358"
+  },
+  {
+    "pantone": "Pantone 4280",
+    "hex": "#252A36"
+  },
+  {
+    "pantone": "Pantone 4281",
+    "hex": "#B1B1B1"
+  },
+  {
+    "pantone": "Pantone 4282",
+    "hex": "#B0ABAC"
+  },
+  {
+    "pantone": "Pantone 4283",
+    "hex": "#A9A2A2"
+  },
+  {
+    "pantone": "Pantone 4284",
+    "hex": "#736B75"
+  },
+  {
+    "pantone": "Pantone 4285",
+    "hex": "#69616A"
+  },
+  {
+    "pantone": "Pantone 4286",
+    "hex": "#5F545D"
+  },
+  {
+    "pantone": "Pantone 4287",
+    "hex": "#464142"
+  },
+  {
+    "pantone": "Pantone 4288",
+    "hex": "#B6BCB3"
+  },
+  {
+    "pantone": "Pantone 4289",
+    "hex": "#999999"
+  },
+  {
+    "pantone": "Pantone 4290",
+    "hex": "#928B8B"
+  },
+  {
+    "pantone": "Pantone 4291",
+    "hex": "#756E6E"
+  },
+  {
+    "pantone": "Pantone 4292",
+    "hex": "#746D6F"
+  },
+  {
+    "pantone": "Pantone 4293",
+    "hex": "#635B64"
+  },
+  {
+    "pantone": "Pantone 4294",
+    "hex": "#575256"
+  },
+  {
+    "pantone": "Pantone 2473",
+    "hex": "#C3B7BC"
+  },
+  {
+    "pantone": "Pantone 2474",
+    "hex": "#B0A098"
+  },
+  {
+    "pantone": "Pantone 2475",
+    "hex": "#A0867F"
+  },
+  {
+    "pantone": "Pantone 2476",
+    "hex": "#826B69"
+  },
+  {
+    "pantone": "Pantone 2477",
+    "hex": "#705853"
+  },
+  {
+    "pantone": "Pantone 2478",
+    "hex": "#4B353A"
+  },
+  {
+    "pantone": "Pantone 2479",
+    "hex": "#3E332E"
+  },
+  {
+  "pantone": "Pantone 3517",
+  "hex": "#C82B1D"
+  }
+]

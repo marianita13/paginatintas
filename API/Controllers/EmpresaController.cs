@@ -44,20 +44,27 @@ public class EmpresaController: BaseController
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Empresa>> Post(EmpresaDto EmpresaDto)
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<EmpresaDto>> Post([FromBody] EmpresaDto dto)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+ 
+        var empresa = new Empresa
         {
-            var Empresa = _mapper.Map<Empresa>(EmpresaDto);
-            this._unitOfWork.Empresas.Add(Empresa);
-            await _unitOfWork.SaveAsync();
-            if(Empresa == null)
-            {
-                return BadRequest();
-            }
-            EmpresaDto.Id = Empresa.Id;
-            return CreatedAtAction(nameof(Post), new {id = EmpresaDto.Id}, EmpresaDto);
-        }
+            NombreComercial = dto.NombreComercial,
+            Telefono        = dto.Telefono ?? string.Empty,
+            FechaRegistro   = System.DateTime.UtcNow.ToString("o"),
+            Información     = dto.Información,
+            Formulas        = null   // evitar que EF intente insertar fórmulas
+        };
+ 
+        _unitOfWork.Empresas.Add(empresa);
+        await _unitOfWork.SaveAsync();
+ 
+        dto.Id = empresa.Id;
+        return CreatedAtAction(nameof(Get), new { id = empresa.Id }, dto);
+    }
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -70,7 +77,12 @@ public class EmpresaController: BaseController
                 return NotFound();
             }
             var empresa = await _unitOfWork.Empresas.GetByIdAsync(id);
+            if(empresa == null)
+            {
+                return NotFound();
+            }
             empresa.Información = EmpresaDto.Información;
+            empresa.Formulas = null;
             _unitOfWork.Empresas.Update(empresa);
             await _unitOfWork.SaveAsync();
             return EmpresaDto;

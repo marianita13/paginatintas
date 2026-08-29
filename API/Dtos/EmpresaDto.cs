@@ -15,6 +15,5 @@ namespace API.Dtos
         public string Telefono {get; set;}
         public DateTime FechaOrden { get; set; }
         public required string Información { get; set; }
-        public ICollection<Formula> Formulas { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace API.Dtos
         public string Correo { get; set; }
         public string PasswordHash { get; set; }
         public int PrimerInicio { get; set; }
-        public ICollection<Rol> Rols { get; set; }
+        public int Rol { get; set; }
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new HashSet<RefreshToken>();
     }
 }

@@ -5,20 +5,13 @@ const API_URL = window.location.hostname === '127.0.0.1' || window.location.host
   ? 'http://localhost:5115/api' 
   : '/api';
 
-// MYSQLHOST: mysql.railway.internal
-// MYSQLPORT: 3306
-// MYSQLDATABASE: railway
-// MYSQLUSER: root
-// MYSQLPASSWORD: ofdGxMnVHtQewtTGPaWNuAxxOWKFNprw
-// MYSQLURL: mysql://root:ofdGxMnVHtQewtTGPaWNuAxxOWKFNprw@mysql.railway.internal:3306/railway
-
 // ════════════════════════════════════════
 //  HELPERS DE ROL
-//  Roles del backend: "Administrador", "Operarios", "Admin2"
+//  Roles del backend: "Administrador", "Operarios", "ventas"
 // ════════════════════════════════════════
-function esAdmin()     { return (currentUser?.rol || '').toLowerCase() === 'administrador'; }
-function esAdmin2()    { return (currentUser?.rol || '').toLowerCase() === 'admin2'; }
-function esOperario()  { return (currentUser?.rol || '').toLowerCase() === 'operarios'; }
+function esAdmin()    { return (currentUser?.rol || '').toLowerCase() === 'administrador'; }
+function esVentas()   { return (currentUser?.rol || '').toLowerCase() === 'ventas'; }
+function esOperario() { return (currentUser?.rol || '').toLowerCase() === 'operarios'; }
 
 // ════════════════════════════════════════
 //  ESTADO GLOBAL
@@ -42,14 +35,27 @@ let ordenPantonesSeleccionados = []; // [{ id, nombreColor, hex }]
 async function cargarPantoneMap() {
   if (Object.keys(pantoneMap).length > 0) return;
   try {
-    const [resC, resU, resKorchy] = await Promise.all([
+    const [resLocal, resC, resU, resKorchy] = await Promise.all([
+      fetch('./pantoneslocales.json'),
       fetch('https://raw.githubusercontent.com/brettapeters/pantones/master/pantone-coated.json'),
       fetch('https://raw.githubusercontent.com/brettapeters/pantones/master/pantone-uncoated.json'),
       fetch('https://raw.githubusercontent.com/Korchy/blender-color-matching/master/pantone.json')
     ]);
+    const locales  = resLocal.ok  ? await resLocal.json()  : {};
     const coated   = resC.ok       ? await resC.json()       : {};
     const uncoated = resU.ok       ? await resU.json()       : {};
     const korchy   = resKorchy.ok  ? await resKorchy.json()  : [];
+
+   // 1. Cargar archivo local (Array de objetos)
+    if (Array.isArray(locales)) {
+      locales.forEach(item => {
+        if (item && item.pantone && item.hex) {
+          const clave = normalizarPantone(item.pantone);
+          const hex = String(item.hex).trim();
+          pantoneMap[clave] = hex.startsWith('#') ? hex : '#' + hex;
+        }
+      });
+    }
 
     const todos = { ...coated, ...uncoated };
     Object.keys(todos).forEach(nombre => {
@@ -306,22 +312,33 @@ function showMainPage() {
 
     const rol = (currentUser.rol || '').toLowerCase();
 
-    // // Inventario y Base de Datos: Admin y Admin2
-    if (rol === 'administrador' || rol === 'admin2') {
-      document.querySelector('.nav-item-inventario').style.display = 'flex';
-      document.querySelector('.nav-item-basedatos').style.display  = 'flex';
-      document.querySelector('.nav-item-usuarios').style.display   = 'flex';
+    // Ocultar todo por defecto primero
+    const navEmpresas   = document.querySelector('[data-tab="empresas"]');
+    const navOrdenes    = document.querySelector('[data-tab="ordenes"]');
+    const navInventario = document.querySelector('.nav-item-inventario');
+    const navBasedatos  = document.querySelector('.nav-item-basedatos');
+    const navUsuarios   = document.querySelector('.nav-item-admin');
+
+    [navEmpresas, navOrdenes, navInventario, navBasedatos, navUsuarios].forEach(el => {
+      if (el) el.style.display = 'none';
+    });
+
+    if (rol === 'administrador') {
+      // Todo visible
+      [navEmpresas, navOrdenes, navInventario, navBasedatos, navUsuarios].forEach(el => {
+        if (el) el.style.display = 'flex';
+      });
+
+    } else if (rol === 'ventas') {
+      // Pantones (ya visible por defecto) + Inventario + Base de Datos
+      if (navInventario) navInventario.style.display = 'flex';
+      if (navBasedatos)  navBasedatos.style.display  = 'flex';
+
+    } else if (rol === 'operarios') {
+      // Pantones (ya visible por defecto) + Empresas + Órdenes
+      if (navEmpresas) navEmpresas.style.display = 'flex';
+      if (navOrdenes)  navOrdenes.style.display  = 'flex';
     }
-    // // Usuarios: solo Admin
-    // if (rol === 'administrador') {
-    //   document.querySelector('.nav-item-admin').style.display = 'flex';
-    //   document.querySelector('.nav-item-empresas').style.display = 'flex';
-    // }
-    // // Empresas: Admin y Operarios (no Admin2)
-    // if (rol === 'admin2') {
-    //   const btnEmpresas = document.querySelector('[data-tab="empresas"]');
-    //   if (btnEmpresas) btnEmpresas.style.display = 'flex';
-    // }
   }
 
   loginPage.style.opacity = '0'; loginPage.style.transition = 'opacity 0.4s ease';
@@ -459,7 +476,6 @@ function abrirModalMezcla(idFormula, nombreColor, hex) {
           <div style="width:48px;height:48px;border-radius:12px;background:${hex};border:2px solid var(--border);flex-shrink:0"></div>
           <div>
             <div style="font-size:0.72rem;color:var(--text-muted);font-weight:700;letter-spacing:.1em;text-transform:uppercase">Proporciones para 100g</div>
-            <div style="font-size:0.78rem;color:var(--text-2);margin-top:2px">Solo visualización — el stock no se descuenta aquí</div>
           </div>
         </div>
         <table class="tabla-mezcla">
@@ -644,13 +660,11 @@ async function cargarOrdenes() {
       return;
     }
     const formulaMap = Object.fromEntries(formulas.map(f => [f.id ?? f.Id, f]));
-    
     allOrdenes = ordenes.map(o => {
-      const idOrden = o.id;
+      const idOrden = o.id ?? o.Id;
       const relacionesDeEstaOrden = ordenFormulas.filter(of => {
         const fkOrden = of.idOrdenImpresion ?? of.IdOrdenImpresion ?? of.idOrden ?? of.IdOrden;
         return fkOrden == idOrden;
-        
       });
       const pantonesDots = relacionesDeEstaOrden.map(of => {
         const idFormula = of.idFormula ?? of.IdFormula;
@@ -673,26 +687,22 @@ function renderOrdenes(lista) {
   const tbody = document.getElementById('tabla-ordenes');
   if (!lista.length) { tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">Sin resultados.</td></tr>'; return; }
   tbody.innerHTML = lista.map(o => {
-    
-    const idOrden     = o.id;
-    const estado      = o.estado;
+    const idOrden     = o.id ?? o.Id;
+    const estado      = o.estado ?? o.Estado;
     const estadoClass = estado ? 'ok' : 'danger';
     const estadoLabel = estado ? 'Completado' : 'Prueba de color';
-    const numeroOrden = o.numeroOrden;
-    const fechaOrden  = o.fechaOrden;
-    const pruebaColor = o.pruebaColor ?? 0;
-    const numeroCajas = o.numeroCajas ?? 0;
-    const costoTotal  = o.costoTotal  ?? 0;
+    const numeroOrden = o.numeroOrden ?? o.NumeroOrden;
+    const fechaOrden  = o.fechaOrden  ?? o.FechaOrden;
+    const pruebaColor = o.pruebaColor ?? o.PruebaColor ?? 0;
+    const numeroCajas = o.numeroCajas ?? o.NumeroCajas ?? 0;
+    const costoTotal  = o.costoTotal  ?? o.CostoTotal  ?? 0;
     return `<tr style="cursor:pointer" onclick="verOrden(${idOrden})">
       <td style="font-weight:700">#${numeroOrden}</td>
       <td>${new Date(fechaOrden).toLocaleDateString('es-CO')}</td>
       <td><div style="display:flex;gap:4px;flex-wrap:wrap">${o._pantonesDots}</div></td>
       <td>${pruebaColor}</td>
       <td>${numeroCajas}</td>
-      <td>$${costoTotal.toLocaleString('es-CO', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0
-})}</td>
+      <td>$${costoTotal.toLocaleString('es-CO')}</td>
       <td><span class="stock-badge ${estadoClass}">${estadoLabel}</span></td>
     </tr>`;
   }).join('');
@@ -702,8 +712,8 @@ function filtrarOrdenes() {
   const q     = (document.getElementById('orden-search-num')?.value || '').trim().toLowerCase();
   const fecha = document.getElementById('orden-search-fecha')?.value || '';
   const filtradas = allOrdenes.filter(o => {
-    const numero     = String(o.numeroOrden ?? '').toLowerCase();
-    const fechaOrden =o.fechaOrden.split('T')[0];
+    const numero     = String(o.numeroOrden ?? o.NumeroOrden ?? '').toLowerCase();
+    const fechaOrden = new Date(o.fechaOrden ?? o.FechaOrden).toISOString().split('T')[0];
     return (!q || numero.includes(q)) && (!fecha || fechaOrden === fecha);
   });
   renderOrdenes(filtradas);
@@ -787,11 +797,17 @@ async function verOrden(id) {
         </div>
       </div>
 
+      <!-- UN SOLO BOTÓN: guarda cajas + marca completada -->
       <div style="display:flex;gap:10px;margin-top:4px">
         <button class="btn-primary" style="flex:1;background:linear-gradient(135deg,#16a34a,#15803d)"
           onclick="guardarYCompletar(${res.id})">
           ✅ Guardar y completar
         </button>
+        ${res.estado
+          ? `<button style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px;
+              background:var(--surface-2);cursor:pointer;font-family:inherit;font-size:.78rem"
+              onclick="cambiarEstadoOrden(${res.id}, false)">↩ Reabrir orden</button>`
+          : ''}
       </div>
       <div id="ord-upd-msg" class="config-msg" style="display:none;margin-top:8px"></div>`;
 
@@ -857,7 +873,7 @@ function actualizarCalculoOrden() {
                   <td style="text-align:right;font-size:0.72rem;color:var(--text-muted);padding:4px 0">
                     $${costoPorGramo.toLocaleString('es-CO')}</td>
                   <td style="text-align:right;font-weight:700;font-size:0.78rem;padding:4px 0">
-                    $${Math.round(subtotal).toLocaleString('es-CO')}</td>
+                    $${subtotal.toLocaleString('es-CO')}</td>
                 </tr>`;
             }).join('')}
           </tbody>
@@ -865,7 +881,12 @@ function actualizarCalculoOrden() {
       </div>`;
   }).join('');
 
-  if (costoEl) costoEl.textContent = '$' + Math.round(costoTotal).toLocaleString('es-CO');
+  if (costoEl) {
+    costoEl.textContent = '$' + costoTotal.toLocaleString('es-CO', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  }
 }
 
 // Guarda cajas + costo + marca como completada en una sola acción
@@ -880,23 +901,21 @@ async function guardarYCompletar(id) {
 
   // Leer costo total del display calculado
   const costoText  = document.getElementById('calculo-costo-valor')?.textContent || '0';
-  const costoTotal = parseInt(costoText.replace(/\D/g, ''), 10);
+  const costoLimpio = parseInt(costoText.replace(/\D/g, ''), 10);
 
   try {
     // 1. Guardar cajas y costo
     const r1 = await apiFetch(`OrdenImpresion/${id}/cajas`, 'PUT', {
       pruebaColor: cajasPrueba,
       numeroCajas: cajasOrden,
-      costoTotal:  costoTotal
+      costoTotal:  costoLimpio
     });
-    if (r1?.error || !r1) { showModalMsg(msg, 'No se pudo actualizar las cajas.', 'err'); return; }
+    if (!r1 || r1?.error) { showModalMsg(msg, 'No se pudo actualizar las cajas.', 'err'); return; }
 
     // 2. Marcar como completada
-    const r2 = await apiFetch(`OrdenImpresion/${id}/estado`, 'PUT', true);
-    if (r2?.error || !r2) { showModalMsg(msg, 'Cajas guardadas pero no se pudo completar.', 'err'); return; }
+    cambiarEstadoOrden(id, true);
 
     document.getElementById('modal-orden').classList.remove('open');
-    cambiarEstadoOrden(id, true); // actualizar estado en la tabla
     cargarOrdenes();
   } catch (e) { showModalMsg(msg, 'Error: ' + e.message, 'err'); }
 }
@@ -905,7 +924,7 @@ async function guardarYCompletar(id) {
 async function cambiarEstadoOrden(id, nuevoEstado) {
   try {
     const res = await apiFetch(`OrdenImpresion/${id}/estado`, 'PUT', nuevoEstado);
-    if (res?.error || !res) { alert('No se pudo cambiar el estado.'); return; }
+    if (!res || res?.error) { alert('No se pudo cambiar el estado.'); return; }
     document.getElementById('modal-orden').classList.remove('open');
     cargarOrdenes();
   } catch (e) { alert('Error: ' + e.message); }
@@ -939,6 +958,14 @@ function filtrarEmpresas() {
 
 function renderEmpresas(lista) {
   const cont = document.getElementById('empresas-list');
+ 
+  // Resetear siempre el panel de detalle al redibujar la lista
+  document.getElementById('empresa-detail').innerHTML = `
+    <div class="empty-detail">
+      <div class="empty-icon-lg">🏢</div>
+      <p>Selecciona una empresa para ver su información</p>
+    </div>`;
+ 
   if (!lista.length) {
     cont.innerHTML = '<div class="no-data">Sin resultados.</div>';
     return;
@@ -948,9 +975,46 @@ function renderEmpresas(lista) {
       <div class="empresa-icon">${iniciales(e.nombreComercial)}</div>
       <div>
         <div class="empresa-name">${escHtml(e.nombreComercial)}</div>
-        <div class="empresa-nit">${e.telefono || ''}</div>
       </div>
     </div>`).join('');
+}
+
+function abrirModalNuevaEmpresa() {
+  ['ne-nombre', 'ne-informacion'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('ne-msg').style.display = 'none';
+  document.getElementById('modal-nueva-empresa').classList.add('open');
+}
+
+function cerrarModalNuevaEmpresa(e) {
+  if (e.target === document.getElementById('modal-nueva-empresa'))
+    document.getElementById('modal-nueva-empresa').classList.remove('open');
+}
+
+async function guardarNuevaEmpresa() {
+  const msg    = document.getElementById('ne-msg');
+  const nombre = document.getElementById('ne-nombre').value.trim();
+
+  if (!nombre) { showModalMsg(msg, 'El nombre comercial es obligatorio.', 'err'); return; }
+
+  const dto = {
+    nombreComercial: nombre,
+    telefono:        '',
+    información:     document.getElementById('ne-informacion').value.trim()
+  };
+
+  try {
+    const res = await apiFetch('Empresa', 'POST', dto);
+    if (!res || res?.error) {
+      showModalMsg(msg, res || 'No se pudo guardar la empresa.', 'err'); return;
+    }
+    document.getElementById('modal-nueva-empresa').classList.remove('open');
+    cargarEmpresas(); // refresca la lista
+  } catch (e) {
+    showModalMsg(msg, 'Error: ' + e.message, 'err');
+  }
 }
 
 async function verEmpresa(id, el) {
@@ -970,7 +1034,23 @@ async function verEmpresa(id, el) {
     const infoActual = resEmp.informacion || resEmp.Informacion || resEmp.información || '';
 
     detail.innerHTML = `
-      <div class="empresa-detail-name">${escHtml(resEmp.nombreComercial || resEmp.NombreComercial)}</div> 
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px">
+        <div class="empresa-detail-name">${escHtml(resEmp.nombreComercial || resEmp.NombreComercial)}</div>
+        <button onclick="eliminarEmpresa(${id})"
+          title="Eliminar empresa"
+          style="flex-shrink:0;padding:7px 10px;background:rgba(200,32,46,0.1);border:1px solid rgba(200,32,46,0.25);
+            border-radius:8px;cursor:pointer;color:var(--red);transition:all .2s;display:flex;align-items:center;gap:6px;
+            font-family:inherit;font-size:.75rem;font-weight:700"
+          onmouseover="this.style.background='var(--red)';this.style.color='#fff'"
+          onmouseout="this.style.background='rgba(200,32,46,0.1)';this.style.color='var(--red)'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6"/><path d="M14 11v6"/>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+          </svg>
+          Eliminar
+        </button>
+      </div>
 
       <div class="detail-section">
         <div class="detail-section-title">Información / Comentarios</div>
@@ -999,20 +1079,22 @@ async function verEmpresa(id, el) {
 async function guardarInformacionEmpresa(id) {
   const input = document.getElementById(`info-empresa-${id}`);
   const msgEl = document.getElementById(`info-empresa-msg-${id}`);
+  if (!input) return;
 
   try {
     // Primero traer la empresa completa para no pisar otros campos con el PUT
     const resGet = await apiFetch(`Empresa/${id}`);
+    // const emp    = await resGet.json();
 
     // Actualizar solo el campo informacion
     const body = {
       ...resGet,
-      Información: input.value.trim()   // sin tilde — nombre exacto en la entidad C#
+      informacion: input.value.trim()   // sin tilde — nombre exacto en la entidad C#
     };
 
     const res = await apiFetch(`Empresa/${id}`, 'PUT', body);
 
-    if (res && (res.id || res.Información || !res.error)) {
+    if (res.ok) {
       if (msgEl) {
         msgEl.textContent  = '✅ Información guardada.';
         msgEl.style.color  = '#16a34a';
@@ -1035,6 +1117,24 @@ async function guardarInformacionEmpresa(id) {
     }
     console.error('Error al actualizar empresa:', error);
   }
+}
+
+// ════════════════════════════════════════
+//  ELIMINAR EMPRESA
+// ════════════════════════════════════════
+async function eliminarEmpresa(id) {
+  if (!confirm('¿Eliminar esta empresa? Esta acción no se puede deshacer.')) return;
+  try {
+    const res = await apiFetch(`Empresa/${id}`, 'DELETE');
+    if (res?.error) { alert('No se pudo eliminar la empresa.'); return; }
+    // Limpiar el panel de detalle y recargar la lista
+    document.getElementById('empresa-detail').innerHTML = `
+      <div class="empty-detail">
+        <div class="empty-icon-lg">🏢</div>
+        <p>Selecciona una empresa para ver su información</p>
+      </div>`;
+    cargarEmpresas();
+  } catch (e) { alert('Error: ' + e.message); }
 }
 
 // ════════════════════════════════════════
@@ -1126,7 +1226,8 @@ async function cargarBaseDatos() {
   const tbody = document.getElementById('tabla-basedatos');
   tbody.innerHTML = '<tr><td colspan="8" class="loading-cell">Cargando...</td></tr>';
   try {
-    const res = await apiFetch('InventarioTinta');
+    const res      = await apiFetch('InventarioTinta');
+    // const registros = await res.json();
     console.log(res);
     
     if (!res.length) {
@@ -1255,7 +1356,7 @@ async function guardarEntradaTinta() {
         showModalMsg(msg, primerosErrores || 'Error de validación.', 'err');
         return;
       }
-      showModalMsg(msg, d.mensaje || d.title || 'Error al guardar.', 'err');
+      showModalMsg(msg, res.mensaje || res.title || 'Error al guardar.', 'err');
       return;
     }
 
@@ -1270,7 +1371,7 @@ async function eliminarRegistroTinta(id) {
   if (!confirm('¿Eliminar este registro? Esta acción no se puede deshacer.')) return;
   try {
     const res = await apiFetch(`InventarioTinta/${id}`, 'DELETE');
-    if (!res.ok) { alert('No se pudo eliminar.'); return; }
+    if (res?.error) { alert('No se pudo eliminar.'); return; }
     cargarBaseDatos();
   } catch (e) { alert('Error: ' + e.message); }
 }
@@ -1281,27 +1382,43 @@ async function eliminarRegistroTinta(id) {
 async function cargarUsuarios() {
   const tbody = document.getElementById('tabla-usuarios');
   tbody.innerHTML = '<tr><td colspan="5" class="loading-cell">Cargando...</td></tr>';
+
   try {
+    const rolesNombre = {
+      1: 'Administrador',
+      2: 'Ventas',
+      3: 'Operario'
+    };
+
     const res = await apiFetch('Usuario');
-    // const usuarios = await res.json();
-    tbody.innerHTML = res.map(u => `
-      <tr>
-        <td><div class="user-row-avatar">${iniciales(u.nombre)}</div></td>
-        <td>${escHtml(u.nombre)}</td>
-        <td>${escHtml(u.correo)}</td>
-        <td><span class="role-badge ${(u.rol||'').toLowerCase()==='1'?'2':'3'}">${u.rol}</span></td>
-        <td>${u.correo !== currentUser.correo
-          ? `<button class="btn-danger" onclick="eliminarUsuario(${u.id},'${escHtml(u.nombre)}')">Eliminar</button>`
-          : '<span style="font-size:.7rem;color:var(--text-muted)">(tú)</span>'}</td>
-      </tr>`).join('') || '<tr><td colspan="5" class="loading-cell">No hay usuarios.</td></tr>';
-  } catch (e) { tbody.innerHTML = `<tr><td colspan="5" class="error-cell">Error: ${escHtml(e.message)}</td></tr>`; }
+
+    tbody.innerHTML = res.map(u => {
+      const rolId = parseInt(u.rol) || 0;
+      const nombreRol = rolesNombre[rolId] || 'Sin Rol';
+      const claseRol = `role-${rolId}`; // Genera clases como role-1, role-2, role-3
+
+      return `
+        <tr>
+          <td><div class="user-row-avatar">${iniciales(u.nombre)}</div></td>
+          <td>${escHtml(u.nombre)}</td>
+          <td>${escHtml(u.correo)}</td>
+          <td><span class="role-badge ${claseRol}">${nombreRol}</span></td>
+          <td>${u.correo !== currentUser.correo
+            ? `<button class="btn-danger" onclick="eliminarUsuario(${u.id},'${escHtml(u.nombre)}')">Eliminar</button>`
+            : '<span style="font-size:.7rem;color:var(--text-muted)">(tú)</span>'}</td>
+        </tr>`;
+    }).join('') || '<tr><td colspan="5" class="loading-cell">No hay usuarios.</td></tr>';
+
+  } catch (e) { 
+    tbody.innerHTML = `<tr><td colspan="5" class="error-cell">Error: ${escHtml(e.message)}</td></tr>`; 
+  }
 }
 
 async function eliminarUsuario(id, nombre) {
   if (!confirm(`¿Eliminar a "${nombre}"?`)) return;
   try {
     const res = await apiFetch(`Usuario/${id}`, 'DELETE');
-    if (!res && res.error) { alert('No se pudo eliminar.'); return; }
+    if (res?.error) { alert('No se pudo eliminar.'); return; }
     cargarUsuarios();
   } catch (e) { alert('Error: ' + e.message); }
 }
@@ -1330,7 +1447,7 @@ async function crearUsuario() {
     if (!res || res.error) { showModalMsg(msg, res.mensaje || 'Error al crear usuario.', 'err'); return; }
     document.getElementById('modal-usuario').classList.remove('open');
     cargarUsuarios();
-  } catch (e) { showModalMsg(msg, 'Error: ' + e.message, 'err'); }
+  } catch (e) { showModalMsg(msg, 'Error: '  + e.message, 'err'); }
 }
 
 // ════════════════════════════════════════
