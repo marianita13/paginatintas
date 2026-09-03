@@ -283,6 +283,8 @@ async function handleLogin() {
     localStorage.setItem('refreshToken', data.refreshToken || '');
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
     document.getElementById('error-msg').style.display = 'none';
+    // Recargar completamente la app para refrescar vistas y estados en memoria
+    window.location.reload();
     showMainPage();
   } catch { showError('No se pudo conectar con el servidor.'); }
   finally { btn.disabled = false; btn.textContent = 'Iniciar Sesión'; }
@@ -334,10 +336,10 @@ function showMainPage() {
       if (navInventario) navInventario.style.display = 'flex';
       if (navBasedatos)  navBasedatos.style.display  = 'flex';
 
-    } else if (rol === 'operarios') {
+    } else if (rol === 'operario') {
       // Pantones (ya visible por defecto) + Empresas + Órdenes
-      if (navEmpresas) navEmpresas.style.display = 'flex';
-      if (navOrdenes)  navOrdenes.style.display  = 'flex';
+      navEmpresas.style.display = 'flex';
+      navOrdenes.style.display  = 'flex';
     }
   }
 
@@ -366,6 +368,7 @@ function handleLogout() {
     document.getElementById('error-msg').style.display = 'none';
     setTimeout(() => { loginPage.style.opacity = '1'; }, 20);
   }, 300);
+  window.location.reload(); // Garantiza limpiar vistas previas
 }
 
 // ════════════════════════════════════════
