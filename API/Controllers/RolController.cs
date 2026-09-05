@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
-
+[Authorize]
 public class RolController: BaseController
     {
         private readonly IUnitOfWork _unitOfWork;

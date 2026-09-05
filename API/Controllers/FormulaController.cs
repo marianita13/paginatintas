@@ -7,8 +7,10 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
+[Authorize]
 public class FormulaController: BaseController
     {
         private readonly IUnitOfWork _unitOfWork;

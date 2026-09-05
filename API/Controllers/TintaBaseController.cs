@@ -8,8 +8,10 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using API.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
+[Authorize]
 public class TintaBaseController: BaseController
     {
         private readonly IUnitOfWork _unitOfWork;

@@ -7,11 +7,11 @@ const API_URL = window.location.hostname === '127.0.0.1' || window.location.host
 
 // ════════════════════════════════════════
 //  HELPERS DE ROL
-//  Roles del backend: "Administrador", "Operarios", "ventas"
+//  Roles del backend: "Administrador", "Operario", "ventas"
 // ════════════════════════════════════════
 function esAdmin()    { return (currentUser?.rol || '').toLowerCase() === 'administrador'; }
 function esVentas()   { return (currentUser?.rol || '').toLowerCase() === 'ventas'; }
-function esOperario() { return (currentUser?.rol || '').toLowerCase() === 'operarios'; }
+function esOperario() { return (currentUser?.rol || '').toLowerCase() === 'operario'; }
 
 // ════════════════════════════════════════
 //  ESTADO GLOBAL
@@ -20,6 +20,8 @@ let token       = localStorage.getItem('token') || null;
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 let allColors   = [];
 let allEmpresas = [];
+let ordenDetalleActual = null;
+let costoTotalCalculado = 0;
 let allOrdenes  = []; // cache para filtrado local // cache para filtrado local
 
 // Diccionario Pantone → HEX
@@ -692,6 +694,9 @@ async function cargarOrdenes() {
 
 function renderOrdenes(lista) {
   const tbody = document.getElementById('tabla-ordenes');
+  // Ocultar la columna de costo cada vez que se dibuja la tabla (no solo al iniciar sesión)
+  const thCostoOrden = document.getElementById('th-costo-orden');
+  if (thCostoOrden) thCostoOrden.style.display = esOperario() ? 'none' : '';
   if (!lista.length) { tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">Sin resultados.</td></tr>'; return; }
   tbody.innerHTML = lista.map(o => {
     const idOrden     = o.id ?? o.Id;
@@ -873,7 +878,6 @@ function actualizarCalculoOrden() {
           </thead>
           <tbody>
             ${tintas.map(t => {
-              // Regla de tres: X = (cajasOrden × gramosBase) / cajasPrueba
               const gramosOrden   = Math.round((cajasOrden * t.gramosNecesarios) / cajasPrueba);
               const costoPorGramo = t.precioUnitario || 0;
               const subtotal      = gramosOrden * costoPorGramo;
