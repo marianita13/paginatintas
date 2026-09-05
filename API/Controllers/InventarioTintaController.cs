@@ -53,6 +53,18 @@ public class InventarioTintaController: BaseController
         {
             var InventarioTinta = _mapper.Map<InventarioTinta>(InventarioTintaDto);
             this._unitOfWork.InventarioTintas.Add(InventarioTinta);
+
+            if (InventarioTinta.IdTintaBase.HasValue)
+            {
+                var tintaBase = await _unitOfWork.TintaBases.GetByIdAsync(InventarioTinta.IdTintaBase.Value);
+                if (tintaBase == null)
+                {
+                    return BadRequest("La tinta base indicada no existe.");
+                }
+                tintaBase.StockActual += InventarioTinta.Presentacion;
+                _unitOfWork.TintaBases.Update(tintaBase);
+            }
+
             await _unitOfWork.SaveAsync();
             if(InventarioTinta == null)
             {

@@ -409,8 +409,13 @@
         <input type="email" id="nu-correo" placeholder="ana@carbolsas.com"></div>
       <div class="form-group-flat"><label>Contraseña inicial</label>
         <input type="password" id="nu-pass" placeholder="••••••••"></div>
-      <div class="form-group-flat"><label>Rol (ID)</label>
-        <input type="number" id="nu-rol-id" placeholder="Ej: 1 = Admin principal, 2= Admin secundario, 3 = Operarios"></div>
+      <div class="form-group-flat"><label>Rol</label>
+        <select id="nu-rol-id">
+          <option value="">Selecciona un rol</option>
+          <option value="1">Administrador</option>
+          <option value="2">Ventas</option>
+          <option value="3">Operario</option>
+        </select></div>
       <div id="nu-msg" class="config-msg" style="display:none"></div>
       <button class="btn-primary" onclick="crearUsuario()" style="width:100%;margin-top:8px">Crear usuario</button>
     </div>
@@ -437,8 +442,8 @@
         <input type="text" id="nt-proveedor" placeholder="Ej: Sun Chemical"></div>
       <div class="form-group-flat"><label>Fabricante</label>
         <input type="text" id="nt-fabricante" placeholder="Ej: Sun Chemical"></div>
-      <div class="form-group-flat"><label>Presentación</label>
-        <input type="text" id="nt-presentacion" placeholder="Ej: Lata 1kg"></div>
+      <div class="form-group-flat"><label>Presentación (kg)</label>
+  <input type="number" step="0.01" id="nt-presentacion" placeholder="Ej: 2"></div>
       <div class="form-group-flat"><label>Costo de Tinta ($)</label>
         <input type="number" step="0.01" id="nt-costo" placeholder="Ej: 45000"></div>
       <div id="nt-msg" class="config-msg" style="display:none"></div>

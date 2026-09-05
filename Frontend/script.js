@@ -341,6 +341,10 @@ function showMainPage() {
       navEmpresas.style.display = 'flex';
       navOrdenes.style.display  = 'flex';
     }
+
+    // El operario no debe ver el costo de las órdenes
+    const thCostoOrden = document.getElementById('th-costo-orden');
+    if (thCostoOrden) thCostoOrden.style.display = esOperario() ? 'none' : '';
   }
 
   loginPage.style.opacity = '0'; loginPage.style.transition = 'opacity 0.4s ease';
@@ -699,13 +703,15 @@ function renderOrdenes(lista) {
     const pruebaColor = o.pruebaColor ?? o.PruebaColor ?? 0;
     const numeroCajas = o.numeroCajas ?? o.NumeroCajas ?? 0;
     const costoTotal  = o.costoTotal  ?? o.CostoTotal  ?? 0;
+    const costoCelda = esOperario() ? '' : `<td>$${costoTotal.toLocaleString('es-CO')}</td>`;
+// ... y en el template: ${costoCelda} en vez de <td>$...</td>
     return `<tr style="cursor:pointer" onclick="verOrden(${idOrden})">
       <td style="font-weight:700">#${numeroOrden}</td>
       <td>${new Date(fechaOrden).toLocaleDateString('es-CO')}</td>
       <td><div style="display:flex;gap:4px;flex-wrap:wrap">${o._pantonesDots}</div></td>
       <td>${pruebaColor}</td>
       <td>${numeroCajas}</td>
-      <td>$${costoTotal.toLocaleString('es-CO')}</td>
+      ${costoCelda}
       <td><span class="stock-badge ${estadoClass}">${estadoLabel}</span></td>
     </tr>`;
   }).join('');
@@ -793,11 +799,12 @@ async function verOrden(id) {
           Cantidad de tinta a preparar para la orden
         </div>
         <div id="calculo-orden-resultado"></div>
+        ${esOperario() ? '' : `
         <div style="margin-top:12px;padding:12px;border-radius:8px;background:var(--navy);color:#fff;
           display:flex;justify-content:space-between;align-items:center">
           <span style="font-size:0.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">Costo total estimado</span>
           <span id="calculo-costo-valor" style="font-size:1.2rem;font-weight:800">$0</span>
-        </div>
+        </div>`}
       </div>
 
       <!-- UN SOLO BOTÓN: guarda cajas + marca completada -->
@@ -815,6 +822,7 @@ async function verOrden(id) {
       <div id="ord-upd-msg" class="config-msg" style="display:none;margin-top:8px"></div>`;
 
     _ordenDetalleActual = res;
+    _costoTotalCalculado = 0;
     if (res.pruebaColor > 0 && res.numeroCajas > 0) actualizarCalculoOrden();
 
   } catch (e) {
@@ -829,11 +837,12 @@ let _ordenDetalleActual = null;
 
 // Recalcula en tiempo real cuando cambian las cajas
 function actualizarCalculoOrden() {
-  const cajasPrueba = parseFloat(document.getElementById('ord-prueba-cajas')?.value) || 0;
-  const cajasOrden  = parseFloat(document.getElementById('ord-total-cajas')?.value)  || 0;
-  const seccion     = document.getElementById('calculo-orden-section');
-  const resultado   = document.getElementById('calculo-orden-resultado');
-  const costoEl     = document.getElementById('calculo-costo-valor');
+  const cajasPrueba  = parseFloat(document.getElementById('ord-prueba-cajas')?.value) || 0;
+  const cajasOrden   = parseFloat(document.getElementById('ord-total-cajas')?.value)  || 0;
+  const seccion      = document.getElementById('calculo-orden-section');
+  const resultado    = document.getElementById('calculo-orden-resultado');
+  const costoEl      = document.getElementById('calculo-costo-valor');
+  const ocultarCosto = esOperario();
   if (!seccion || !resultado || !_ordenDetalleActual) return;
 
   if (!cajasPrueba || !cajasOrden) { seccion.style.display = 'none'; return; }
@@ -855,10 +864,11 @@ function actualizarCalculoOrden() {
                 text-transform:uppercase;color:var(--text-muted);padding:3px 0">Tinta</th>
               <th style="text-align:right;font-size:.65rem;font-weight:700;letter-spacing:.08em;
                 text-transform:uppercase;color:var(--text-muted);padding:3px 0">Gramos</th>
+              ${ocultarCosto ? '' : `
               <th style="text-align:right;font-size:.65rem;font-weight:700;letter-spacing:.08em;
                 text-transform:uppercase;color:var(--text-muted);padding:3px 0">Costo/g</th>
               <th style="text-align:right;font-size:.65rem;font-weight:700;letter-spacing:.08em;
-                text-transform:uppercase;color:var(--text-muted);padding:3px 0">Subtotal</th>
+                text-transform:uppercase;color:var(--text-muted);padding:3px 0">Subtotal</th>`}
             </tr>
           </thead>
           <tbody>
@@ -873,16 +883,19 @@ function actualizarCalculoOrden() {
                   <td style="padding:4px 0;font-size:0.78rem;color:var(--text)">${escHtml(t.nombreTinta)}</td>
                   <td style="text-align:right;font-weight:700;font-size:0.78rem;color:var(--navy);
                     padding:4px 0">${gramosOrden}g</td>
+                  ${ocultarCosto ? '' : `
                   <td style="text-align:right;font-size:0.72rem;color:var(--text-muted);padding:4px 0">
                     $${costoPorGramo.toLocaleString('es-CO')}</td>
                   <td style="text-align:right;font-weight:700;font-size:0.78rem;padding:4px 0">
-                    $${subtotal.toLocaleString('es-CO')}</td>
+                    $${subtotal.toLocaleString('es-CO')}</td>`}
                 </tr>`;
             }).join('')}
           </tbody>
         </table>
       </div>`;
   }).join('');
+
+  _costoTotalCalculado = costoTotal;
 
   if (costoEl) {
     costoEl.textContent = '$' + costoTotal.toLocaleString('es-CO', {
@@ -902,9 +915,9 @@ async function guardarYCompletar(id) {
     showModalMsg(msg, 'Ingresa ambos valores de cajas.', 'err'); return;
   }
 
-  // Leer costo total del display calculado
-  const costoText  = document.getElementById('calculo-costo-valor')?.textContent || '0';
-  const costoLimpio = parseInt(costoText.replace(/\D/g, ''), 10);
+  // Usar el costo total calculado en memoria (se calcula siempre,
+  // se muestre o no en pantalla según el rol del usuario)
+  const costoLimpio = Math.round(_costoTotalCalculado) || 0;
 
   try {
     // 1. Guardar cajas y costo
@@ -941,13 +954,14 @@ function cerrarModalOrden(e) {
 // ════════════════════════════════════════
 //  EMPRESAS
 // ════════════════════════════════════════
+// Ahora
 async function cargarEmpresas() {
   const lista = document.getElementById('empresas-list');
   lista.innerHTML = '<div class="loading-state">Cargando empresas...</div>';
   try {
     const res = await apiFetch('Empresa');
-    // allEmpresas = await res.json();
-    renderEmpresas(res);
+    allEmpresas = res || [];
+    renderEmpresas(allEmpresas);
   } catch (e) { lista.innerHTML = `<div class="error-cell">Error: ${escHtml(e.message)}</div>`; }
 }
 
@@ -1244,7 +1258,7 @@ async function cargarBaseDatos() {
         <td style="font-weight:600">${escHtml(r.nombre || '—')}</td>
         <td>${escHtml(r.proveedor || '—')}</td>
         <td>${escHtml(r.fabricante || '—')}</td>
-        <td>${escHtml(r.presentacion || '—')}kg</td>
+        <td>${r.presentacion ? (r.presentacion / 1000) : '—'}kg</td>
         <td>$${(r.costo || 0).toLocaleString('es-CO')}</td>
         <td><button class="btn-danger" onclick="eliminarRegistroTinta(${r.id})">Eliminar</button></td>
       </tr>`).join('');
@@ -1342,7 +1356,7 @@ async function guardarEntradaTinta() {
         nombre:       seleccionada?.dataset.nombre || seleccionada?.textContent || '',
         fabricante:   document.getElementById('nt-fabricante').value.trim(),
         proveedor:    document.getElementById('nt-proveedor').value.trim(),
-        presentacion: document.getElementById('nt-presentacion').value.trim(),
+        presentacion: (parseFloat(document.getElementById('nt-presentacion').value) || 0) * 1000,
         costo:        parseFloat(document.getElementById('nt-costo').value) || 0
     };
     if (!dto.nombre) {
