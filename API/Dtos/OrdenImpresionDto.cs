@@ -16,6 +16,8 @@ namespace API.Dtos
         public decimal CostoTotal { get; set; }
         public int NumeroCajas { get; set; }
         public int PruebaColor { get; set; }
+        public string MedidaLamina { get; set; }
+        public string MontajeImpresion { get; set; }
         public ICollection<Formula> Formulas { get; set; }
         public List<OrdenPantoneDto> Pantones { get; set; } = new();
     }
@@ -24,6 +26,8 @@ namespace API.Dtos
     {
         public int PruebaColor { get; set; }  // N° cajas impresas con la prueba de color
         public int NumeroCajas { get; set; }  // N° cajas totales de la orden
+        public string MedidaLamina { get; set; } // Medidas de la lámina
+        public string MontajeImpresion { get; set; } // Montaje de impresión
         public decimal CostoTotal { get; set; } // Costo total de la orden
     }
 }

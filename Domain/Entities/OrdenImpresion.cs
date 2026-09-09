@@ -16,6 +16,8 @@ namespace Domain.Entities
         public decimal CostoTotal { get; set; }
         public int NumeroCajas { get; set; }
         public int PruebaColor { get; set; }
+        public string MedidaLamina { get; set; }
+        public string MontajeImpresion { get; set; }
 
         public Usuario Usuario { get; set; }
 

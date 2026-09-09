@@ -637,6 +637,8 @@ async function guardarOrden() {
       numeroOrden: String(numero),
       numeroCajas: 0,
       pruebaColor: 0,
+      medidaLamina: '',
+      montajeImpresion: '',
       idsFormulas: ordenPantonesSeleccionados.map(p => p.id)
     });
     // if (!res.ok) {
@@ -665,7 +667,7 @@ async function cargarOrdenes() {
       apiFetch('OrdenFormula').catch(() => [])
     ]);
     if (!ordenes || !ordenes.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">No hay órdenes registradas.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="loading-cell">No hay órdenes registradas.</td></tr>';
       return;
     }
     const formulaMap = Object.fromEntries(formulas.map(f => [f.id ?? f.Id, f]));
@@ -708,6 +710,8 @@ function renderOrdenes(lista) {
     const pruebaColor = o.pruebaColor ?? o.PruebaColor ?? 0;
     const numeroCajas = o.numeroCajas ?? o.NumeroCajas ?? 0;
     const costoTotal  = o.costoTotal  ?? o.CostoTotal  ?? 0;
+    const medidaLamina = o.medidaLamina ?? o.MedidaLamina;
+    const montajeImpresion = o.montajeImpresion ?? o.MontajeImpresion;
     const costoCelda = esOperario() ? '' : `<td>$${costoTotal.toLocaleString('es-CO')}</td>`;
 // ... y en el template: ${costoCelda} en vez de <td>$...</td>
     return `<tr style="cursor:pointer" onclick="verOrden(${idOrden})">
@@ -716,6 +720,8 @@ function renderOrdenes(lista) {
       <td><div style="display:flex;gap:4px;flex-wrap:wrap">${o._pantonesDots}</div></td>
       <td>${pruebaColor}</td>
       <td>${numeroCajas}</td>
+      <td>${medidaLamina}</td>
+      <td>${montajeImpresion}</td>
       ${costoCelda}
       <td><span class="stock-badge ${estadoClass}">${estadoLabel}</span></td>
     </tr>`;
@@ -783,21 +789,39 @@ async function verOrden(id) {
 
       <div style="background:var(--surface-2);border-radius:10px;padding:16px;border:1px solid var(--border);margin:16px 0">
         <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-          color:var(--text-muted);margin-bottom:12px">Cajas a producir</div>
+          color:var(--text-muted);margin-bottom:12px">Láminas a producir</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="form-group-flat" style="margin:0">
-            <label>N° cajas con prueba de color</label>
+            <label>N° laminas con prueba de color</label>
             <input type="number" id="ord-prueba-cajas" min="1" placeholder="Ej: 6"
               value="${res.pruebaColor || ''}" oninput="actualizarCalculoOrden()">
           </div>
           <div class="form-group-flat" style="margin:0">
-            <label>N° cajas de la orden</label>
+            <label>N° láminas de la orden</label>
             <input type="number" id="ord-total-cajas" min="1" placeholder="Ej: 850"
               value="${res.numeroCajas || ''}" oninput="actualizarCalculoOrden()">
           </div>
         </div>
       </div>
 
+      
+      <div style="background:var(--surface-2);border-radius:10px;padding:16px;border:1px solid var(--border);margin:16px 0">
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+          color:var(--text-muted);margin-bottom:12px">Datos de impresión</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group-flat" style="margin:0">
+            <label>Montaje de impresión</label>
+            <input type="text" id="ord-montaje-impresion" placeholder="Ej: 4"
+              value="${escHtml(res.montajeImpresion || '')}">
+          </div>
+          <div class="form-group-flat" style="margin:0">
+            <label>Medidas de lámina</label>
+            <input type="text" id="ord-medida-lamina" placeholder="Ej: 70x100 cm"
+              value="${escHtml(res.medidaLamina || '')}">
+          </div>
+        </div>
+      </div>
+      
       <div id="calculo-orden-section" style="display:none;margin-bottom:16px">
         <div style="font-size:0.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
           color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)">
@@ -913,6 +937,8 @@ function actualizarCalculoOrden() {
 async function guardarYCompletar(id) {
   const cajasPrueba = parseInt(document.getElementById('ord-prueba-cajas')?.value) || 0;
   const cajasOrden  = parseInt(document.getElementById('ord-total-cajas')?.value)  || 0;
+  const medidaLamina      = document.getElementById('ord-medida-lamina')?.value.trim()      || '';
+  const montajeImpresion  = document.getElementById('ord-montaje-impresion')?.value.trim()  || '';
   const msg         = document.getElementById('ord-upd-msg');
 
   if (!cajasPrueba || !cajasOrden) {
@@ -928,7 +954,9 @@ async function guardarYCompletar(id) {
     const r1 = await apiFetch(`OrdenImpresion/${id}/cajas`, 'PUT', {
       pruebaColor: cajasPrueba,
       numeroCajas: cajasOrden,
-      costoTotal:  costoLimpio
+      costoTotal:  costoLimpio,
+      medidaLamina: medidaLamina,
+      montajeImpresion: montajeImpresion
     });
     if (!r1 || r1?.error) { showModalMsg(msg, 'No se pudo actualizar las cajas.', 'err'); return; }
 

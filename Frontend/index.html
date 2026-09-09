@@ -266,12 +266,14 @@
               <th>Pantones</th>
               <th>Cajas Prueba</th>
               <th>Cajas Orden</th>
+              <th>Medida Lámina</th>
+              <th>Montaje Impresión</th>
               <th id="th-costo-orden">Costo Orden</th>
               <th>Estado</th>
             </tr>
           </thead>
           <tbody id="tabla-ordenes">
-            <tr><td colspan="7" class="loading-cell">Cargando órdenes...</td></tr>
+            <tr><td colspan="9" class="loading-cell">Cargando órdenes...</td></tr>
           </tbody>
         </table>
       </div>
@@ -319,13 +321,14 @@
                 <th>Nombre de la Tinta</th>
                 <th>Proveedor</th>
                 <th>Fabricante</th>
+                <th>Fórmula</th>
                 <th>Presentación</th>
                 <th id="th-costo-orden">Costo Orden</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody id="tabla-basedatos">
-              <tr><td colspan="7" class="loading-cell">Cargando registros...</td></tr>
+              <tr><td colspan="9" class="loading-cell">Cargando registros...</td></tr>
             </tbody>
           </table>
         </div>
@@ -442,6 +445,8 @@
         <input type="text" id="nt-proveedor" placeholder="Ej: Sun Chemical"></div>
       <div class="form-group-flat"><label>Fabricante</label>
         <input type="text" id="nt-fabricante" placeholder="Ej: Sun Chemical"></div>
+      <div class="form-group-flat"><label>Fórmula</label>
+        <input type="text" id="nt-formula" placeholder="Ej: F-CB-001"></div>
       <div class="form-group-flat"><label>Presentación (kg)</label>
   <input type="number" step="0.01" id="nt-presentacion" placeholder="Ej: 2"></div>
       <div class="form-group-flat"><label>Costo de Tinta ($)</label>
@@ -511,4 +516,4 @@
 
 <script src="script.js"></script>
 </body>
-</html>
+</html> 

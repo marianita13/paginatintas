@@ -9,6 +9,7 @@ using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace API.Controllers;
 
@@ -53,7 +54,9 @@ public class OrdenImpresionController : BaseController
             CostoTotal   = orden.CostoTotal,
             NumeroCajas  = orden.NumeroCajas,
             PruebaColor  = orden.PruebaColor,
-            VolumenTotal = orden.VolumenTotal
+            VolumenTotal = orden.VolumenTotal,
+            MedidaLamina = orden.MedidaLamina,
+            MontajeImpresion = orden.MontajeImpresion
         };
 
         foreach (var of in ordenFormulas)
@@ -146,16 +149,26 @@ public class OrdenImpresionController : BaseController
         if (dto.IdsFormulas == null || !dto.IdsFormulas.Any())
             return BadRequest("Debes seleccionar al menos un Pantone.");
 
+        // Extrae el ID del usuario autenticado desde el contexto del Token JWT enviado en el Header Authorize
+        var idUsuarioClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (int.TryParse(idUsuarioClaim, out int idUsuario))
+        {
+            dto.IdUsuario = idUsuario;
+        }
+
         var orden = new OrdenImpresion
         {
-            IdUsuario    = 2,
+            IdUsuario    = dto.IdUsuario,
             NumeroOrden  = dto.NumeroOrden,
             FechaOrden   = DateTime.UtcNow,
             VolumenTotal = 0,
             Estado       = false,
             CostoTotal   = 0,
             NumeroCajas  = dto.NumeroCajas,
-            PruebaColor  = dto.PruebaColor
+            PruebaColor  = dto.PruebaColor,
+            MedidaLamina = dto.MedidaLamina,
+            MontajeImpresion = dto.MontajeImpresion
         };
 
         _unitOfWork.OrdenImpresions.Add(orden);
@@ -188,9 +201,11 @@ public class OrdenImpresionController : BaseController
         int cajasPruebaAnterior = orden.PruebaColor;
         int cajasOrdenAnterior  = orden.NumeroCajas;
 
-        orden.PruebaColor = dto.PruebaColor;
-        orden.NumeroCajas = dto.NumeroCajas;
-        orden.CostoTotal  = dto.CostoTotal;
+        orden.PruebaColor      = dto.PruebaColor;
+        orden.NumeroCajas      = dto.NumeroCajas;
+        orden.CostoTotal       = dto.CostoTotal;
+        orden.MedidaLamina     = dto.MedidaLamina;
+        orden.MontajeImpresion = dto.MontajeImpresion;
 
         // Descontar stock solo si las cajas cambiaron o la orden no estaba completada
         // Usamos PruebaColor > 0 para validar que hay datos reales

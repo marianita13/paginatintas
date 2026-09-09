@@ -21,6 +21,10 @@ namespace Persistence.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
+            builder.Property(e => e.FechaOrden)
+                .HasColumnType("datetime") // Coincide con tu SQL
+                .HasDefaultValueSql("CURRENT_TIMESTAMP"); // Usa el valor por defecto del servidor
+
             builder.Property(e => e.Nombre)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -35,6 +39,9 @@ namespace Persistence.Data.Configurations
 
             builder.Property(e => e.Presentacion)
                 .HasColumnType("decimal(10,2)");
+
+            builder.Property(e => e.Formula)
+                .HasColumnType("varchar(100)");
 
             builder.Property(e => e.Costo)
                 .IsRequired()

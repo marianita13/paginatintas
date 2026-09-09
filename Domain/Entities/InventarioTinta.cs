@@ -7,6 +7,8 @@ namespace Domain.Entities
         public int? IdTintaBase { get; set; }
         public required string IdInterno { get; set; }
         public required string Lote { get; set; }
+        public DateTime FechaOrden { get; set; }
+        public required string Formula { get; set; }
         public required string Nombre { get; set; }
         public required string Fabricante { get; set; }
         public required string Proveedor {get; set;}

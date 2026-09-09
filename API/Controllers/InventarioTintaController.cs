@@ -26,10 +26,10 @@ public class InventarioTintaController: BaseController
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<InventarioTinta>>> Get()
+        public async Task<ActionResult<IEnumerable<InventarioTintaDto>>> Get()
         {
             var InventarioTintaes = await _unitOfWork.InventarioTintas.GetAllAsync();
-            return _mapper.Map<List<InventarioTinta>>(InventarioTintaes);
+            return _mapper.Map<List<InventarioTintaDto>>(InventarioTintaes);
         }
 
         [HttpGet("{id}")]
@@ -52,6 +52,7 @@ public class InventarioTintaController: BaseController
         public async Task<ActionResult<InventarioTinta>> Post(InventarioTintaDto InventarioTintaDto)
         {
             var InventarioTinta = _mapper.Map<InventarioTinta>(InventarioTintaDto);
+            InventarioTinta.FechaOrden = DateTime.UtcNow;
             this._unitOfWork.InventarioTintas.Add(InventarioTinta);
 
             if (InventarioTinta.IdTintaBase.HasValue)
@@ -71,6 +72,7 @@ public class InventarioTintaController: BaseController
                 return BadRequest();
             }
             InventarioTintaDto.Id = InventarioTinta.Id;
+            InventarioTintaDto.FechaOrden = InventarioTinta.FechaOrden;
             return CreatedAtAction(nameof(Post), new {id = InventarioTintaDto.Id}, InventarioTintaDto);
         }
 
