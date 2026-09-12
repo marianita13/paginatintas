@@ -55,7 +55,7 @@ async function cargarPantoneMap() {
     const uncoated = resU.ok       ? await resU.json()       : {};
     const korchy   = resKorchy.ok  ? await resKorchy.json()  : [];
 
-   // 1. Cargar archivo local (Array de objetos)
+    // 1. Cargar archivo local PRIMERO (Array de objetos) — estos tienen prioridad absoluta
     if (Array.isArray(locales)) {
       locales.forEach(item => {
         if (item && item.pantone && item.hex) {
@@ -66,15 +66,20 @@ async function cargarPantoneMap() {
       });
     }
 
+    // 2. Fuentes en línea (coated/uncoated): SOLO si la clave no vino ya del local
     const todos = { ...coated, ...uncoated };
     Object.keys(todos).forEach(nombre => {
       const c = todos[nombre];
       if (c && c.hex) {
-        const hex = String(c.hex).trim();
-        pantoneMap[normalizarPantone(nombre)] = hex.startsWith('#') ? hex : '#' + hex;
+        const clave = normalizarPantone(nombre);
+        if (!pantoneMap[clave]) {
+          const hex = String(c.hex).trim();
+          pantoneMap[clave] = hex.startsWith('#') ? hex : '#' + hex;
+        }
       }
     });
 
+    // 3. Korchy: igualmente, solo si sigue sin existir
     if (Array.isArray(korchy)) {
       korchy.forEach(item => {
         if (Array.isArray(item) && item[1] && Array.isArray(item[1])) {
