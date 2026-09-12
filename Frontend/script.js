@@ -20,6 +20,7 @@ let token       = localStorage.getItem('token') || null;
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 let allColors   = [];
 let allEmpresas = [];
+let allBaseDatos = [];
 let ordenDetalleActual = null;
 let costoTotalCalculado = 0;
 let allOrdenes  = []; // cache para filtrado local // cache para filtrado local
@@ -1269,28 +1270,58 @@ async function guardarEdicionTinta() {
 
 async function cargarBaseDatos() {
   const tbody = document.getElementById('tabla-basedatos');
-  tbody.innerHTML = '<tr><td colspan="8" class="loading-cell">Cargando...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="10" class="loading-cell">Cargando...</td></tr>';
   try {
-    const res      = await apiFetch('InventarioTinta');
-    // const registros = await res.json();
-    console.log(res);
-    
-    if (!res.length) {
-      tbody.innerHTML = '<tr><td colspan="8" class="loading-cell">No hay registros. Usa el botón "+" para agregar.</td></tr>';
-      return;
-    }
-    tbody.innerHTML = res.map(r => `
-      <tr>
-        <td style="font-family:monospace;font-size:.78rem">${escHtml(r.idInterno || '—')}</td>
-        <td>${escHtml(r.lote || '—')}</td>
-        <td style="font-weight:600">${escHtml(r.nombre || '—')}</td>
-        <td>${escHtml(r.proveedor || '—')}</td>
-        <td>${escHtml(r.fabricante || '—')}</td>
-        <td>${r.presentacion ? (r.presentacion / 1000) : '—'}kg</td>
-        <td>$${(r.costo || 0).toLocaleString('es-CO')}</td>
-        <td><button class="btn-danger" onclick="eliminarRegistroTinta(${r.id})">Eliminar</button></td>
-      </tr>`).join('');
-  } catch (e) { tbody.innerHTML = `<tr><td colspan="8" class="error-cell">Error: ${escHtml(e.message)}</td></tr>`; }
+    const res = await apiFetch('InventarioTinta');
+    allBaseDatos = Array.isArray(res) ? res : [];
+    renderBaseDatos(allBaseDatos);
+  } catch (e) { tbody.innerHTML = `<tr><td colspan="10" class="error-cell">Error: ${escHtml(e.message)}</td></tr>`; }
+}
+
+function renderBaseDatos(lista) {
+  const tbody = document.getElementById('tabla-basedatos');
+  if (!lista.length) {
+    tbody.innerHTML = '<tr><td colspan="10" class="loading-cell">No hay registros. Usa el botón "+" para agregar.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = lista.map(r => {
+    const fecha = r.fechaOrden || r.FechaOrden
+      ? new Date(r.fechaOrden || r.FechaOrden).toLocaleDateString('es-CO')
+      : '—';
+    return `<tr>
+      <td style="font-family:monospace;font-size:.78rem;font-weight:700">${escHtml(r.idInterno || '—')}</td>
+      <td>${fecha}</td>
+      <td>${escHtml(r.lote || '—')}</td>
+      <td style="font-weight:600">${escHtml(r.nombre || '—')}</td>
+      <td>${escHtml(r.proveedor || '—')}</td>
+      <td>${escHtml(r.fabricante || '—')}</td>
+      <td>${r.formula ? r.formula : '—'}</td>
+      <td>${r.presentacion ? r.presentacion/1000 + 'kg' : '—'}</td>
+      <td>$${(r.costo || 0).toLocaleString('es-CO')}</td>
+      <td><button class="btn-danger" onclick="eliminarRegistroTinta(${r.id})">Eliminar</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarBaseDatos() {
+  const qId   = (document.getElementById('bd-search-id')?.value || '').trim().toLowerCase();
+  const qFecha = document.getElementById('bd-search-fecha')?.value || '';
+  const filtrados = allBaseDatos.filter(r => {
+    const id    = (r.idInterno || '').toLowerCase();
+    const fecha = r.fechaOrden || r.FechaOrden
+      ? new Date(r.fechaOrden || r.FechaOrden).toISOString().split('T')[0]
+      : '';
+    return (!qId || id.includes(qId)) && (!qFecha || fecha === qFecha);
+  });
+  renderBaseDatos(filtrados);
+}
+
+function limpiarFiltrosBD() {
+  const id    = document.getElementById('bd-search-id');
+  const fecha = document.getElementById('bd-search-fecha');
+  if (id)    id.value    = '';
+  if (fecha) fecha.value = '';
+  renderBaseDatos(allBaseDatos);
 }
 
 async function cargarTintasBase() {
@@ -1339,19 +1370,24 @@ async function cargarTintasBase() {
 }
 
 async function abrirModalNuevaTinta() {
-    // Limpiar todos los campos
-    ['nt-idinterno','nt-lote','nt-nombre','nt-fabricante', 'nt-proveedor','nt-presentacion','nt-costo']
-        .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-
-    // Resetear select al estado inicial
-    const select = document.getElementById('nt-idtinta');
-    if (select) select.innerHTML = '<option value="">-- Selecciona una tinta --</option>';
-
-    document.getElementById('nt-msg').style.display = 'none';
-    document.getElementById('modal-tinta').classList.add('open');
-
-    // Cargar las tintas en el selector
-    await cargarTintasBase();
+  // Limpiar campos
+  ['nt-lote','nt-presentacion','nt-costo','nt-idinterno', 'nt-formula'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  // Resetear selects
+  ['nt-proveedor','nt-fabricante'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.selectedIndex = 0;
+  });
+  // Fecha de hoy por defecto
+  const fechaEl = document.getElementById('nt-fecha');
+  if (fechaEl) fechaEl.value = new Date().toISOString().split('T')[0];
+ 
+  const select = document.getElementById('nt-idtinta');
+  if (select) select.innerHTML = '<option value="">-- Selecciona una tinta --</option>';
+ 
+  document.getElementById('nt-msg').style.display = 'none';
+  document.getElementById('modal-tinta').classList.add('open');
+  await cargarTintasBase();
 }
 
 function cerrarModalTinta(e) {
@@ -1360,56 +1396,46 @@ function cerrarModalTinta(e) {
 }
 
 async function guardarEntradaTinta() {
-
-    const msg = document.getElementById('nt-msg');
-    const idTintaBase = parseInt(
-        document.getElementById('nt-idtinta').value
-    );
-
-    // Validar que haya seleccionado una tinta
-    if (!idTintaBase) {
-        showModalMsg(
-            msg,
-            'Debes seleccionar una tinta base.',
-            'err'
-        );
-        return;
-    }
-    const select      = document.getElementById('nt-idtinta');
-    const seleccionada = select?.options[select.selectedIndex];
-    const dto = {
-        idTintaBase:  idTintaBase,
-        idInterno:    document.getElementById('nt-idinterno').value.trim(),
-        lote:         document.getElementById('nt-lote').value.trim(),
-        nombre:       seleccionada?.dataset.nombre || seleccionada?.textContent || '',
-        fabricante:   document.getElementById('nt-fabricante').value.trim(),
-        proveedor:    document.getElementById('nt-proveedor').value.trim(),
-        presentacion: (parseFloat(document.getElementById('nt-presentacion').value) || 0) * 1000,
-        costo:        parseFloat(document.getElementById('nt-costo').value) || 0
-    };
-    if (!dto.nombre) {
-        showModalMsg(msg, 'No se pudo determinar el nombre de la tinta.', 'err'); return;
-    }
-    try {
+  const msg         = document.getElementById('nt-msg');
+  const idTintaBase = parseInt(document.getElementById('nt-idtinta').value);
+ 
+  if (!idTintaBase) { showModalMsg(msg, 'Debes seleccionar una tinta base.', 'err'); return; }
+ 
+  const select       = document.getElementById('nt-idtinta');
+  const seleccionada = select?.options[select.selectedIndex];
+ 
+  // ID con prefijo fijo "26-"
+  const sufijo   = document.getElementById('nt-idinterno').value.trim();
+  const idInterno = sufijo ? `26-${sufijo}` : '';
+ 
+  const fecha = document.getElementById('nt-fecha').value;
+ 
+  const dto = {
+    idTintaBase:   idTintaBase,
+    idInterno:     idInterno,
+    fechaEntrada:  fecha || new Date().toISOString().split('T')[0],
+    lote:          document.getElementById('nt-lote').value.trim(),
+    nombre:        seleccionada?.dataset.nombre || seleccionada?.textContent || '',
+    fabricante:    document.getElementById('nt-fabricante').value,
+    proveedor:     document.getElementById('nt-proveedor').value,
+    formula:       document.getElementById('nt-formula').value.trim() || '',
+    presentacion:  (parseFloat(document.getElementById('nt-presentacion').value) || 0) * 1000,
+    costo:         parseFloat(document.getElementById('nt-costo').value) || 0
+  };
+ 
+  if (!dto.nombre) { showModalMsg(msg, 'No se pudo determinar el nombre de la tinta.', 'err'); return; }
+ 
+  try {
     const res = await apiFetch('InventarioTinta', 'POST', dto);
-    
-    if (!res || res.error) {
-      // const d = await res.json().catch(() => ({}));
-      // Si ASP.NET devuelve errores de validación de ModelState
+    if (!res.ok) {
       if (res.errors) {
-        const primerosErrores = Object.values(res.errors).flat().join(' ');
-        showModalMsg(msg, primerosErrores || 'Error de validación.', 'err');
-        return;
+        showModalMsg(msg, Object.values(res.errors).flat().join(' ') || 'Error de validación.', 'err'); return;
       }
-      showModalMsg(msg, res.mensaje || res.title || 'Error al guardar.', 'err');
-      return;
+      showModalMsg(msg, res.mensaje || res.title || 'Error al guardar.', 'err'); return;
     }
-
     document.getElementById('modal-tinta').classList.remove('open');
     cargarBaseDatos();
-  } catch (e) {
-    showModalMsg(msg, 'Error: ' + e.message, 'err');
-  }
+  } catch (e) { showModalMsg(msg, 'Error: ' + e.message, 'err'); }
 }
 
 async function eliminarRegistroTinta(id) {
