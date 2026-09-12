@@ -43,6 +43,16 @@ builder.Services.AddDbContext<paginatintasContext>(options =>
         connectionString,
         new MySqlServerVersion(new Version(8, 0, 0))
     );
+
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), mysqlOptions =>
+    {
+        // Activa reintentos automáticos si la conexión en Railway falla momentáneamente
+        mysqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,                  // Número máximo de reintentos
+            maxRetryDelay: TimeSpan.FromSeconds(10), // Tiempo máximo de espera entre reintentos
+            errorNumbersToAdd: null            // Códigos de error específicos (opcional)
+        );
+    });
 });
 
 var app = builder.Build();
