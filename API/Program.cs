@@ -97,3 +97,9 @@ public partial class Program
 
 // dotnet ef migrations add InitialCreate --project Persistence --startup-project API|x|
 // dotnet ef database update --project Persistence --startup-project API
+
+// ============================================================================
+// Proyecto: Sistema de Gestión de Color y Control de Tintas - Carbolsas Ltda.
+// Autor: Mariana Acero Velásquez
+// Rol: Lead Software Engineer / Desarrolladora Principal
+// ============================================================================

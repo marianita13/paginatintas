@@ -29,3 +29,9 @@ namespace Persistence.Data
         }
     }
 }
+
+// ============================================================================
+// Proyecto: Sistema de Gestión de Color y Control de Tintas - Carbolsas Ltda.
+// Autor: Mariana Acero Velásquez
+// Rol: Lead Software Engineer / Desarrolladora Principal
+// ============================================================================

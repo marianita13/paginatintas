@@ -1,3 +1,9 @@
+// ============================================================================
+// Proyecto: Sistema de Gestión de Color y Control de Tintas - Carbolsas Ltda.
+// Autor: Mariana Acero Velásquez
+// Rol: Lead Software Engineer / Desarrolladora Principal
+// ============================================================================
+
 // ════════════════════════════════════════
 //  CONFIGURACIÓN
 // ════════════════════════════════════════
@@ -1568,3 +1574,9 @@ function showModalMsg(el, text, type) {
   el.textContent = text; el.className = 'config-msg ' + type; el.style.display = 'block';
   if (type === 'ok') setTimeout(() => { el.style.display = 'none'; }, 4000);
 }
+
+// ============================================================================
+// Proyecto: Sistema de Gestión de Color y Control de Tintas - Carbolsas Ltda.
+// Autor: Mariana Acero Velásquez
+// Rol: Lead Software Engineer / Desarrolladora Principal
+// ============================================================================
