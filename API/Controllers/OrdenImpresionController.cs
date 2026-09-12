@@ -149,17 +149,9 @@ public class OrdenImpresionController : BaseController
         if (dto.IdsFormulas == null || !dto.IdsFormulas.Any())
             return BadRequest("Debes seleccionar al menos un Pantone.");
 
-        // Extrae el ID del usuario autenticado desde el contexto del Token JWT enviado en el Header Authorize
-        var idUsuarioClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
-        if (int.TryParse(idUsuarioClaim, out int idUsuario))
-        {
-            dto.IdUsuario = idUsuario;
-        }
-
         var orden = new OrdenImpresion
         {
-            IdUsuario    = dto.IdUsuario,
+            IdUsuario    = 2,
             NumeroOrden  = dto.NumeroOrden,
             FechaOrden   = DateTime.UtcNow,
             VolumenTotal = 0,

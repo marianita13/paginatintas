@@ -641,10 +641,6 @@ async function guardarOrden() {
       montajeImpresion: '',
       idsFormulas: ordenPantonesSeleccionados.map(p => p.id)
     });
-    // if (!res.ok) {
-    //   const text = await res.text();
-    //   showModalMsg(msg, text || 'Error al guardar la orden.', 'err'); return;
-    // }
     document.getElementById('modal-orden').classList.remove('open');
     ordenPantonesSeleccionados = [];
     const btnOrdenes = document.querySelector('[data-tab="ordenes"]');
@@ -659,7 +655,7 @@ async function guardarOrden() {
 // ════════════════════════════════════════
 async function cargarOrdenes() {
   const tbody = document.getElementById('tabla-ordenes');
-  tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">Cargando...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="9" class="loading-cell">Cargando...</td></tr>';
   try {
     const [ordenes, formulas, ordenFormulas] = await Promise.all([
       apiFetch('OrdenImpresion').catch(() => []),
@@ -690,7 +686,7 @@ async function cargarOrdenes() {
     renderOrdenes(allOrdenes);
   } catch (e) {
     console.error('Error en cargarOrdenes:', e);
-    tbody.innerHTML = `<tr><td colspan="7" class="error-cell">Error: ${escHtml(e.message)}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="error-cell">Error: ${escHtml(e.message)}</td></tr>`;
   }
 }
 
@@ -699,7 +695,7 @@ function renderOrdenes(lista) {
   // Ocultar la columna de costo cada vez que se dibuja la tabla (no solo al iniciar sesión)
   const thCostoOrden = document.getElementById('th-costo-orden');
   if (thCostoOrden) thCostoOrden.style.display = esOperario() ? 'none' : '';
-  if (!lista.length) { tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">Sin resultados.</td></tr>'; return; }
+  if (!lista.length) { tbody.innerHTML = '<tr><td colspan="9" class="loading-cell">Sin resultados.</td></tr>'; return; }
   tbody.innerHTML = lista.map(o => {
     const idOrden     = o.id ?? o.Id;
     const estado      = o.estado ?? o.Estado;
